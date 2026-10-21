@@ -3,7 +3,7 @@
 # Separate from the root Dockerfile on purpose: that one serves the phone-first web UI
 # (multipart photo uploads, image responses, an HTML page) and belongs on App Runner.
 # This one serves exactly what the Runtime contract asks for — POST /invocations and
-# GET /ping on port 8080, ARM64 only — and nothing else. See docs/DEPLOY.md.
+# GET /ping on port 8080, ARM64 only — and nothing else.
 #
 #   docker build --platform linux/arm64 -f Dockerfile.agentcore -t stepspotter-agentcore:dev .
 #

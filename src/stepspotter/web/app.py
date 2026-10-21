@@ -235,7 +235,7 @@ def create_app(
         ),
     )
     # Public URL, no login, 23 days of judging: cap what one address and one day can
-    # spend on Bedrock, and keep a kill switch. See web/limits.py and OPERATIONS-JUDGING.md.
+    # spend on Bedrock, and keep a kill switch. See web/limits.py.
     install_limits(app)
     app.state.service = svc
     app.state.gate = gate

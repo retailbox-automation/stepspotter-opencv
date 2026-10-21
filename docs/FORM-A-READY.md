@@ -142,7 +142,7 @@ Only the **web** image changes. `agentcore_entry.py` imports `store`, `guide` an
 `web.photos`, none of which this branch touches, so **the guide image and the AgentCore
 Runtime do not need rebuilding or redeploying.** Leave them alone.
 
-Merge first, then build from `main`. Full context in `docs/DEPLOY.md` § Path A; the
+Merge first, then build from `main`. Full context was in the original submission's deploy notes, not carried into this repo (§ Path A); the
 account, roles, service and scaling config already exist and are not re-created.
 
 ```bash

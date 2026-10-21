@@ -24,7 +24,7 @@ Counters live in this process. App Runner runs this service at min=max=1 instanc
 one process *is* the service; the day counters are additionally mirrored to small files
 under ``$STEPSPOTTER_DATA/limits/`` so that an app reload does not hand the next
 visitor a fresh budget. A container replacement does reset it — that is the same
-ephemeral disk that loses jobs, and it is written down in docs/DEPLOY.md rather than
+ephemeral disk that loses jobs, and it is written down in the original submission's deploy notes, not carried into this repo rather than
 papered over.
 """
 

@@ -6,7 +6,8 @@ until your photo proves the last one was done safely.** Built on **Strands Agent
 
 **Live demo: https://w7ihmvgxxj.us-east-1.awsapprunner.com** — open it on a phone; the
 photo buttons go straight to the rear camera. (AWS App Runner, us-east-1. The Guide
-agent also runs on Amazon Bedrock AgentCore Runtime — see `docs/DEPLOY.md`.)
+agent also runs on Amazon Bedrock AgentCore Runtime. That deployment is the build
+submitted to Agents for Humans, before the OpenCV 5 layer; see the section at the end.)
 
 **Demo video (2:39):** https://youtu.be/gHYz2I742yY
 
@@ -110,9 +111,9 @@ allowed to look like a grounded one. Why the ladder: a hosted container starts w
 empty filesystem, and on 2026-09-11 DuckDuckGo answered us with HTTP 202 (its
 rate-limit challenge) for every query, which parses to zero results and is indistinguish-
 able from "no manual exists". `python tools/bake_manual_cache.py "<brand model>" <url>`
-adds a model to the baked cache: excerpt, pages and the maker's link, without the PDF.
-Both images run offline, the engines caught refusing live, and the two step cards a
-person sees: [`data/demo/research-hardening/`](data/demo/research-hardening/).
+adds a model to the baked cache: the maker's link and the page numbers, and no text
+from the manual — the page text is fetched from the maker's PDF at runtime
+(`research.hydrate`) into a gitignored cache.
 
 - **No API key.** DuckDuckGo and Brave's HTML pages and `pypdf`; a stranger can run it cold.
 - **Switch it off** with `STEPSPOTTER_RESEARCH=0` — it returns before any socket
@@ -143,7 +144,7 @@ Every line below is in this repository; nothing here is aspirational.
 | `@tool` × 6 | `src/stepspotter/guide.py:253, 277, 291, 306, 332, 347` | `start_job`, `find_manual`, `show_step`, `submit_photo`, `advance_step`, `escalate` — the Guide's whole surface |
 | `strands.session.FileSessionManager` passed as `Agent(session_manager=...)` | `src/stepspotter/guide.py:397-403` | the conversation survives a restart; resuming a job is the SDK's job, not a homemade chat log |
 | `HookRegistry` + a hand-built `BeforeToolCallEvent` | `src/stepspotter/guide.py:484-504` | the web UI does not talk to the model at all, and still goes through the *same* gate object — one policy, two front doors |
-| Amazon Bedrock AgentCore Runtime entrypoint | `src/stepspotter/agentcore_entry.py:54, 60, 236` | `BedrockAgentCoreApp` + `@app.entrypoint`, deployed and READY (`docs/DEPLOY.md`) |
+| Amazon Bedrock AgentCore Runtime entrypoint | `src/stepspotter/agentcore_entry.py:54, 60, 236` | `BedrockAgentCoreApp` + `@app.entrypoint`, deployed and READY |
 
 Not used, so not claimed: `strands_tools` built-ins, `MCPClient`, and the
 `vended_interventions` helpers. The human-in-the-loop path here is the hook's own
@@ -245,12 +246,12 @@ polite.
 |---|---|
 | Spikes A + B (Verifier structured output, Gate `BeforeToolCall` hook, live Bedrock) | ✅ Done — `spikes/SPIKE-A-RESULT.md`, `spikes/SPIKE-B-RESULT.md` |
 | Core (Planner, Marker, Verifier, Gate, Guide, models, store) | ✅ Done — `src/stepspotter/`; `python -m pytest -q` → from a fresh clone, **189 passed, 7 skipped** with the `agentcore` extra and **176 passed, 8 skipped** without it; on the machine that also holds the raw photo archive, 195 / 1 and 177 / 2 |
-| Web UI (phone-first, FastAPI, camera capture) | ✅ Done — `src/stepspotter/web/`; a camera-free **Try a demo job** button for judges, a readable **why** trace ("Everything it did"), and per-address + per-day spend caps in front of the two endpoints that call a model (`src/stepspotter/web/limits.py`, `docs/OPERATIONS-JUDGING.md`) |
+| Web UI (phone-first, FastAPI, camera capture) | ✅ Done — `src/stepspotter/web/`; a camera-free **Try a demo job** button for judges, a readable **why** trace ("Everything it did"), and per-address + per-day spend caps in front of the two endpoints that call a model (`src/stepspotter/web/limits.py`) |
 | Manual research (find the maker's PDF, ground the plan, cite the page) | ✅ Done — `src/stepspotter/research.py`, `docs/research-epx3030-2026-09-09.md` |
 | Eval harness + smoke fixtures | ✅ Done — `src/stepspotter/evalharness.py`, `fixtures/onq-keystone-smoke/`; published run: `docs/eval-results/2026-09-09.md` |
 | Full 12-step eval set (`docs/EVAL-PLAN.md` §2, red-team R1–R6) | ⛔ Not run — waiting on evidence photos from the finished job |
-| Deploy — phone web app | ✅ Live on AWS App Runner: <https://w7ihmvgxxj.us-east-1.awsapprunner.com> (`/healthz` 200). Redeployed 2026-09-11 15:00Z with the four-branch merge — clicked through on a phone viewport: *Try a demo job* → 8 steps → a refused photo → a passing one → step 2. Image `sha256:5cf39d91…`, rollback tag `web-rollback-20260911b`; see `docs/DEPLOY.md` |
-| Deploy — Guide agent on Amazon Bedrock AgentCore Runtime | ✅ `stepspotter_guide` READY, version 3 (2026-09-11) — invoked live, 200 in 7 s, resolves the ePX3030 manual to pages 10–14 from the baked excerpt with no network; rollback tag `guide-rollback-20260911b`; see `docs/DEPLOY.md` |
+| Deploy — phone web app | ✅ Live on AWS App Runner: <https://w7ihmvgxxj.us-east-1.awsapprunner.com> (`/healthz` 200). Redeployed 2026-09-11 15:00Z with the four-branch merge — clicked through on a phone viewport: *Try a demo job* → 8 steps → a refused photo → a passing one → step 2. Image `sha256:5cf39d91…`, rollback tag `web-rollback-20260911b` |
+| Deploy — Guide agent on Amazon Bedrock AgentCore Runtime | ✅ `stepspotter_guide` READY, version 3 (2026-09-11) — invoked live, 200 in 7 s, resolves the ePX3030 manual to pages 10–14 from the baked excerpt with no network; rollback tag `guide-rollback-20260911b` |
 
 ## Setup
 
@@ -314,8 +315,7 @@ Run the phone-first web UI (needs the AWS export above):
 stepspotter serve --port 8137
 ```
 Then open `http://<your-machine's-LAN-ip>:8137` on a phone — the photo inputs use
-`capture="environment"` and open the rear camera directly. Full deploy notes
-(App Runner, AgentCore Runtime, Docker): `docs/DEPLOY.md`.
+`capture="environment"` and open the rear camera directly.
 
 **No panel in front of you?** The first screen has a **Try a demo job** button. It
 runs the whole thing on three photos of a real low-voltage panel shipped inside the
@@ -396,3 +396,26 @@ an AI coding assistant, as the rules allow.
 ## License
 
 MIT (see `LICENSE`).
+
+---
+
+## OpenCV 5 layer (in progress — OpenCV AI Competition 2026)
+
+Everything above describes the build submitted to Agents for Humans. This fork adds an
+OpenCV 5 perception layer as the first, deterministic stage of the photo gate: every
+evidence photo is checked for blur, light, glare and framing, matched to the person's
+first photo (SIFT + `findHomography(USAC_MAGSAC)`), checked for being a repeat of a photo
+already sent, and compared zone by zone for what changed — before any model is asked. A
+photo it refuses never reaches the model; a change where the step said "do not touch"
+stops the run for a person's approval. What it measures, every threshold and where it came
+from, the eval and its failures: [`docs/PERCEPTION.md`](docs/PERCEPTION.md). The live URL
+at the top of this README still runs the pre-OpenCV build.
+
+```bash
+nice -n 15 uv pip install -p .venv/bin/python -e ".[dev]"     # pins opencv-python-headless 5.0.0.93
+.venv/bin/python -m pytest -q -m "not integration" -p no:cacheprovider
+.venv/bin/python eval/build_set.py && .venv/bin/python eval/run.py --config opencv
+```
+
+The bundled manual cache is link-only: the maker's URL and page numbers, no text copied
+from a manual; the page text is fetched from the official PDF at runtime.

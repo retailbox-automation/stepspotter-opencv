@@ -32,7 +32,7 @@ State lives under ``$STEPSPOTTER_DATA`` (``/tmp/stepspotter`` in the container â
 in ``Dockerfile.agentcore``, not here, so local runs and tests keep their own
 defaults). AgentCore gives each ``runtimeSessionId`` its own microVM, so that
 directory is already private to one repair; it is not durable across sessions, which
-is the same trade the web UI makes on App Runner (see docs/DEPLOY.md).
+is the same trade the web UI makes on App Runner.
 
 Local run::
 
