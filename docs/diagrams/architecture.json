@@ -7,7 +7,7 @@
     "quality_profile": "showcase",
     "repository": {
       "url": "https://github.com/retailbox-automation/stepspotter-opencv",
-      "revision": "43c1520d22a84abd675a3e396bf606be6d4d92cb"
+      "revision": "750d1525e7a76fe5dbe91651dd81776f56988417"
     },
     "views": [
       {
@@ -87,12 +87,12 @@
       "sources": [
         {
           "path": "src/stepspotter/web/app.py",
-          "line": 256,
+          "line": 265,
           "label": "routes"
         },
         {
           "path": "src/stepspotter/guide.py",
-          "line": 396,
+          "line": 405,
           "label": "JobService.verify"
         }
       ]
@@ -114,7 +114,7 @@
       "sources": [
         {
           "path": "src/stepspotter/perception/inspect.py",
-          "line": 181,
+          "line": 203,
           "label": "inspect_full"
         },
         {
@@ -471,10 +471,10 @@
       "dot": "cyan",
       "title": "OpenCV 5 decides before the model",
       "items": [
-        "Laplacian, calcHist, connectedComponentsWithStats: blur, light, glare (perception/quality.py:65, :96, :85)",
+        "Laplacian, calcHist, connectedComponentsWithStats: blur, light, glare (perception/quality.py:65, :107, :85)",
         "SIFT + knnMatch + findHomography(USAC_MAGSAC): same place (imgio.py:88, scene.py:55, :61)",
         "warpPerspective, CLAHE, absdiff, morphologyEx: change per zone (change.py:40, imgio.py:60, change.py:54, :56)",
-        "FaceDetectorYN blur before storing or sending (privacy.py:57); YuNet fetched and checksum-checked at image build (Dockerfile:44)"
+        "FaceDetectorYN blur before storing or sending (privacy.py:59); YuNet fetched and checksum-checked at image build (Dockerfile:44)"
       ]
     },
     {
@@ -489,9 +489,10 @@
     },
     {
       "dot": "amber",
-      "title": "Not on this page",
+      "title": "Agent mode and limits",
       "items": [
-        "The Guide agent loop that calls inspect_photo itself runs from the CLI (guide.py:761, cli.py:195), not from the public page",
+        "At /agent the Strands Guide agent decides the tool calls (inspect_photo, submit_photo, advance_step); same tools, same gate (web/app.py:510, guide.py:773)",
+        "Capped: 6 jobs, 30 photo checks, 60 agent turns a day for everyone; at most 8 tool calls per turn (web/limits.py, web/agent_mode.py)",
         "No COOL, no S3 for photos, no AgentCore in this stack"
       ]
     }

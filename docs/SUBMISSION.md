@@ -53,6 +53,10 @@ happens next:
 Faces in a photo are blurred before it is stored or sent anywhere. A video works too:
 OpenCV picks the sharpest frame that shows the right place.
 
+In agent mode (`/agent`) the Strands Guide agent decides which tools to call — it can ask
+OpenCV about a photo before submitting it — and every answer shows its tool calls,
+OpenCV's decision and any refusal by the gate.
+
 ### How we built it
 
 - **OpenCV 5.0.0** (`opencv-python-headless==5.0.0.93`): Laplacian sharpness per tile,
@@ -87,6 +91,11 @@ OpenCV picks the sharpest frame that shows the right place.
   map decides nothing.
 - **A false positive must never trap a person.** After three OpenCV refusals in a row on
   one step, the next photo goes to the model with OpenCV's findings attached.
+- **White things look like glare.** The first evaluation run showed OpenCV refusing 8 of
+  56 ordinary real photos — white basins, a white wall, a flashlight hot spot. Glare now
+  refuses a photo only when it newly covers the work zone, and overexposure is judged
+  against the first photo; 0 of 56 are refused now. The price: some synthetic glare now
+  goes on to the model.
 - App Runner runs x86_64 images only, so the Graviton plan changed; the build now checks
   the image architecture before pushing.
 
@@ -95,8 +104,17 @@ OpenCV picks the sharpest frame that shows the right place.
 - OpenCV output decides the next action — no model call, a one-photo or two-photo model
   call, a cancelled tool, or a person's approval — and every step of that is in the
   trace and covered by an offline test.
-- {{EVAL:headline — one or two numbers from docs/EVAL.md, e.g. model calls avoided and
-  false refusals on real re-shots}}
+- On 50 held-out cases, the model on one photo refused 11 of 33 bad photos; our gate
+  refused 30 of 33, wrongly refused 2 of 15 good ones (as many as the model alone, leaving
+  out 2 mislabelled pairs), made 31 model calls for 54 checks instead of 54 and cost $0.89
+  per 100 checks instead of $1.27. Shown both photos, the model alone matches us on
+  look-alikes of another place; our edge is a resent photo, no change, a change in a
+  do-not-touch zone, overexposure and a cut-off work zone. Small sample: 2 cases per
+  synthetic class, one run.
+- A live recording of the real agent (`data/demo/agentic-opencv/`): a blurred photo is
+  refused in 44 ms without a model call, a photo of another room goes to the two-photo
+  check and fails, the right photo passes and the gate lets the agent move on, and a skip
+  attempt is cancelled by the gate.
 - We published the failures next to the successes, including the policy that refused
   honest photos and why we dropped it.
 
@@ -110,6 +128,8 @@ better question, not to refuse.
 ### What's next
 
 - A blind test on photos of a real repair that no threshold was tuned on.
+- The misses we know about: mirror-image look-alikes, a resent photo with a mark drawn on
+  it, a smeared video frame that passes the blur check.
 - Segmentation instead of boxes for the work and do-not-touch zones.
 - Job state outside the instance, so a job survives a redeploy.
 
@@ -184,9 +204,22 @@ C. ONE FULL JOB WITH THE MODEL (about 2 minutes, uses Amazon Bedrock)
    the verdict is shown, and "Next step" appears if the model passed it. The model is not
    deterministic; the trace shows whatever came back.
 
-LIMITS: the live service allows 6 jobs and 30 photo checks per day for everyone together
-(the four judge buttons count as photo checks) and 6 jobs / 30 photos per hour per address,
-to stay inside its budget. If the page says the demo has run its quota for today, use D.
+E. AGENT MODE - THE AGENT DECIDES THE TOOL CALLS (about 3 minutes, uses Amazon Bedrock)
+10. Open https://utgfmpcgxf.us-east-1.awsapprunner.com/agent . Type a task and attach a photo
+   (e.g. src/stepspotter/web/demo_photos/02-panel-inside.jpg from the repo: "Confirm the
+   structured wiring panel is safe to work on"). The Guide agent starts the job.
+11. Send a blurred photo (data/demo/agentic-opencv/photos/02-panel-inside-blurred-sigma4.jpg),
+   then one of another place (src/stepspotter/web/demo_photos/04-office-jack-front.jpg), then
+   the panel from further back (src/stepspotter/web/demo_photos/01-panel-overview.jpg). Expected: under each answer you see the tool calls
+   the agent made, OpenCV's decision for the photo (retake / place_unconfirmed / ok), its
+   time and pictures, and any gate refusal; a blurred photo is refused without a model call.
+   The model is not deterministic, so wording and the exact calls vary.
+   A recorded run of this, with the full trace: data/demo/agentic-opencv/transcript.md
+
+LIMITS: the live service allows, per day for everyone together, 6 jobs, 30 photo checks
+(the four judge buttons count as photo checks) and 60 agent turns; per address per hour,
+6 jobs, 30 photo checks and 20 agent turns; at most 8 tool calls in one agent turn. This
+keeps it inside its budget. If the page says the demo has run its quota for today, use D.
 
 D. OFFLINE, NO AWS ACCOUNT
   git clone https://github.com/retailbox-automation/stepspotter-opencv && cd stepspotter-opencv
@@ -194,6 +227,7 @@ D. OFFLINE, NO AWS ACCOUNT
   tools/fetch_models.sh
   .venv/bin/python -m pytest -q -m "not integration"
   .venv/bin/python eval/build_set.py && .venv/bin/python eval/run.py --config opencv
+Expected: 433 passed, 1 skipped (with the face model fetched).
 The test tests/test_perception_gate.py shows each OpenCV decision changing the next call
 (no model call / one-photo / two-photo check / cancel_tool / interrupt) with the model
 replaced by a recorder.
@@ -223,8 +257,10 @@ integration.)
 
 1. **architecture.png** — What runs on AWS: App Runner with OpenCV 5 in front of the Bedrock verifier and the Strands gate; CloudWatch, Budget, CodeBuild and ECR.
 2. **agent-workflow.png** — Perception, decision, action: OpenCV's route decides between no model call, a one-photo or a two-photo model check; the gate cancels or asks a person.
-3. **{{SCREENSHOT:judge-retake}}** — A blurred photo refused in milliseconds with one instruction, no model call.
-4. **{{SCREENSHOT:judge-human}}** — A change in the do-not-touch zone stops the run for a person's approval.
-5. **{{SCREENSHOT:trace}}** — The trace: OpenCV's row, its time, and whether a model was asked.
-6. **{{SCREENSHOT:heatmap}}** — What OpenCV saw: matched points and the change heatmap with the zones.
-7. **{{SCREENSHOT:eval-table}}** — Evaluation: model only vs OpenCV then model, with the failures.
+3. **data/demo/agentic-opencv/perception/step-01-probe-01-quality.jpg** — The real agent: a blurred photo refused by OpenCV in 44 ms, the agent asks for a steady shot instead of submitting.
+4. **{{SCREENSHOT:judge-retake}}** — A blurred photo refused in milliseconds with one instruction, no model call.
+5. **{{SCREENSHOT:judge-human}}** — A change in the do-not-touch zone stops the run for a person's approval.
+6. **{{SCREENSHOT:trace}}** — The trace: OpenCV's row, its time, and whether a model was asked.
+7. **{{SCREENSHOT:heatmap}}** — What OpenCV saw: matched points and the change heatmap with the zones.
+8. **eval/results/figures/c-vs-a-c03-real_lookalike-c05.jpg** — Where OpenCV changed the decision: the model alone passed a look-alike of another place; the gate's two-photo check refused it.
+9. **{{SCREENSHOT:eval-table}}** — Evaluation: model only vs OpenCV then model, with the failures.

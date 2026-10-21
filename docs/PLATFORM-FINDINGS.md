@@ -117,7 +117,7 @@ ourselves, it says so.
 - **SIFT inliers did not separate a real re-shot from another room** on our photos: real
   photos of the same place from another angle or after cables moved kept 4–8 inliers
   after `findHomography(USAC_MAGSAC)`; photos of different rooms kept 5–8
-  (`eval/results/opencv.md`, `docs/PERCEPTION.md`). CLAHE on the luminance before SIFT
+  (`eval/results/opencv.md` at commit `ff97511`, `docs/PERCEPTION.md`). CLAHE on the luminance before SIFT
   roughly doubled inliers on the one real pair that did match (33 → 62). This is why a
   photo OpenCV cannot line up goes to a two-photo model check instead of being refused.
 - **Laplacian sharpness depends on the scale it is read at.** Thresholds measured at a

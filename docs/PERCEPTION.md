@@ -22,14 +22,14 @@ OpenCV could not line up was refused as `wrong_place`; on our own photos that re
 
 Code: `src/stepspotter/perception/`. The policy, in the order it is applied, is the
 docstring of `perception/inspect.py`; every number is in `perception/thresholds.py`
-with where it came from. The route is `PerceptionReport.route` (`perception/models.py:163`).
+with where it came from. The route is `PerceptionReport.route` (`perception/models.py:167`).
 
 ## What each check measures
 
 | module | measures | OpenCV 5 calls |
 |---|---|---|
 | `privacy.py` | faces found and blurred in the file **before** anything else reads it — before the quality check, before it is stored, before any model sees it (see Privacy) | `FaceDetectorYN`, `GaussianBlur` |
-| `quality.py` | sharpness = p90 of Laplacian variance over 4x4 tiles (a sharp part on a soft background passes); exposure = mean grey, share of near-black (<16) and near-white (>=245) pixels; blank frame = grey std; glare = largest connected saturated (>=250) blob; size | `Laplacian`, `calcHist`, `threshold`, `connectedComponentsWithStats` |
+| `quality.py` | sharpness = p90 of Laplacian variance over 4x4 tiles (a sharp part on a soft background passes); exposure = mean grey, share of near-black (<16) and near-white (>=245) pixels, overexposure read against the first photo; blank frame = grey std; glare = largest connected saturated (>=250) blob — a note on its own, a refusal only when it newly covers the work zone; size | `Laplacian`, `calcHist`, `threshold`, `connectedComponentsWithStats` |
 | `scene.py` | is the evidence the same place as the reference: SIFT (2000, on CLAHE luminance), Lowe ratio 0.75, `findHomography(USAC_MAGSAC)`, then a sanity check on the homography (orientation, convex projected quad, scale 0.2–5, not a sliver, overlap). A close-up that fails the whole-frame match is matched again against a crop of the reference around the work zone. Replay = homography near identity AND nothing different after alignment, anywhere | `SIFT_create`, `BFMatcher.knnMatch`, `findHomography`, `perspectiveTransform`, `isContourConvex`, `intersectConvexConvex` |
 | `change.py` | the evidence warped onto the reference grid, CLAHE on L in Lab, sigma-3 blur, per-pixel change = any Lab channel moved > 28 levels, 5x5 opening; the changed share of each work zone and each do-not-touch zone, **read against the change outside every zone** (the noise floor) | `warpPerspective`, `cvtColor(LAB)`, `createCLAHE`, `absdiff`, `morphologyEx`, `erode` |
 | `frames.py` | a video instead of a photo: 24 evenly spaced frames, scored by sharpness × exposure × (1 + inliers to the reference / 100), near-duplicates dropped, best 3 kept; the best one goes down the photo path | `VideoCapture` + the above |
@@ -48,10 +48,14 @@ OpenCV 5.0.0, numpy 2.5.4. "spike" = `spike/opencv5/spike.py` in the hackathon p
 | `QUALITY_PX` (quality read at, long side) | 640, or half the photo if smaller | exp: Laplacian energy depends on the read scale; thresholds were measured at a 2x downscale |
 | `DARK_MEAN` | 28 | spike: darkened copies 5.1–18.4, darkest real original 47.4 |
 | `BRIGHT_FRAC_MAX` | 0.12 | spike: overexposed copies 0.23–0.99, originals ≤ 0.007 |
+| `OVEREXPOSED_MARGIN` | 0.12 | overexposure is refused only when the near-white share is also more than this above the first photo's. Calibration half of the eval set: every overexposed case exceeded its first photo by +0.216 to +0.966, no good photo by more than +0.063; a white scene is white in both photos |
+| `BRIGHT_FRAC_ABS_MAX` | 0.50 | with no readable first photo, only a photo more than half blown out is refused. Calibration: the brightest good photo 0.466 (a white scene); 8 of 12 overexposed cases above 0.50 |
 | `BLANK_STD` | 8 | spike: originals ≥ 23.1 |
 | `SHARP_P90_MIN` | 45 | exp at 640 px: originals 73.7–1072.5; sigma-2 blur ≤ 34.2 and motion ≤ 60 except on the densely wired 03 |
-| `SHARP_RATIO_MIN` / `REL_SHARP_MIN_COVERAGE` | 0.35 / 0.6 | exp: blurred copies keep 0.05–0.40 of the original's sharpness; applied only when the evidence covers ≥ 60 % of the reference (same view) |
-| `GLARE_BLOB_FRAC` | 0.005 | exp: originals ≤ 0.002; a 5 % glare disc 0.009–0.011 |
+| `SHARP_RATIO_MIN` / `REL_SHARP_MIN_COVERAGE` | 0.22 / 0.6 | the evidence may not fall below this share of the first photo's sharpness; applied only when it covers ≥ 60 % of the reference (same view). Lowered from 0.35 on the calibration half of the eval set: every blur case that passed the floor had ≤ 0.193; the real same-place pair c36→c37 scored 0.255 and was wrongly refused at 0.35 |
+| `WEAK_FIT_INLIERS` | 12 | the ratio is also read on a weak but sane fit (≥ 12 points, below the confirm bar), because blur is what removes matches. Calibration: the blurred trap frame v0180 kept 16 sane inliers; 12 is above the different-place maximum seen (10) |
+| `GLARE_BLOB_FRAC` | 0.005 | advisory note only since the evaluation: as a refusal, a frame-wide blob rule refused 14 of 111 good calibration photos (white basins, a white wall, a flashlight hot spot) — blob size cannot tell glare from a white object |
+| `GLARE_ZONE_NEW_FRAC` | 0.10 | glare refuses only when at least this share of the work zone is saturated in the evidence but not at the same place in the first photo. Calibration: good photos ≤ 0.086, synthetic glare 0.060–0.569; refuses no good calibration photo and still blocks 5 of 12 glare cases, the rest go to the model |
 | `MIN_INLIERS` / `MIN_INLIER_RATIO` | 25 / 0.2 | to **confirm** the place. eval run 2 (CLAHE): every pair that did not line up had ≤ 8 inliers — different rooms (5–8) and real re-shots of the same place (4–8) alike; every confirmed match had ≥ 52 (real 01↔02: 52, 79; synthetic ≥ 118). 25 = 3x the worst unmatched, half the weakest real match. Below it the photo is not refused, it goes to the two-photo check, so a high bar costs a dearer check, never a refused person. Raised from 20 when a miss stopped being a block |
 | `REPLAY_*` | corner shift ≤ 4 % of diagonal, scale ±5 %, normalised MAD ≤ 2.5, changed ≤ 1.2 %, largest changed blob ≤ 0.05 % | exp: re-encoded / resized / 2°-rotated copies MAD 0.25–0.59, largest blob ≤ 0.003 %; a small pasted part ≥ 0.03 % |
 | `CHANGE_DELTA` | 28 Lab levels | spike: an edit read 0.29–0.31 inside its box, 0.0 without one |
@@ -61,22 +65,22 @@ OpenCV 5.0.0, numpy 2.5.4. "spike" = `spike/opencv5/spike.py` in the hackathon p
 | `YUNET_SCORE` | 0.8 | score threshold passed to `FaceDetectorYN.create`; not tuned on our photos (one public-domain portrait is the only face test) |
 | `STUCK_AFTER` (`inspect.py`) | 3 | the coordinator's rule: after 3 OpenCV blocks in a row on one step, the next `retake` or `no_change` refusal goes to the model with OpenCV's findings attached instead |
 
-**Not a blind test.** These thresholds were set looking at all six photos. The eval
+**Not a blind test.** The first thresholds were set looking at all six photos; the quality thresholds changed after the evaluation (`OVEREXPOSED_MARGIN`, `BRIGHT_FRAC_ABS_MAX`, `SHARP_RATIO_MIN`, `WEAK_FIT_INLIERS`, `GLARE_ZONE_NEW_FRAC`) were calibrated on the evaluation's calibration half only (`src/stepspotter/perception/thresholds.py`). The eval
 split below (by scene) is reported per half so a reader can see whether results differ
 by scene; it is not a held-out validation of these numbers. The full evaluation, with
 the model configurations and photos nobody tuned on, is `docs/EVAL.md`.
 
 ## Where OpenCV changes what happens next
 
-1. `JobService.verify` (`guide.py:396`) runs `inspect_evidence` first. A blocking decision
+1. `JobService.verify` (`guide.py:405`) runs `inspect_evidence` first. A blocking decision
    becomes `StepVerdict(passed=False, source="opencv", route="opencv_block")` **without
    calling the model**; the `perception` trace row says `llm_called: false` and the job's
    `llm_calls_saved` grows. Tests: `tests/test_perception_gate.py` (`Model.calls == []` in
    every blocking case).
 2. **The route picks the model check.** `place_unconfirmed` sends the person's first photo
-   and the evidence to the two-photo verifier (`guide.py:434`, `verifier.py:91`), which must
+   and the evidence to the two-photo verifier (`guide.py:443`, `verifier.py:91`), which must
    fill `same_place`; a pass without `same_place=true` is turned into a fail
-   (`guide.py:440`, fail closed). `ok` sends one photo plus OpenCV's aligned crop of the
+   (`guide.py:449`, fail closed). `ok` sends one photo plus OpenCV's aligned crop of the
    work zone. Tests: `test_a_photo_opencv_cannot_line_up_goes_to_the_two_photo_check`,
    `test_without_a_two_photo_verifier_the_unconfirmed_place_fails_closed`,
    `test_a_confirmed_place_is_checked_on_one_photo`.
@@ -106,6 +110,12 @@ the model configurations and photos nobody tuned on, is `docs/EVAL.md`.
    (`place_unconfirmed` → route `llm_two_image`) and stops before the model call.
    `POST /api/inspect` returns the report and pictures for any reference + evidence
    (+ zones), no model, under the photo rate caps.
+7. Agent mode (`/agent`, `src/stepspotter/web/agent_mode.py`): the Guide agent decides the
+   tool calls on the web; each answer shows the calls, OpenCV's decision and pictures for
+   each photo, and any gate refusal. A recorded live run is in `data/demo/agentic-opencv/`
+   (blur → `retake` in 44 ms with no model call; another room → two-photo check, not
+   passed; the panel → single-photo pass → the gate allows `advance_step`; a permissive
+   skip attempt cancelled by the gate).
 
 **Trace contract** (one flat row, `event: "perception"`): `decision`, `reason_code`,
 `route`, `llm_called`, `ms_total`, `step_id`, plus `reason`, `instruction`, `mode`
@@ -130,11 +140,14 @@ records its provenance (real / synthetic + generator + parameters) and its group
 the dining node (04–06, 50 cases); no case mixes the halves.
 
 **The numbers for the current policy, and for the model configurations, are in
-`docs/EVAL.md`** (`eval/results/*.json`). The two runs below were made on 2026-10-21
+`docs/EVAL.md`** (`eval/results/*.json`), on 548 cases. In short, after the quality-rule
+change: OpenCV alone wrongly refused 2 of 66 good test-half photos and 1 of 103 calibration
+photos (20 before), and 0 of 56 unmodified real photos (8 before)
+(`eval/results/opencv.json`, `eval/results/originals.json`). The two runs below were made on 2026-10-21
 before the policy change in `793b987`, when a photo OpenCV could not line up was still
 refused as `wrong_place`; they are kept because they are why the policy changed.
 
-**Run 2** (`eval/results/opencv.md`, 2026-10-21T11:54:17Z, `wrong_place` policy):
+**Run 2** (`eval/results/opencv.md` at commit `ff97511`, 2026-10-21T11:54:17Z, `wrong_place` policy):
 
 | slice | bad caught | good falsely blocked | decision = expected |
 |---|---:|---:|---:|
@@ -184,12 +197,18 @@ good refused. Four of its findings were fixed before run 2, none by moving a thr
    the Marker model's boxes — rough by design (`marker.py`: boxes drift and run
    oversized). No zones for a step means the scene check is recorded `not_applicable`
    and routes nothing to the two-photo check.
-4. Large clipped white areas (a lamp-lit wall) read as glare; seen with generator v1, and
-   possible with real phone photos of bright walls. Not measured on real photos.
+4. White subjects read as glare. The evaluation measured it on real photos: before the
+   quality-rule change, 8 of 56 unmodified real photos were refused, mostly as glare on
+   white basins, a white wall and a flashlight hot spot. Glare now refuses only when it newly
+   covers the work zone, and none of the 56 is refused; the price is that 11 of 23
+   synthetic glare discs now pass OpenCV and are left to the model (`docs/EVAL.md`).
 5. Replay is "pixel-near-identical"; a person photographing from a tripod-steady position
    with nothing changed would be told it is a repeat. Not observed; no such photos.
 6. Thin margin: the softest original (04, plain jack on a plain wall) reads 73.7 against a
    floor of 45.
+7. Still open (`docs/EVAL.md`): a mirror-image look-alike of a symmetric scene can line up
+   with the first photo (c08, 55 inliers) and passes the model checks too; a resent photo with a circle drawn on it counts as a change, not a replay; the
+   smeared trap frame f0195 of our own video passes the blur check.
 
 ## Privacy
 

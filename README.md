@@ -52,9 +52,17 @@ Policy and every threshold: [`docs/PERCEPTION.md`](docs/PERCEPTION.md).
    match lines and the change heatmap.
 4. For a full job with the model: **Try a demo job**, then *Send the wrong photo* and
    *Send the right photo*.
+5. **Agent mode** — <https://utgfmpcgxf.us-east-1.awsapprunner.com/agent>: here the
+   Strands Guide agent decides which tools to call. Send a task with a photo
+   (`src/stepspotter/web/demo_photos/02-panel-inside.jpg` works), then a blurred photo
+   (`data/demo/agentic-opencv/photos/02-panel-inside-blurred-sigma4.jpg`), one of another
+   place (`04-office-jack-front.jpg`) and the panel from further back
+   (`01-panel-overview.jpg`). Each answer shows the tool calls, OpenCV's decision
+   and pictures for the photo, and any gate refusal. A recorded run of exactly that, with
+   the full trace, is in [`data/demo/agentic-opencv/`](data/demo/agentic-opencv/transcript.md).
 
-The service is capped at 6 jobs and 30 photo checks per day for everyone together (the
-four judge buttons count as photo checks), to keep it inside its budget. If the page says the demo
+The service is capped per day for everyone together — 6 jobs, 30 photo checks (the four
+judge buttons count as photo checks) and 60 agent turns — to keep it inside its budget. If the page says the demo
 "has run its … for today", everything below runs offline. Exact steps and expected results:
 [`docs/SUBMISSION.md`](docs/SUBMISSION.md) § Testing instructions.
 
@@ -72,16 +80,30 @@ Interactive versions with every node's source file and line:
 
 ## Results
 
-From [`docs/EVAL.md`](docs/EVAL.md); every number there has the command that reproduces it.
+From [`docs/EVAL.md`](docs/EVAL.md) (548 cases; every number has the command that
+reproduces it). The model sample — 50 test-half cases, the same frozen sample for every
+configuration:
 
-| | A: model, 1 photo | A′: model, 2 photos | B: OpenCV only | C: OpenCV → model |
+| | A: model, 1 photo | A′: model, 2 photos | C before the glare fix | **C: OpenCV → model** |
 |---|---:|---:|---:|---:|
-| bad evidence caught | {{EVAL:A_caught}} | {{EVAL:A2_caught}} | {{EVAL:B_caught}} | {{EVAL:C_caught}} |
-| good evidence refused | {{EVAL:A_false}} | {{EVAL:A2_false}} | {{EVAL:B_false}} | {{EVAL:C_false}} |
-| model calls | {{EVAL:A_calls}} | {{EVAL:A2_calls}} | 0 | {{EVAL:C_calls}} |
-| latency p50 / p95 | {{EVAL:A_ms}} | {{EVAL:A2_ms}} | {{EVAL:B_ms}} | {{EVAL:C_ms}} |
+| bad photos refused (of 33) | 11 | 19 | 31 | **30** |
+| good photos wrongly refused (of 17) | 3 | 3 | 8 | **4** |
+| … without the 2 mislabelled same-place pairs (of 15) | 2 | 1 | 6 | **2** |
+| model calls for 54 checks | 54 | 54 | 24 | 31 |
+| time p50 / p95 | 2 989 / 3 738 ms | 3 689 / 5 027 ms | 95 / 5 159 ms | 2 920 / 4 556 ms |
+| $ per 100 checks | 1.27 | 1.80 | 0.71 | 0.89 |
 
-Failures are published with pictures in `docs/EVAL.md` and `docs/PERCEPTION.md`.
+- On real look-alikes of another place, A′ (the model shown both photos) is as good as C.
+  C's edge is what a model cannot see in one or two photos: a photo sent again, nothing
+  changed in the work zone, a change in a do-not-touch zone, overexposure, a work zone cut
+  off.
+- OpenCV alone on all 548 cases: 0 of 56 unmodified real photos refused; 2 of 66 good
+  test-half photos wrongly refused; p50 / p95 68 / 111 ms on a Mac.
+- Still open: mirror-image look-alikes pass every configuration; a resent photo with a circle
+  drawn on it passes; one smeared video frame passes the blur check.
+- The model numbers rest on 2 cases per synthetic class, one run each — examples, not rates.
+
+Failures, with pictures: `docs/EVAL.md`, `eval/results/figures/`.
 
 ## Run it
 
@@ -95,7 +117,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 tools/fetch_models.sh                                    # YuNet face detector, SHA256-checked
 
 # test — offline, no AWS account
-.venv/bin/python -m pytest -q -m "not integration"       # {{TESTS:passed / skipped at the final commit}}
+.venv/bin/python -m pytest -q -m "not integration"       # 433 passed, 1 skipped (with the face model)
 
 # eval — OpenCV only, no AWS account
 .venv/bin/python eval/build_set.py && .venv/bin/python eval/run.py --config opencv
@@ -115,12 +137,12 @@ Operations, spend caps, kill switch, logs and privacy: [`docs/OPERATIONS.md`](do
 
 | what | where |
 |---|---|
-| OpenCV runs first; a blocked photo never reaches the model | `src/stepspotter/guide.py:396`, `:421` |
-| the route picks the one-photo or the two-photo model check | `src/stepspotter/perception/models.py:163`, `src/stepspotter/guide.py:434` |
-| fail closed without `same_place=true` | `src/stepspotter/guide.py:440`, `src/stepspotter/gate.py:153` |
+| OpenCV runs first; a blocked photo never reaches the model | `src/stepspotter/guide.py:405`, `:430` |
+| the route picks the one-photo or the two-photo model check | `src/stepspotter/perception/models.py:167`, `src/stepspotter/guide.py:443` |
+| fail closed without `same_place=true` | `src/stepspotter/guide.py:449`, `src/stepspotter/gate.py:153` |
 | the gate cancels `advance_step` on a blocking report | `src/stepspotter/gate.py:141`, `:118` |
 | a change in a do-not-touch zone → `interrupt("human_review")` | `src/stepspotter/gate.py:91` |
-| the agent's own OpenCV tool (`inspect_photo`) | `src/stepspotter/guide.py:654` |
+| the agent's own OpenCV tool (`inspect_photo`) | `src/stepspotter/guide.py:663` |
 | the OpenCV 5 checks | `src/stepspotter/perception/` (quality, scene, change, frames, privacy) |
 
 ## Documents

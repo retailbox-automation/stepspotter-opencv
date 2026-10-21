@@ -37,9 +37,9 @@ blockquote { margin: 6px 0; padding: 6px 10px; border-left: 3px solid var(--acc)
   padding: 0 3px; font-weight: 600; }
 a { color: inherit; }
 </style></head><body><header class="head"><div class="kicker">OpenCV AI Competition 2026, powered by AWS · technical report</div><h1 class="title">StepSpotter: <span class="hl">OpenCV 5</span> decides what the agent does next</h1><div class="prep">prepared by <span class="who">Mikh<span class="ai">ai</span>l</span></div><div class="links">github.com/retailbox-automation/stepspotter-opencv · utgfmpcgxf.us-east-1.awsapprunner.com</div></header><blockquote>
-<p>Numbers in double braces (<code><span class="ph">{{EVAL:…}}</span></code>) are filled from <code>docs/EVAL.md</code> and
-<code>eval/results/*.json</code> when the evaluation run is final. No number in this report
-comes from anywhere else.</p>
+<p>Every evaluation number in this report comes from <code>docs/EVAL.md</code> and
+<code>eval/results/*.json</code>, with the file and field next to it. Text in double braces is
+filled in at submission.</p>
 </blockquote>
 <h2>1. Problem</h2>
 <p>StepSpotter walks one person through one small home repair, one step at a time, on a
@@ -74,10 +74,10 @@ are refused by the planner with an empty step list (<code>src/stepspotter/planne
 <p><img alt="Architecture: phone → App Runner (FastAPI, OpenCV 5 perception, Verifier, StepGate, job state) → Amazon Bedrock; CloudWatch, SNS and Budget; CodeBuild and ECR for delivery" src="../diagrams/architecture.png" /></p>
 <p>Everything above runs in one container on AWS App Runner, deployed by one CloudFormation
 stack (<code>infra/template.yaml</code>). Every node in the diagram carries its source file and line
-in <code>docs/diagrams/architecture.html</code> (checked against commit <code>43c1520</code>).</p>
+in <code>docs/diagrams/architecture.html</code> (checked against commit <code>750d152</code>).</p>
 <ul>
 <li><strong>FastAPI web app</strong> (<code>src/stepspotter/web/app.py</code>) serves the phone page and the API.
-  A photo goes to <code>JobService.verify</code> (<code>src/stepspotter/guide.py:396</code>).</li>
+  A photo goes to <code>JobService.verify</code> (<code>src/stepspotter/guide.py:405</code>).</li>
 <li><strong>OpenCV 5.0.0 perception</strong> (<code>src/stepspotter/perception/</code>) runs first on every
   evidence photo and returns a <code>PerceptionReport</code> with a decision and a route.</li>
 <li><strong>Verifier</strong> — a Strands <code>Agent</code> on Amazon Bedrock (Claude Sonnet 4.6) that returns a
@@ -93,11 +93,16 @@ in <code>docs/diagrams/architecture.html</code> (checked against commit <code>43
 <p>The agent loop, as the competition's Agentic Vision award asks for it — perception,
 decision, action:</p>
 <p><img alt="Agent workflow: evidence → inspect_evidence → route → one instruction (no model) | single-image check | two-image check → StepGate → next step | cancel_tool | interrupt human_review" src="../diagrams/agent-workflow.png" /></p>
-<p>Two front doors use the same tools and the same gate. On the public page the person's
-buttons drive the loop and code routes each photo. In <code>stepspotter chat</code>
-(<code>src/stepspotter/cli.py:195</code>) a Strands Guide agent drives it itself and can call
-<code>inspect_photo</code> before submitting (<code>src/stepspotter/guide.py:654</code>); that agent is not
-exposed on the public URL.</p>
+<p>Three front doors use the same tools and the same gate. On the default page the person's
+buttons drive the loop and code routes each photo. In <strong>agent mode</strong> (<code>/agent</code>,
+<code>src/stepspotter/web/agent_mode.py</code>) and in <code>stepspotter chat</code> (<code>src/stepspotter/cli.py:195</code>)
+the Strands Guide agent decides which tools to call — it can run <code>inspect_photo</code> before
+submitting (<code>src/stepspotter/guide.py:663</code>) — and every answer on the web shows the tool
+calls it made, what OpenCV decided about each photo, and any gate refusal. Agent mode is
+capped like the rest: starting a job counts as a job, a turn with a photo as a photo check,
+a text-only turn as an agent turn (60 a day for everyone, 20 an hour per address), and a
+hook cancels tool calls past 8 in one turn (<code>src/stepspotter/web/limits.py</code>,
+<code>src/stepspotter/web/agent_mode.py</code>).</p>
 <h2>4. OpenCV 5 implementation</h2>
 <p>Pinned: <code>opencv-python-headless==5.0.0.93</code>, <code>numpy==2.5.4</code> (<code>pyproject.toml</code>). The image
 build prints <code>cv2 5.0.0</code> from inside the built container (<code>infra/buildspec.yml:24</code>). Full
@@ -114,12 +119,12 @@ description, every threshold and where it came from: <code>docs/PERCEPTION.md</c
 <tr>
 <td>faces blurred before anything else reads the photo</td>
 <td><code>FaceDetectorYN</code> (YuNet, opencv_zoo), <code>GaussianBlur</code></td>
-<td><code>perception/privacy.py:57</code></td>
+<td><code>perception/privacy.py:59</code></td>
 </tr>
 <tr>
 <td>sharpness, exposure, glare</td>
 <td><code>Laplacian</code>, <code>calcHist</code>, <code>threshold</code>, <code>connectedComponentsWithStats</code></td>
-<td><code>perception/quality.py:65</code>, <code>:96</code>, <code>:80</code>, <code>:85</code></td>
+<td><code>perception/quality.py:65</code>, <code>:107</code>, <code>:80</code>, <code>:85</code></td>
 </tr>
 <tr>
 <td>same place as the first photo</td>
@@ -186,22 +191,41 @@ fires decides):</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Quality rules after the evaluation.</strong> The first evaluation run showed OpenCV refusing
+ordinary real photos of white things (basins, a white wall, a flashlight hot spot) as
+glare or overexposure. The rules were changed, calibrating on the calibration half of the
+evaluation set only (<code>src/stepspotter/perception/thresholds.py</code>):</p>
+<ul>
+<li>glare refuses a photo only when it <strong>newly</strong> covers at least 10 % of the work zone —
+  saturated in the evidence but not at the same place in the first photo
+  (<code>GLARE_ZONE_NEW_FRAC = 0.10</code>); anywhere else it is a note;</li>
+<li>overexposure is judged against the first photo of the place: the near-white share must
+  exceed the first photo's by more than 0.12 (<code>OVEREXPOSED_MARGIN</code>) on top of the absolute
+  0.12 (<code>BRIGHT_FRAC_MAX</code>); with no readable first photo, only a photo more than half blown
+  out is refused (<code>BRIGHT_FRAC_ABS_MAX = 0.50</code>);</li>
+<li>the relative-blur bar is 0.22 of the first photo's sharpness (<code>SHARP_RATIO_MIN</code>), and it is
+  also read on a weak but sane fit of at least 12 matched points (<code>WEAK_FIT_INLIERS</code>),
+  because blur is what removes matches.</li>
+</ul>
+<p>On the calibration half, OpenCV alone then wrongly refused 1 of 103 good photos instead
+of 20 (<code>eval/results/opencv-before-glare-fix.json</code> and <code>eval/results/opencv.json</code>,
+<code>summary.by_split.calibration.false_blocks</code>).</p>
 <p><strong>Why <code>place_unconfirmed</code> is not a refusal.</strong> On our own photos, real re-shots of the same
 place from another angle kept 4–8 SIFT inliers after the homography fit, the same range
 as photos of different rooms (5–8); no inlier threshold separates them
-(<code>eval/results/opencv.md</code>, run on 2026-10-21 under the previous policy, which refused
+(<code>eval/results/opencv.md</code> at commit <code>ff97511</code>, run on 2026-10-21 under the previous policy, which refused
 3 of 5 such re-shots). So OpenCV confirms a place when it can (≥ 25 inliers,
-<code>perception/thresholds.py:115</code>) and otherwise hands the question to the model with both
+<code>perception/thresholds.py:152</code>) and otherwise hands the question to the model with both
 photos — a dearer check, never a refused person. The gate fails closed: a pass without
-<code>same_place=true</code> cannot close the step (<code>guide.py:440</code>, <code>gate.py:153</code>).</p>
+<code>same_place=true</code> cannot close the step (<code>guide.py:449</code>, <code>gate.py:153</code>).</p>
 <p><strong>Where OpenCV output changes a later decision</strong> — the evidence the Agentic Vision award
 asks for, each with a test:</p>
 <ol>
 <li>A blocking decision becomes a failed verdict with <code>source="opencv"</code> and the model is
-   never called (<code>guide.py:421</code>; <code>tests/test_perception_gate.py</code>,
+   never called (<code>guide.py:430</code>; <code>tests/test_perception_gate.py</code>,
    <code>test_a_blurred_photo_is_refused_without_calling_the_model</code>).</li>
 <li>The route chooses which model call is made: one photo plus crop, or two photos with a
-   required <code>same_place</code> (<code>guide.py:434</code>;
+   required <code>same_place</code> (<code>guide.py:443</code>;
    <code>test_a_photo_opencv_cannot_line_up_goes_to_the_two_photo_check</code>).</li>
 <li>The gate cancels <code>advance_step</code> on a stored blocking report even beside a passing
    verdict (<code>gate.py:141</code>; <code>test_the_gate_refuses_on_a_blocking_report_even_beside_a_passing_verdict</code>).</li>
@@ -209,11 +233,33 @@ asks for, each with a test:</p>
    person's approval (<code>gate.py:91</code>;
    <code>test_a_change_in_the_do_not_touch_zone_stops_the_run_for_a_person</code>).</li>
 <li><code>inspect_photo</code> lets the agent ask once for a photo from the first angle before it
-   submits (<code>guide.py:654</code>; <code>test_inspect_photo_offers_one_ask_for_the_first_angle_and_never_refuses</code>).</li>
+   submits (<code>guide.py:663</code>; <code>test_inspect_photo_offers_one_ask_for_the_first_angle_and_never_refuses</code>).</li>
 <li>After three OpenCV blocks in a row on one step, the next <code>retake</code> or <code>no_change</code> goes
    to the model with OpenCV's findings attached, so a false positive cannot trap a person
    (<code>perception/inspect.py</code>, <code>apply_stuck_rule</code>; <code>tests/test_perception_failures.py</code>).</li>
 </ol>
+<p><strong>A recorded live agent run</strong> (<code>data/demo/agentic-opencv/</code>: <code>transcript.md</code>,
+<code>trace.jsonl</code>, <code>NOTES.md</code>). The real Guide agent (Strands, Claude Sonnet 4.6 on Bedrock)
+with a scripted person, on 2026-10-21:</p>
+<ol>
+<li>a blurred copy of the panel → the agent called <code>inspect_photo</code>; OpenCV said <code>retake</code>
+   (sharpness 4, needs 45) in 44 ms with no model call; the agent relayed "hold the phone
+   still" and did not submit;</li>
+<li>a photo of a wall jack, not the panel → OpenCV could not line it up
+   (<code>place_unconfirmed</code>); the person insisted, the agent submitted, and the two-photo check
+   (<code>llm_two_image</code>) answered <code>same_place=false</code> — not passed;</li>
+<li>the panel from across the room → OpenCV confirmed the place (52 matched points), the
+   single-photo check (<code>llm_single</code>) passed it, the agent called <code>advance_step</code>, the gate
+   allowed it, and step 2 was shown;</li>
+<li>on the permissive prompt ("the user is always right"), the agent's <code>advance_step</code> on
+   step 2 was cancelled by the gate hook in code, because step 2 had no passed photo.
+   This was recorded as a follow-up turn on the same saved job, after the first attempt's
+   permissive agent asked for the step number instead of trying to skip.</li>
+</ol>
+<p>The plan was fixed from the repository fixture (<code>plan.json</code>) so that archive photos could
+honestly pass a step; the agent, the Marker, the verifier, OpenCV and the gate were live.
+19 Bedrock calls in all (<code>run.json</code> → <code>total_with_follow_up.bedrock_calls</code>). The first
+recording, where no step could pass, is kept unchanged in <code>run-1/</code>.</p>
 <p>Every OpenCV decision is one trace row with <code>decision</code>, <code>route</code>, <code>llm_called</code> and
 <code>ms_total</code> (<code>guide.py:320</code>). On the page, "Everything it did" shows it as "OpenCV photo
 check (code, not the model)" with the match lines, the change heatmap and the time.</p>
@@ -263,102 +309,160 @@ check (code, not the model)" with the match lines, the change heatmap and the ti
 <p>One command deploys (<code>infra/deploy.sh --yes</code>) and one removes (<code>infra/destroy.sh --yes</code>);
 full procedure, measured durations and cost in <code>docs/DEPLOY.md</code>, operations and the kill
 switch in <code>docs/OPERATIONS.md</code>. Spend is bounded in code: per-address caps (6 jobs,
-30 photo checks an hour) and global daily caps (6 jobs, 30 photo checks a day) bound
-Bedrock at ≤ 78 calls a day (<code>src/stepspotter/web/limits.py</code>, <code>docs/OPERATIONS.md</code>). A
+30 photo checks, 20 agent turns an hour) and global daily caps (6 jobs, 30 photo checks,
+60 agent turns a day); jobs and photo checks alone bound the default page at ≤ 78 Bedrock
+calls a day (<code>src/stepspotter/web/limits.py</code>, <code>docs/OPERATIONS.md</code>). A
 photo OpenCV refuses costs no model call. Model price used: $3 / $15 per million input /
 output tokens for Claude Sonnet 4.6 in us-east-1 (AWS Price List API, effective
 2026-09-01, read 2026-10-21); at the 3,142 / 657 average tokens per call measured on the
 first deployment that is about $0.019 per model call (<code>docs/DEPLOY.md</code>).</p>
-<p>Deployed build: <span class="ph">{{DEPLOY:commit and image digest of the final redeploy}}</span>. OpenCV
-latency on the App Runner instance: <span class="ph">{{EVAL:cloud_latency — p50/p95 of ms_total on AWS,
-from a recorded run}}</span>.</p>
+<p>Deployed build: <span class="ph">{{DEPLOY:commit and image digest of the final redeploy}}</span>. The timings in
+§6 were measured on a shared Mac, not on the App Runner instance (1 vCPU); the evaluation
+did not measure OpenCV latency on AWS.</p>
 <h2>6. Evaluation</h2>
-<p>Full method, data provenance and every failure: <code>docs/EVAL.md</code>. Summary:</p>
-<p><strong>Data.</strong> <span class="ph">{{EVAL:set_summary — cases by source (own photos, own video frames, public
-photos with licence, synthetic damage) and by class; calibration / test split by scene}}</span></p>
-<p><strong>Configurations.</strong> A = model only, one photo · A′ = model only, first photo and
-evidence · B = OpenCV only · C = OpenCV then model (the shipped gate).</p>
-<p><span class="ph">{{EVAL:table_ABC — per class: caught / missed on bad evidence, false blocks on good
-evidence, for A, A′, B, C; test half only}}</span></p>
+<p>Full method, data provenance, every failure with pictures and the command behind every
+number: <code>docs/EVAL.md</code>. Result files: <code>eval/results/*.json</code>.</p>
+<p><strong>Data.</strong> 548 cases (<code>eval/cases/manifest.json</code>): 90 real and 458 synthetic, from 6 photos
+of our own house, 40 Wikimedia Commons photos with API-checked licences
+(<code>eval/cases/public/ATTRIBUTION.md</code>) and 16 frames of the author's own under-sink video.
+Split by scene or object into a calibration half (308) and a test half (240); no
+threshold was tuned on the test half.</p>
+<p><strong>Configurations.</strong> A = the model on the evidence photo alone (the gate before OpenCV) ·
+A′ = the model on the first photo <strong>and</strong> the evidence, every time · B = OpenCV alone ·
+C = OpenCV then the model (the shipped gate).</p>
+<p><strong>Headline — the 50 test-half cases of the model sample</strong> (one fixed 54-case sample drawn
+before any model call; calls, time and money cover all 54 checks; C re-run after the
+quality-rule change, A and A′ not re-run because the model and its inputs did not change):</p>
 <table>
 <thead>
 <tr>
 <th></th>
 <th style="text-align: right;">A</th>
 <th style="text-align: right;">A′</th>
-<th style="text-align: right;">B</th>
-<th style="text-align: right;">C</th>
+<th style="text-align: right;">C before the fix</th>
+<th style="text-align: right;"><strong>C after the fix</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>bad evidence caught</td>
-<td style="text-align: right;"><span class="ph">{{EVAL:A_caught}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:A2_caught}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:B_caught}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:C_caught}}</span></td>
+<td>bad photos refused (of 33)</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;"><strong>30</strong></td>
 </tr>
 <tr>
-<td>good evidence refused</td>
-<td style="text-align: right;"><span class="ph">{{EVAL:A_false}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:A2_false}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:B_false}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:C_false}}</span></td>
+<td>good photos wrongly refused (of 17)</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;"><strong>4</strong></td>
 </tr>
 <tr>
-<td>model calls</td>
-<td style="text-align: right;"><span class="ph">{{EVAL:A_calls}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:A2_calls}}</span></td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;"><span class="ph">{{EVAL:C_calls}}</span></td>
+<td>… without the 2 mislabelled same-place pairs (of 15)</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;"><strong>2</strong></td>
 </tr>
 <tr>
-<td>latency p50 / p95</td>
-<td style="text-align: right;"><span class="ph">{{EVAL:A_ms}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:A2_ms}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:B_ms}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:C_ms}}</span></td>
+<td>model calls for 54 checks</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">31 (14 two-photo)</td>
 </tr>
 <tr>
-<td>$ per 100 checks</td>
-<td style="text-align: right;"><span class="ph">{{EVAL:A_cost}}</span></td>
-<td style="text-align: right;"><span class="ph">{{EVAL:A2_cost}}</span></td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;"><span class="ph">{{EVAL:C_cost}}</span></td>
+<td>time p50 / p95</td>
+<td style="text-align: right;">2 989 / 3 738 ms</td>
+<td style="text-align: right;">3 689 / 5 027 ms</td>
+<td style="text-align: right;">95 / 5 159 ms</td>
+<td style="text-align: right;">2 920 / 4 556 ms</td>
+</tr>
+<tr>
+<td>$ per 100 checks (token count × list price)</td>
+<td style="text-align: right;">1.27</td>
+<td style="text-align: right;">1.80</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">0.89</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Where C decided differently from A and A′.</strong> <span class="ph">{{EVAL:c_differs — each case with the
-image pair, OpenCV's numbers and both decisions}}</span></p>
-<p><strong>Real re-shots of the same place.</strong> <span class="ph">{{EVAL:false_blocks_real_reshots}}</span></p>
-<p><strong>How to read the synthetic classes.</strong> Synthetic damage is of a known kind and size and
-the checks were built for it, so a high catch rate there shows the checks fire on what
-they target, not field accuracy. The informative numbers are the false refusals, the
-real pairs and the comparison with A′.</p>
+<p>Sources: <code>eval/results/compare.json</code> (A, A′, C after: <code>slices["test half"]</code>, <code>perf</code>) and
+<code>eval/results/compare-before-glare-fix.json</code> (C before). The "without" row excludes OnQ
+04→05 and Commons c09→c10, whose second photo cannot show the first photo's step (label
+audit in <code>docs/EVAL.md</code>); counted from the <code>rows</code> of <code>llm-sample.json</code>, <code>llm2-sample.json</code>,
+<code>combined-sample-before-glare-fix.json</code> and <code>combined-sample.json</code>.</p>
+<ul>
+<li><strong>Where C's lead is, and where it is not.</strong> On real look-alikes of another place, A′ —
+  the model shown both photos — catches them as well as C (6 of 6 in the sample); in C they
+  reach the same two-photo check. C's edge over A′ is what a model cannot see in one or two
+  photos: an earlier photo sent again, nothing changed in the work zone, a change in a
+  do-not-touch zone, overexposure and a work zone cut off — C refused all of those in the
+  sample without a model call, A′ caught 0 of 2 no-change, 0 of 2 do-not-touch, 3 of 6
+  replays and 1 of 4 overexposed or cut-off cases.</li>
+<li><strong>C against A:</strong> they decided differently in 20 cases and C was right in 19
+  (<code>compare.json</code> → <code>c_differs_from_a[].C_right</code>); the one wrong case is the mislabelled
+  c09→c10. A′ agreed with C in 9 of the 20 (<code>A_prime_agrees_with_C</code>). Each case with its
+  pair of photos and both answers: <code>eval/results/compare.md</code>.</li>
+<li><strong>Who refused C's bad photos</strong> (whole sample, 34): OpenCV for the reason the case was
+  built for 22, the model 11, OpenCV for another reason 1 (<code>compare.json</code> → <code>c_caught_by</code>).</li>
+<li><strong>The price of fewer false refusals.</strong> After the fix more photos reach the model: 31
+  calls instead of 24, a median of 2.9 s instead of 0.1 s, $0.89 instead of $0.71 per 100
+  checks. Per call: one photo $0.0129, two photos $0.0181 (<code>compare.json</code> → <code>per_mode</code>).</li>
+<li><strong>Still open — bad photos that pass C:</strong> the mirror-image look-alikes (2 in the sample)
+  pass every configuration, A, A′ and C; the real resent photo with a circle drawn on it
+  (c22→c23) passes, because OpenCV counts the circle as a change and the model accepts it;
+  the smeared trap frame from our own video (f0195) passes OpenCV's blur check.</li>
+</ul>
+<p><strong>OpenCV alone on all 548 cases</strong> (<code>eval/results/opencv.json</code>, <code>summary.by_split</code>, after
+the fix): test half — 130 bad photos blocked, 6 passed and 38 sent to the two-photo check;
+2 of 66 good photos wrongly blocked; p50 / p95 68 / 111 ms. Calibration half — 141 blocked,
+7 passed, 55 sent on; 1 of 103 good photos wrongly blocked. <strong>Unmodified real photos:</strong>
+0 of 56 refused (<code>eval/results/originals.json</code>: 6 OnQ, 40 Commons, 10 good video frames;
+before the fix 8 of 56 were refused, mostly as glare). Of 4 video frames blurred by eye,
+OpenCV refuses 1 (the whip pan); the other 3 go on to the model.</p>
+<p><strong>How to read these numbers.</strong> The model figures rest on 2 cases per synthetic class and
+1–6 per real class, one run each; the model is not deterministic, so read them as
+examples, not rates. Synthetic bad photos are built to match the checks, so OpenCV's high
+catch rate on them is expected by construction; the informative numbers are the real
+classes, the false refusals and the unmodified photos. The share of bad photos in the set
+is constructed, not observed in use. Timings are from a shared Mac.</p>
 <h2>7. Limitations and failure cases</h2>
 <ul>
 <li><strong>Real re-shots do not line up.</strong> A photo of the same place from another angle or after
   cables moved often keeps too few SIFT inliers to confirm the place. Since <code>793b987</code> it
   costs a two-photo model call instead of a refusal; before that, OpenCV refused 3 of 5
-  such pairs in our set (<code>eval/results/opencv.md</code>). OpenCV alone can no longer reject a
+  such pairs in our set (<code>eval/results/opencv.md</code> at commit <code>ff97511</code>). OpenCV alone can no longer reject a
   photo of another room; only the model can, through <code>same_place</code>.</li>
 <li><strong>Parallax.</strong> On the real 01↔02 pair, alignment left 37 % of the frame "changed"; such
   maps are marked <code>unreliable</code> and decide nothing, so <code>no_change</code> and <code>touched_avoid</code>
   fire only for photos taken from near the first viewpoint (<code>docs/PERCEPTION.md</code>).</li>
 <li><strong>Zones come from a model.</strong> Work and do-not-touch zones are the Marker model's boxes,
-  which drift and run oversized (<code>src/stepspotter/marker.py</code>); a wrong zone makes a
-  right change look wrong.</li>
+  which are rough: they drift, run oversized and can overlap (<code>src/stepspotter/marker.py</code>,
+  <code>data/demo/agentic-opencv/NOTES.md</code>); a wrong zone makes a right change look wrong.</li>
 <li><strong>Thresholds were set on six photos of one house</strong> and are not a blind test; the scene
   split shows whether results differ by scene, not field accuracy.</li>
 <li><strong>Faces:</strong> checked on one public-domain portrait (<code>tests/test_privacy_faces.py</code>); no
   detection rate is claimed.</li>
 <li><strong>One instance, local disk.</strong> Jobs live on the App Runner instance and are lost on
   every redeploy, pause or instance replacement (<code>docs/OPERATIONS.md</code>).</li>
-<li><strong>Judging capacity.</strong> The global daily caps (6 jobs, 30 photo checks a day, shared by
-  everyone) protect the budget and can run out on a busy judging day; the offline test
+<li><strong>Judging capacity.</strong> The global daily caps (6 jobs, 30 photo checks and 60 agent turns
+  a day, shared by everyone) protect the budget and can run out on a busy judging day; the offline test
   suite and the eval harness need no AWS account.</li>
-<li><span class="ph">{{EVAL:opencv_failures — OpenCV misses and false refusals from the final run, with
-  pictures and reasons}}</span></li>
+<li><strong>Misses that remain</strong> (<code>eval/results/opencv-failures.json</code>, pictures in
+  <code>eval/results/figures/opencv-failures-01..02.jpg</code>): mirror-image look-alikes pass
+  everything; a resent photo with a drawn circle passes; the smeared trap frame f0195 passes
+  the blur check; since the glare fix 11 of 23 synthetic glare discs pass OpenCV and are
+  left to the model; 3 good synthetic photos are still refused (<code>touched_avoid</code> twice,
+  <code>blurry</code> once).</li>
+<li><strong>The step card is always drawn on the job's first photo.</strong> A step that happens
+  somewhere else (step 2 of the recorded run is at the office jack) shows its boxes on the
+  first photo.</li>
+<li><strong>Recorded run pictures.</strong> The change-heatmap captions in the pictures of the recorded
+  agent run were drawn before the caption fix (<code>3f75518</code>), which wraps long captions
+  instead of cutting them.</li>
+<li><strong>Model numbers are small.</strong> 2 cases per synthetic class, one run each (§6).</li>
 </ul>
 <h2>8. Responsible use</h2>
 <ul>
@@ -370,7 +474,7 @@ real pairs and the comparison with A′.</p>
   stops the run too (<code>gate.py:76</code>). A refusal always comes with the reason and one
   instruction; the stuck rule keeps a false positive from trapping anyone.</li>
 <li><strong>Fail closed.</strong> A photo whose place OpenCV cannot confirm closes a step only if the
-  model says it is the same place (<code>guide.py:440</code>, <code>gate.py:153</code>).</li>
+  model says it is the same place (<code>guide.py:449</code>, <code>gate.py:153</code>).</li>
 <li><strong>Privacy.</strong> Faces are blurred in the stored file before any model sees it; each report
   says whether that check ran (<code>faces_checked</code>). Photos live only on the instance's
   ephemeral disk, are not copied to S3 or a database, and are gone on every redeploy.
@@ -409,8 +513,9 @@ encouraged».</p>
 <ul>
 <li><strong>In the product:</strong> Claude Sonnet 4.6 on Amazon Bedrock plans the steps, draws the
   zones and checks the photos OpenCV lets through (one photo, or two photos with
-  <code>same_place</code>); a tool-less agent answers questions typed into the chat. OpenCV runs
-  before it on every evidence photo.</li>
+  <code>same_place</code>); in agent mode the Strands Guide agent decides which tool to call next;
+  a tool-less agent answers questions typed into the chat. OpenCV runs before the model
+  on every evidence photo, and the gate sits under every tool call.</li>
 <li><strong>In development:</strong> the code, tests, infrastructure and these documents were written
   with AI coding assistants, directed and reviewed by the author. The author chose the
   product and its rules, took the photos, decided what to publish and approved every
@@ -421,7 +526,7 @@ encouraged».</p>
 <pre><code class="language-bash">git clone https://github.com/retailbox-automation/stepspotter-opencv &amp;&amp; cd stepspotter-opencv
 python3.12 -m venv .venv &amp;&amp; .venv/bin/pip install -e &quot;.[dev]&quot;
 tools/fetch_models.sh                                   # YuNet face detector, SHA256-checked
-.venv/bin/python -m pytest -q -m &quot;not integration&quot;      # offline, no AWS account
+.venv/bin/python -m pytest -q -m &quot;not integration&quot;      # offline: 433 passed, 1 skipped
 .venv/bin/python eval/build_set.py &amp;&amp; .venv/bin/python eval/run.py --config opencv
 infra/deploy.sh --yes                                   # needs an AWS account; see docs/DEPLOY.md
 </code></pre></body></html>

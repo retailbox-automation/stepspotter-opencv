@@ -290,17 +290,17 @@
       "dot": "cyan",
       "title": "Perception (code)",
       "items": [
-        "inspect_full: quality, scene match, replay, zone change — perception/inspect.py:181",
-        "route = opencv_block | llm_single | llm_two_image — perception/models.py:163",
-        "Blocked photo: StepVerdict(source='opencv'), no model call — guide.py:396"
+        "inspect_full: quality, scene match, replay, zone change — perception/inspect.py:203",
+        "route = opencv_block | llm_single | llm_two_image — perception/models.py:167",
+        "Blocked photo: StepVerdict(source='opencv'), no model call — guide.py:405"
       ]
     },
     {
       "dot": "violet",
       "title": "Decision (code)",
       "items": [
-        "Two-image check only when OpenCV could not confirm the place — guide.py:434, verifier.py:91",
-        "Fail closed: a pass without same_place=true is turned into a fail — guide.py:440",
+        "Two-image check only when OpenCV could not confirm the place — guide.py:443, verifier.py:91",
+        "Fail closed: a pass without same_place=true is turned into a fail — guide.py:449",
         "Stuck rule: after 3 OpenCV blocks the model gets the photo with OpenCV's findings — guide.py:307"
       ]
     },
@@ -310,7 +310,7 @@
       "items": [
         "Stored blocking report: cancel_tool with OpenCV's reason — gate.py:141, :118",
         "Place not confirmed and no same_place=true: cancel_tool — gate.py:153",
-        "touched_avoid: interrupt('human_review'), resume records the answer — gate.py:91, guide.py:513"
+        "touched_avoid: interrupt('human_review'), resume records the answer — gate.py:91, guide.py:522"
       ]
     }
   ]

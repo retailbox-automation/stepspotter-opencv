@@ -5452,9 +5452,9 @@
           <h3>Perception (code)</h3>
         </div>
         <ul>
-          <li>&bull; inspect_full: quality, scene match, replay, zone change — perception/inspect.py:181</li>
-          <li>&bull; route = opencv_block | llm_single | llm_two_image — perception/models.py:163</li>
-          <li>&bull; Blocked photo: StepVerdict(source=&#39;opencv&#39;), no model call — guide.py:396</li>
+          <li>&bull; inspect_full: quality, scene match, replay, zone change — perception/inspect.py:203</li>
+          <li>&bull; route = opencv_block | llm_single | llm_two_image — perception/models.py:167</li>
+          <li>&bull; Blocked photo: StepVerdict(source=&#39;opencv&#39;), no model call — guide.py:405</li>
         </ul>
       </div>
 
@@ -5464,8 +5464,8 @@
           <h3>Decision (code)</h3>
         </div>
         <ul>
-          <li>&bull; Two-image check only when OpenCV could not confirm the place — guide.py:434, verifier.py:91</li>
-          <li>&bull; Fail closed: a pass without same_place=true is turned into a fail — guide.py:440</li>
+          <li>&bull; Two-image check only when OpenCV could not confirm the place — guide.py:443, verifier.py:91</li>
+          <li>&bull; Fail closed: a pass without same_place=true is turned into a fail — guide.py:449</li>
           <li>&bull; Stuck rule: after 3 OpenCV blocks the model gets the photo with OpenCV&#39;s findings — guide.py:307</li>
         </ul>
       </div>
@@ -5478,7 +5478,7 @@
         <ul>
           <li>&bull; Stored blocking report: cancel_tool with OpenCV&#39;s reason — gate.py:141, :118</li>
           <li>&bull; Place not confirmed and no same_place=true: cancel_tool — gate.py:153</li>
-          <li>&bull; touched_avoid: interrupt(&#39;human_review&#39;), resume records the answer — gate.py:91, guide.py:513</li>
+          <li>&bull; touched_avoid: interrupt(&#39;human_review&#39;), resume records the answer — gate.py:91, guide.py:522</li>
         </ul>
       </div>
     </div>
