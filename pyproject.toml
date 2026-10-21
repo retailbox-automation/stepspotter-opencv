@@ -18,6 +18,13 @@ dependencies = [
   "fastapi>=0.115",
   "uvicorn>=0.30",
   "python-multipart>=0.0.9",
+  # The OpenCV 5 perception layer (src/stepspotter/perception/). Pinned for the same
+  # reason as strands: the thresholds in perception/thresholds.py were measured on
+  # exactly this build, and a silent minor bump is a silent recalibration.
+  # Headless: the server never opens a window, and the GUI wheel drags in Qt.
+  "opencv-python-headless==5.0.0.93",
+  # The numpy the 21.10 spike ran on (spike/opencv5, OpenCV 5.0.0 + numpy 2.5.4).
+  "numpy==2.5.4",
 ]
 
 [project.scripts]
