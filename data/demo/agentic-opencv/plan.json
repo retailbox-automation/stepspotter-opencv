@@ -1,0 +1,40 @@
+{
+ "_about": "Fixed plan for the recorded agent run (run 2). Steps 1 and 2 are copied from fixtures/onq-keystone-smoke/job.json, whose evidence lines were written to match what the archive photos show, so a pass is reachable: step 1's evidence describes photo 01. Changes from the fixture: expects_change set on both steps; step 2's highlight_targets and do_not_touch emptied so drawing its card needs no model call (the run has a hard cap of 20 Bedrock calls). Used instead of the live Planner; everything else in the run is live.",
+ "plan_override": {
+  "job_title": "Check the panel, then seat the office jack",
+  "safety_class": "diy_ok",
+  "vendor_reason": null,
+  "tools_needed": [
+   "punch-down tool",
+   "cable tester"
+  ],
+  "steps": [
+   {
+    "id": 1,
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the structured-wiring panel and check you see only coax and Cat5e cable runs, a splitter and a telecom module, not any circuit breakers.",
+    "do_not_touch": [
+     "the coax splitter's connected cable ends",
+     "the telecom module's punched-down ports"
+    ],
+    "stop_condition": "if any breaker or orange/red mains wire is visible in the box, stop and get a licensed electrician",
+    "evidence_required": "the open low-voltage panel box in one wide frame, showing the coax splitter and telecom module with cable runs, and no circuit breakers anywhere in the photo",
+    "highlight_targets": [
+     "coax splitter",
+     "telecom module"
+    ],
+    "expects_change": false
+   },
+   {
+    "id": 2,
+    "title": "Seat the wire pairs into the office jack",
+    "action": "At the office wall box, hold the keystone jack (the small snap-in socket the cable plugs into) out with its faceplate off, and lay the loose coloured wire pairs from the cable against the jack body before punching them down.",
+    "do_not_touch": [],
+    "stop_condition": null,
+    "evidence_required": "the wall box open with the faceplate off, the keystone jack held out (not yet snapped into the plate), and the coloured wire pairs visibly laid against or into the jack body",
+    "highlight_targets": [],
+    "expects_change": true
+   }
+  ]
+ }
+}

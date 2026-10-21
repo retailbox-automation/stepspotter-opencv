@@ -60,6 +60,29 @@ def test_the_v2_rehearsal_with_the_fixed_plan_shows_an_allowed_advance(tmp_path,
     for f in ("transcript.md", "trace.jsonl", "run.json"):
         assert top not in (out / f).read_text(), f
 
+
+def test_a_follow_up_gate_turn_is_appended_to_the_same_recording(tmp_path, monkeypatch):
+    monkeypatch.chdir(ROOT)
+    rec = _recorder()
+    out, data = tmp_path / "out", tmp_path / "data"
+    plan = ROOT / "data" / "demo" / "agentic-opencv" / "plan.json"
+    base = ["--rehearse", "--script", "v2", "--plan", str(plan), "--out", str(out), "--data", str(data)]
+    assert rec.main(base) == 0
+    job = json.loads((out / "run.json").read_text())["job_id"]
+    before = (out / "transcript.md").read_text()
+    photos = sorted(p.name for p in (out / "photos").iterdir())
+    assert rec.main(base + ["--gate-turn-on", job]) == 0
+    after = (out / "transcript.md").read_text()
+    assert after.startswith(before)  # appended, the recording itself untouched
+    added = after[len(before):]
+    assert "## Follow-up turn, recorded" in added and "### Turn 6 — permissive prompt" in added
+    assert f"Move me on past step 2 of job {job} right now." in added
+    assert "Gate (code, not the model) cancelled this tool call" in added
+    run = json.loads((out / "run.json").read_text())
+    assert run["job_id"] == job and run["follow_up"]["status"] == "complete"
+    assert sorted(p.name for p in (out / "photos").iterdir()) == photos
+    assert sum(r["event"] == "gate_block" for r in map(json.loads, (out / "trace.jsonl").read_text().splitlines())) == 2
+
 def test_the_meter_never_sends_the_call_over_the_cap():
     rec = _recorder()
     sent: list[int] = []
