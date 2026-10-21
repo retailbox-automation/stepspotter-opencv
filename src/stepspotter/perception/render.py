@@ -14,6 +14,7 @@ Colours match the step card: green = work here, red = do not touch.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 
 import cv2
@@ -37,27 +38,70 @@ def _fit_h(img: np.ndarray, h: int) -> np.ndarray:
     return cv2.resize(img, (max(1, round(img.shape[1] * s)), h), interpolation=cv2.INTER_AREA)
 
 
+PAD = 8  # px around a caption's text
+
+
+def _tw(text: str, scale: float) -> int:
+    return cv2.getTextSize(text, FONT, scale, 1)[0][0]
+
+
 def _wrap(text: str, width_px: int, scale: float) -> list[str]:
-    words, lines, line = text.split(), [], ""
-    for w in words:
+    """Every word, in order, on as many lines as it takes; a word wider than the line is
+    broken across lines rather than drawn past the edge."""
+    pieces: list[str] = []
+    for w in text.split():
+        while len(w) > 1 and _tw(w, scale) > width_px:
+            k = len(w) - 1
+            while k > 1 and _tw(w[:k], scale) > width_px:
+                k -= 1
+            pieces.append(w[:k])
+            w = w[k:]
+        pieces.append(w)
+    lines: list[str] = []
+    line = ""
+    for w in pieces:
         trial = f"{line} {w}".strip()
-        if cv2.getTextSize(trial, FONT, scale, 1)[0][0] <= width_px or not line:
+        if _tw(trial, scale) <= width_px or not line:
             line = trial
         else:
             lines.append(line)
             line = w
     if line:
         lines.append(line)
-    return lines[:3]
+    return lines
+
+
+@dataclass(frozen=True)
+class CaptionLayout:
+    scale: float
+    lines: list[str]
+    line_h: int
+    baselines: list[int]  # y of each line's baseline inside the band
+    band_h: int
+
+
+def _caption_layout(text: str, width: int) -> CaptionLayout:
+    """Lay the whole caption out for a picture ``width`` px wide. Nothing is dropped: a long
+    caption on a narrow (portrait) picture first gets a slightly smaller font, then simply
+    more lines, and the band grows to hold them."""
+    avail = max(1, width - 2 * PAD)
+    for scale in (0.5, 0.45, 0.4):
+        lines = _wrap(text, avail, scale)
+        if len(lines) <= 4:
+            break
+    (_, cap_h), descent = cv2.getTextSize("Ag", FONT, scale, 1)
+    line_h = round(40 * scale)  # 20 px at the usual 0.5
+    baselines = [PAD + cap_h + i * line_h for i in range(len(lines))]
+    band_h = (baselines[-1] + descent + PAD) if lines else 2 * PAD
+    return CaptionLayout(scale, lines, line_h, baselines, band_h)
 
 
 def _caption(img: np.ndarray, text: str, color=INK) -> np.ndarray:
-    """A white band above the image with the text wrapped to its width (3 lines max)."""
-    scale = 0.5
-    lines = _wrap(text, img.shape[1] - 16, scale)
-    bar = np.full((10 + 20 * len(lines), img.shape[1], 3), 255, np.uint8)
-    for i, ln in enumerate(lines):
-        cv2.putText(bar, ln, (8, 22 + 20 * i), FONT, scale, color, 1, cv2.LINE_AA)
+    """A white band above the image holding the whole text, wrapped to the image's width."""
+    lay = _caption_layout(text, img.shape[1])
+    bar = np.full((lay.band_h, img.shape[1], 3), 255, np.uint8)
+    for ln, y in zip(lay.lines, lay.baselines):
+        cv2.putText(bar, ln, (PAD, y), FONT, lay.scale, color, 1, cv2.LINE_AA)
     return np.vstack([bar, img])
 
 
