@@ -1,0 +1,5242 @@
+{
+ "_about": "Build the perception eval set from the six real photos, deterministically.",
+ "_built_with": {
+  "opencv": "5.0.0",
+  "numpy": "2.5.4",
+  "jpeg_quality": 92
+ },
+ "_split": "Eval split is by SCENE, never by case: calibration = scene 'panel' (01, 02, 03); test = scenes 'office-jack' and 'dining-node' (04, 05, 06). Variants of one photo never land in both halves, and no case mixes photos from both halves.",
+ "counts": {
+  "cases": 99,
+  "by_split": {
+   "calibration": 49,
+   "test": 50
+  },
+  "by_kind": {
+   "good": 35,
+   "bad": 64
+  }
+ },
+ "cases": [
+  {
+   "id": "01-good_rotate",
+   "class": "good_rotate",
+   "kind": "good",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-good_rotate.jpg",
+   "evidence_sha256": "c1265b4a6a81081780ace840145a892a72a57a9a77266fdc0824c0ea8c5e3b88",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (good_rotate)",
+    "params": {
+     "rotate_deg": 8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-good_reshot",
+   "class": "good_reshot",
+   "kind": "good",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-good_reshot.jpg",
+   "evidence_sha256": "86534a006790c88f2a18d4619b6fed8f18f1383e6fc368882819256d792d3c66",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (good_reshot)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 101
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-good_light",
+   "class": "good_light",
+   "kind": "good",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-good_light.jpg",
+   "evidence_sha256": "73e218d98943d908a24786a9a75fd0643804df2e335f45379f327ea39ed6a3f8",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (good_light)",
+    "params": {
+     "side_light": [
+      0.85,
+      1.15
+     ],
+     "version": 2,
+     "new_clipped_frac": 0.0041
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-good_closeup",
+   "class": "good_closeup",
+   "kind": "good",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-good_closeup.jpg",
+   "evidence_sha256": "bc494fbba51f91a41e0c69701a94b8696b933e14c11a5b93d9bd11e6f033f20f",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (good_closeup)",
+    "params": {
+     "crop_around": "act zone",
+     "min_frac": 0.55,
+     "upscale": false
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-good_act_edit",
+   "class": "good_act_edit",
+   "kind": "good",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": true,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-good_act_edit.jpg",
+   "evidence_sha256": "07f1ced7ae934e03aae66368be5c2b89045f1cc9d06b56f759b12e67fbd3e1a6",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (good_act_edit)",
+    "params": {
+     "paste_into": "act zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 102
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-blur_gaussian",
+   "class": "blur_gaussian",
+   "kind": "bad",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-blur_gaussian.jpg",
+   "evidence_sha256": "999eb891aba605ec4f5113502de5679e3e1ec60464c368d701921f6d8e6dd87b",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (blur_gaussian)",
+    "params": {
+     "sigma": 3
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-blur_motion",
+   "class": "blur_motion",
+   "kind": "bad",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-blur_motion.jpg",
+   "evidence_sha256": "e193c9ce5ef69b4042a4c2be6036b2845fd6673e1c585ef6f678f0b899e471d2",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (blur_motion)",
+    "params": {
+     "length": 21,
+     "angle_deg": 30
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-dark",
+   "class": "dark",
+   "kind": "bad",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-dark.jpg",
+   "evidence_sha256": "10964b9b060443e6e618316bf94cc73245c9cf39b0b83baa1e061fd83d81e6bd",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (dark)",
+    "params": {
+     "gain": 0.12
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-overexposed",
+   "class": "overexposed",
+   "kind": "bad",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-overexposed.jpg",
+   "evidence_sha256": "e8c92b3df9bdf49ebfa245caad494733356f1682c5c2f17b6b0f013a55179623",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (overexposed)",
+    "params": {
+     "gain": 2.8,
+     "offset": 50
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-glare",
+   "class": "glare",
+   "kind": "bad",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-glare.jpg",
+   "evidence_sha256": "e513c9c30d4c70e1281ff43ea51bfa33287bdb0219c4ed0ca06ae575619e09e9",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (glare)",
+    "params": {
+     "frac": 0.06,
+     "centre": "act zone"
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-zone_cut",
+   "class": "zone_cut",
+   "kind": "bad",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-zone_cut.jpg",
+   "evidence_sha256": "f79a64e0198b0e945458461b286f51afce642e9f1960bcfb3fb08da0259e2c6e",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (zone_cut)",
+    "params": {
+     "cut_zone": "act",
+     "keep_frac": 0.25
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-replay_reference",
+   "class": "replay_reference",
+   "kind": "bad",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "replay",
+   "expects_change": true,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-replay_reference.jpg",
+   "evidence_sha256": "611929424e9481e00bc9e27afad44b1526d7081299f28fd1a0551a19290e189a",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (replay_reference)",
+    "params": {
+     "of": "reference",
+     "jpeg_q": 70,
+     "resize": 0.8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-replay_earlier",
+   "class": "replay_earlier",
+   "kind": "bad",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "replay",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-replay_earlier.jpg",
+   "evidence_sha256": "8d3768888b5648edb4eec70ffefdfb21eb717cd499e03821d897073254458d5e",
+   "earlier": [
+    {
+     "name": "earlier evidence",
+     "path": "eval/cases/01-replay_earlier-earlier-0.jpg",
+     "sha256": "212f55696cf3607a599a19c578f8b311d49c6d1a9c9d8ac394d969049f54a5fe",
+     "accepted": false
+    }
+   ],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (replay_earlier)",
+    "params": {
+     "of": "an earlier evidence photo (a re-shot)",
+     "resize": 0.85,
+     "rotate_deg": 1.5,
+     "seed": 103
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-no_change",
+   "class": "no_change",
+   "kind": "bad",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "no_change",
+   "expects_change": true,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-no_change.jpg",
+   "evidence_sha256": "c489957dcb641d7a313ccca38ad29b0a2846e7833cd3baa36293374b287f9bd9",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (no_change)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 104
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-touched_avoid",
+   "class": "touched_avoid",
+   "kind": "bad",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "touched_avoid",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "eval/cases/01-touched_avoid.jpg",
+   "evidence_sha256": "6e1d318247ee52cc9eb26524ce65d59792ea0372e5f2fc3adbb403b77cbe2b05",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "01-panel-overview",
+    "generator": "stepspotter.perception.synthetic (touched_avoid)",
+    "params": {
+     "paste_into": "avoid zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 105
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-good_rotate",
+   "class": "good_rotate",
+   "kind": "good",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-good_rotate.jpg",
+   "evidence_sha256": "f14accea8d379caa55cec52dc1df0165c47418884863b6a05746359996e7f16b",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (good_rotate)",
+    "params": {
+     "rotate_deg": 8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-good_reshot",
+   "class": "good_reshot",
+   "kind": "good",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-good_reshot.jpg",
+   "evidence_sha256": "b8d641812b21ee722bdb15ea227881c9785ddd79de9a148e9a9cea039aa79557",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (good_reshot)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 201
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-good_light",
+   "class": "good_light",
+   "kind": "good",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-good_light.jpg",
+   "evidence_sha256": "998ab7b3dd2ed63373a7da479d6a132cc58a38b7a18848b7094d9d5fbd081aa9",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (good_light)",
+    "params": {
+     "side_light": [
+      0.85,
+      1.15
+     ],
+     "version": 2,
+     "new_clipped_frac": 0.0
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-good_closeup",
+   "class": "good_closeup",
+   "kind": "good",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-good_closeup.jpg",
+   "evidence_sha256": "8891965ce127221e2cee34cc4e015b56c4326abf1d3eb262cdcc130b127bdd58",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (good_closeup)",
+    "params": {
+     "crop_around": "act zone",
+     "min_frac": 0.55,
+     "upscale": false
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-good_act_edit",
+   "class": "good_act_edit",
+   "kind": "good",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": true,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-good_act_edit.jpg",
+   "evidence_sha256": "81fdac2a36bab01a49ea3798c5620bd1a3750df68b1a25eac6ae5ad714f331e7",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (good_act_edit)",
+    "params": {
+     "paste_into": "act zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 202
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-blur_gaussian",
+   "class": "blur_gaussian",
+   "kind": "bad",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-blur_gaussian.jpg",
+   "evidence_sha256": "405f3ce116f2e6c8590bb4f4136dcf3c3749f388b15784587be22732efb52673",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (blur_gaussian)",
+    "params": {
+     "sigma": 3
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-blur_motion",
+   "class": "blur_motion",
+   "kind": "bad",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-blur_motion.jpg",
+   "evidence_sha256": "0bbfbe2e106336ab81a74c264861107afbbb01335b806cb2a8c4263ed2483abd",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (blur_motion)",
+    "params": {
+     "length": 21,
+     "angle_deg": 30
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-dark",
+   "class": "dark",
+   "kind": "bad",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-dark.jpg",
+   "evidence_sha256": "65c90a2a669decc277b26d6a7954e90667cad5b3976eed6616cb7bf0d9b60e78",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (dark)",
+    "params": {
+     "gain": 0.12
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-overexposed",
+   "class": "overexposed",
+   "kind": "bad",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-overexposed.jpg",
+   "evidence_sha256": "ade851d3454ba725e6ee841b0a0d1a4c6bf809b098b82085287fe750409dd144",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (overexposed)",
+    "params": {
+     "gain": 2.8,
+     "offset": 50
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-glare",
+   "class": "glare",
+   "kind": "bad",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-glare.jpg",
+   "evidence_sha256": "b3e3531937cf7c9fd1a584ebe65d764c9f78dfed8bc231c9d979e5dec1c6995d",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (glare)",
+    "params": {
+     "frac": 0.06,
+     "centre": "act zone"
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-zone_cut",
+   "class": "zone_cut",
+   "kind": "bad",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-zone_cut.jpg",
+   "evidence_sha256": "e7158591b3d6d5c14a5c1ed1c8c65c95f7f5b34edc0c176b4b75a87f89e531a9",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (zone_cut)",
+    "params": {
+     "cut_zone": "act",
+     "keep_frac": 0.25
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-replay_reference",
+   "class": "replay_reference",
+   "kind": "bad",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "replay",
+   "expects_change": true,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-replay_reference.jpg",
+   "evidence_sha256": "bc9cec9946a1f7f2091ecf70f1074b8b322bf68e82af0e29a272cee44dad4c7f",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (replay_reference)",
+    "params": {
+     "of": "reference",
+     "jpeg_q": 70,
+     "resize": 0.8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-replay_earlier",
+   "class": "replay_earlier",
+   "kind": "bad",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "replay",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-replay_earlier.jpg",
+   "evidence_sha256": "5d7f7fa56c0fab5f324ea8a58d1570e17cd7e86522eb21a1dcb093d54bbbcbf5",
+   "earlier": [
+    {
+     "name": "earlier evidence",
+     "path": "eval/cases/02-replay_earlier-earlier-0.jpg",
+     "sha256": "0df0c2a258452d949a001c3d1f57aff76be280e471f6aeab1f82204da940b689",
+     "accepted": false
+    }
+   ],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (replay_earlier)",
+    "params": {
+     "of": "an earlier evidence photo (a re-shot)",
+     "resize": 0.85,
+     "rotate_deg": 1.5,
+     "seed": 203
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-no_change",
+   "class": "no_change",
+   "kind": "bad",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "no_change",
+   "expects_change": true,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-no_change.jpg",
+   "evidence_sha256": "b9c56a8d44ba2dc7a960b74dffdce06b5a430c026a03489561183ae9e00a2016",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (no_change)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 204
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-touched_avoid",
+   "class": "touched_avoid",
+   "kind": "bad",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "touched_avoid",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "eval/cases/02-touched_avoid.jpg",
+   "evidence_sha256": "3bc5168437651e25cb5647d8f24b3aef202891dbe90a37acc87b32e9141c594c",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "02-panel-inside",
+    "generator": "stepspotter.perception.synthetic (touched_avoid)",
+    "params": {
+     "paste_into": "avoid zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 205
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-good_rotate",
+   "class": "good_rotate",
+   "kind": "good",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-good_rotate.jpg",
+   "evidence_sha256": "807cfee6119c251db3f2afcc8300f14aeb7ba9aa1951687055bc28797c627eb5",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (good_rotate)",
+    "params": {
+     "rotate_deg": 8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-good_reshot",
+   "class": "good_reshot",
+   "kind": "good",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-good_reshot.jpg",
+   "evidence_sha256": "65afe5c384d69a619d37d8eba83d621144d02bd9594950cf1713ef9ac65b7ed4",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (good_reshot)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 301
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-good_light",
+   "class": "good_light",
+   "kind": "good",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-good_light.jpg",
+   "evidence_sha256": "9f534253a0e8eac679e51fd9022e976e7d17bd4fee42077cf34b20b398896645",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (good_light)",
+    "params": {
+     "side_light": [
+      0.85,
+      1.15
+     ],
+     "version": 2,
+     "new_clipped_frac": 0.0008
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-good_closeup",
+   "class": "good_closeup",
+   "kind": "good",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-good_closeup.jpg",
+   "evidence_sha256": "501874641873e448a8a10d0387d7c55e087d88a00cd74896760d0c0b4bcd099a",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (good_closeup)",
+    "params": {
+     "crop_around": "act zone",
+     "min_frac": 0.55,
+     "upscale": false
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-good_act_edit",
+   "class": "good_act_edit",
+   "kind": "good",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": true,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-good_act_edit.jpg",
+   "evidence_sha256": "4fad4e1be1afe70e72e2a53c898d29f70b12d582f9f800f8d8cb498778833095",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (good_act_edit)",
+    "params": {
+     "paste_into": "act zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 302
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-blur_gaussian",
+   "class": "blur_gaussian",
+   "kind": "bad",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-blur_gaussian.jpg",
+   "evidence_sha256": "5b780e561ea311ebc75680048166437d6d75c9ac2da73fdb345308bb89110f7d",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (blur_gaussian)",
+    "params": {
+     "sigma": 3
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-blur_motion",
+   "class": "blur_motion",
+   "kind": "bad",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-blur_motion.jpg",
+   "evidence_sha256": "fa26acb03607d6f63559e63253433f25a99adc584cc9f29d294421756074667a",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (blur_motion)",
+    "params": {
+     "length": 21,
+     "angle_deg": 30
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-dark",
+   "class": "dark",
+   "kind": "bad",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-dark.jpg",
+   "evidence_sha256": "e21be59062bb53173b6dc101dac497b70993736a23fed8e0c0fbb7e5e74fc673",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (dark)",
+    "params": {
+     "gain": 0.12
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-overexposed",
+   "class": "overexposed",
+   "kind": "bad",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-overexposed.jpg",
+   "evidence_sha256": "a2a159bb185e6393c1bcb8a0a10a1cf52dac5ffc06d4ed71c4f4fb51d186524d",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (overexposed)",
+    "params": {
+     "gain": 2.8,
+     "offset": 50
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-glare",
+   "class": "glare",
+   "kind": "bad",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-glare.jpg",
+   "evidence_sha256": "82b91f729e2c2bd10c9f574152045342417c22afe7ff9385c5e4725e5802ba24",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (glare)",
+    "params": {
+     "frac": 0.06,
+     "centre": "act zone"
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-zone_cut",
+   "class": "zone_cut",
+   "kind": "bad",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-zone_cut.jpg",
+   "evidence_sha256": "f5dc9063862d47795fde049e2cfd838f82216d9f2af6e48e228e921bdd9808ff",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (zone_cut)",
+    "params": {
+     "cut_zone": "act",
+     "keep_frac": 0.25
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-replay_reference",
+   "class": "replay_reference",
+   "kind": "bad",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "replay",
+   "expects_change": true,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-replay_reference.jpg",
+   "evidence_sha256": "18b1f4a0f785d5c1a1aaac935ac8fece901bbe1fc816837ee06b5a12822fb47a",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (replay_reference)",
+    "params": {
+     "of": "reference",
+     "jpeg_q": 70,
+     "resize": 0.8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-replay_earlier",
+   "class": "replay_earlier",
+   "kind": "bad",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "replay",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-replay_earlier.jpg",
+   "evidence_sha256": "b7b3e023c66b3eba8a6d95803675f5b93cd173ce44280d81d2096b6974ca31e2",
+   "earlier": [
+    {
+     "name": "earlier evidence",
+     "path": "eval/cases/03-replay_earlier-earlier-0.jpg",
+     "sha256": "0ede14cb2fb1acc650591c3ef4ec17e709e0f14dba1f41922787099205272b08",
+     "accepted": false
+    }
+   ],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (replay_earlier)",
+    "params": {
+     "of": "an earlier evidence photo (a re-shot)",
+     "resize": 0.85,
+     "rotate_deg": 1.5,
+     "seed": 303
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-no_change",
+   "class": "no_change",
+   "kind": "bad",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "no_change",
+   "expects_change": true,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-no_change.jpg",
+   "evidence_sha256": "0f1f346fb42f77ad4b63bf7e6bea39df8314151372fa58c1517607afcd38b89b",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (no_change)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 304
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "03-touched_avoid",
+   "class": "touched_avoid",
+   "kind": "bad",
+   "group": "03",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "touched_avoid",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "reference_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "evidence": "eval/cases/03-touched_avoid.jpg",
+   "evidence_sha256": "6bf40ba6cd5a0d9cb7aec5bcac43f6404fff4dff870ca13dcfbb65b0d44a8743",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "punch-down ports",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.42,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "coax splitter",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.24,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the run lands at the module",
+    "action": "Check the cable is punched down into one of the module's numbered ports.",
+    "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "03-telecom-module",
+    "generator": "stepspotter.perception.synthetic (touched_avoid)",
+    "params": {
+     "paste_into": "avoid zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 305
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-good_rotate",
+   "class": "good_rotate",
+   "kind": "good",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-good_rotate.jpg",
+   "evidence_sha256": "83d29a5ad4ac2ebe701a52305bc58475baa16a078865dab7585629273aacef1a",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (good_rotate)",
+    "params": {
+     "rotate_deg": 8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-good_reshot",
+   "class": "good_reshot",
+   "kind": "good",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-good_reshot.jpg",
+   "evidence_sha256": "9fe804b940bbd38fbab190580b83ec739554129c972f80c3375b60d6d49d3a2e",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (good_reshot)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 401
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-good_light",
+   "class": "good_light",
+   "kind": "good",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-good_light.jpg",
+   "evidence_sha256": "7ccb375bbf90e1e386db4f4242d21bc6fc45f00850755d9a5664ac44bcdf20e2",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (good_light)",
+    "params": {
+     "side_light": [
+      0.85,
+      1.15
+     ],
+     "version": 2,
+     "new_clipped_frac": 0.0
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-good_closeup",
+   "class": "good_closeup",
+   "kind": "good",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-good_closeup.jpg",
+   "evidence_sha256": "9fa712e85ee539b53dc5cb253569a2c74b7690da7c79c02ceca7be5dc593667c",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (good_closeup)",
+    "params": {
+     "crop_around": "act zone",
+     "min_frac": 0.55,
+     "upscale": false
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-good_act_edit",
+   "class": "good_act_edit",
+   "kind": "good",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": true,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-good_act_edit.jpg",
+   "evidence_sha256": "6c2d694b643e1602e67bbf9b1a9706d42bcd30bf3cf5000460341d852da02f6d",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (good_act_edit)",
+    "params": {
+     "paste_into": "act zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 402
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-blur_gaussian",
+   "class": "blur_gaussian",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-blur_gaussian.jpg",
+   "evidence_sha256": "0dd7a96aca5fbd6ab9e03bc3e49bd6c595bf5e827aa459ead2b8aefa6e5a6dbb",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (blur_gaussian)",
+    "params": {
+     "sigma": 3
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-blur_motion",
+   "class": "blur_motion",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-blur_motion.jpg",
+   "evidence_sha256": "df0542eca4ca6eb143ce6b6d7e708796fb34655dd736152f95f7ed017300eca7",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (blur_motion)",
+    "params": {
+     "length": 21,
+     "angle_deg": 30
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-dark",
+   "class": "dark",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-dark.jpg",
+   "evidence_sha256": "c21d1d2d46472962fd69856f4a6512737bbccdb17c0ee51a472126f2b562e9fa",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (dark)",
+    "params": {
+     "gain": 0.12
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-overexposed",
+   "class": "overexposed",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-overexposed.jpg",
+   "evidence_sha256": "3a0804424deff9432eab5e6b7aa26956679e75da8ae811e835023f1c583518d4",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (overexposed)",
+    "params": {
+     "gain": 2.8,
+     "offset": 50
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-glare",
+   "class": "glare",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-glare.jpg",
+   "evidence_sha256": "7b341ea75d7fbe4cc889f37fc02ac413350a1f84372503c9899ded0eedd292d0",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (glare)",
+    "params": {
+     "frac": 0.06,
+     "centre": "act zone"
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-zone_cut",
+   "class": "zone_cut",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-zone_cut.jpg",
+   "evidence_sha256": "4882df26c833a6cd96ff55af029a75df462c27de08be815695b2fe753147a71a",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (zone_cut)",
+    "params": {
+     "cut_zone": "act",
+     "keep_frac": 0.25
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-replay_reference",
+   "class": "replay_reference",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "replay",
+   "expects_change": true,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-replay_reference.jpg",
+   "evidence_sha256": "15b05a99fb64e9d77d05491ed5e72c5a4c6dc64f7ed450dd7364efd50a93ed19",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (replay_reference)",
+    "params": {
+     "of": "reference",
+     "jpeg_q": 70,
+     "resize": 0.8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-replay_earlier",
+   "class": "replay_earlier",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "replay",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-replay_earlier.jpg",
+   "evidence_sha256": "46ed70fccb0bd18c15190bdeffe46e06c36ef0de237147a8c67754e0d4b8c679",
+   "earlier": [
+    {
+     "name": "earlier evidence",
+     "path": "eval/cases/04-replay_earlier-earlier-0.jpg",
+     "sha256": "8e1c3d34816ee987a1bec9b6c624bc95e0c8822c8f3a7fd881018677300377e8",
+     "accepted": false
+    }
+   ],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (replay_earlier)",
+    "params": {
+     "of": "an earlier evidence photo (a re-shot)",
+     "resize": 0.85,
+     "rotate_deg": 1.5,
+     "seed": 403
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-no_change",
+   "class": "no_change",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "no_change",
+   "expects_change": true,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-no_change.jpg",
+   "evidence_sha256": "11974e58a6464e28dbe4701388c2d221a0d6349da51ecc5c236964190b492e82",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (no_change)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 404
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-touched_avoid",
+   "class": "touched_avoid",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "touched_avoid",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "eval/cases/04-touched_avoid.jpg",
+   "evidence_sha256": "fa2a0e79fd353dd94f05eeca9114c8ff291bb876aabcf822b14f4a46561be09d",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "04-office-jack-front",
+    "generator": "stepspotter.perception.synthetic (touched_avoid)",
+    "params": {
+     "paste_into": "avoid zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 405
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-good_rotate",
+   "class": "good_rotate",
+   "kind": "good",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-good_rotate.jpg",
+   "evidence_sha256": "49628fc726a09c87aed95ed07225f70affa584a7290de4d60093002071594dd9",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (good_rotate)",
+    "params": {
+     "rotate_deg": 8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-good_reshot",
+   "class": "good_reshot",
+   "kind": "good",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-good_reshot.jpg",
+   "evidence_sha256": "aac455393b3a6b5866da4892d7287b69dc9e95ead00f5d45bbf935884c99129f",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (good_reshot)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 501
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-good_light",
+   "class": "good_light",
+   "kind": "good",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-good_light.jpg",
+   "evidence_sha256": "e36c112f07ff94be161a783ef022d5bd1e81bb14a3e930aa9ec672f18c038722",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (good_light)",
+    "params": {
+     "side_light": [
+      0.85,
+      1.15
+     ],
+     "version": 2,
+     "new_clipped_frac": 0.0006
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-good_closeup",
+   "class": "good_closeup",
+   "kind": "good",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-good_closeup.jpg",
+   "evidence_sha256": "d3e3b8f87bc96c82d043cd4486b90c3db467cab0fa52fc5dfede72d55d0fb527",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (good_closeup)",
+    "params": {
+     "crop_around": "act zone",
+     "min_frac": 0.55,
+     "upscale": false
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-good_act_edit",
+   "class": "good_act_edit",
+   "kind": "good",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": true,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-good_act_edit.jpg",
+   "evidence_sha256": "6bf1e913ed26298375cc19b4ffbb41002ee069b6e22a230b0bbb3dd50bd8fe9b",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (good_act_edit)",
+    "params": {
+     "paste_into": "act zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 502
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-blur_gaussian",
+   "class": "blur_gaussian",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-blur_gaussian.jpg",
+   "evidence_sha256": "eea8ef173ed876e19a89d17e79fc15579bfa9352d92c097ed68f12eb7c7f0f0b",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (blur_gaussian)",
+    "params": {
+     "sigma": 3
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-blur_motion",
+   "class": "blur_motion",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-blur_motion.jpg",
+   "evidence_sha256": "2d685bce1ad8665ed3163d4cfd15d4e856b15e4d13f96e7d84c5208f3a22ca13",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (blur_motion)",
+    "params": {
+     "length": 21,
+     "angle_deg": 30
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-dark",
+   "class": "dark",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-dark.jpg",
+   "evidence_sha256": "904c432140dc0a7a4adfeb5a188ecff5c3d277fe8e74f0d7c2367b44447742fc",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (dark)",
+    "params": {
+     "gain": 0.12
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-overexposed",
+   "class": "overexposed",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-overexposed.jpg",
+   "evidence_sha256": "76203ce63309eb57f0eb8401d37ca2ab6b5809e83a7b229e411fd9d8d117abbe",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (overexposed)",
+    "params": {
+     "gain": 2.8,
+     "offset": 50
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-glare",
+   "class": "glare",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-glare.jpg",
+   "evidence_sha256": "7344b8b3bcbe23eeb4279a9701c68d882b49f073a62b4234c01ba039e12884a0",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (glare)",
+    "params": {
+     "frac": 0.06,
+     "centre": "act zone"
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-zone_cut",
+   "class": "zone_cut",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-zone_cut.jpg",
+   "evidence_sha256": "c932e8babfea22ab02861419106009c4a1e2e9bed9538486f4a525f3b3fa63fb",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (zone_cut)",
+    "params": {
+     "cut_zone": "act",
+     "keep_frac": 0.25
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-replay_reference",
+   "class": "replay_reference",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "replay",
+   "expects_change": true,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-replay_reference.jpg",
+   "evidence_sha256": "a9b6063c002bb36176c6b718746b4ceece39e7422cff960fefa75bc3c5ab2fc6",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (replay_reference)",
+    "params": {
+     "of": "reference",
+     "jpeg_q": 70,
+     "resize": 0.8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-replay_earlier",
+   "class": "replay_earlier",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "replay",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-replay_earlier.jpg",
+   "evidence_sha256": "dd0c4b22f3ba24ee08d61f1a463646ce69bd48c3d6fc8ed9576c4306ccc2880d",
+   "earlier": [
+    {
+     "name": "earlier evidence",
+     "path": "eval/cases/05-replay_earlier-earlier-0.jpg",
+     "sha256": "7d97e15110490b1fceaf9cacf15166846579bbe230208a06f4cdc328c9466fdd",
+     "accepted": false
+    }
+   ],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (replay_earlier)",
+    "params": {
+     "of": "an earlier evidence photo (a re-shot)",
+     "resize": 0.85,
+     "rotate_deg": 1.5,
+     "seed": 503
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-no_change",
+   "class": "no_change",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "no_change",
+   "expects_change": true,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-no_change.jpg",
+   "evidence_sha256": "293143c2d7f8f699589f7ed78acbbe4ce92d1a5941d2e31328d71db2f1d13884",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (no_change)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 504
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-touched_avoid",
+   "class": "touched_avoid",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "touched_avoid",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "eval/cases/05-touched_avoid.jpg",
+   "evidence_sha256": "7a17c600cbeb8102ea7fde4c9704258a3d3b5df3d66d9b789907d42da5a92a2a",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "05-office-jack-open",
+    "generator": "stepspotter.perception.synthetic (touched_avoid)",
+    "params": {
+     "paste_into": "avoid zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 505
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-good_rotate",
+   "class": "good_rotate",
+   "kind": "good",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-good_rotate.jpg",
+   "evidence_sha256": "868da1643525d7573b28b4aa99dc3c3b1fcf9bc0c117fa6be248e595279b9905",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (good_rotate)",
+    "params": {
+     "rotate_deg": 8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-good_reshot",
+   "class": "good_reshot",
+   "kind": "good",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-good_reshot.jpg",
+   "evidence_sha256": "7201577dd270371797fcc76700476b25b8e1e1ff95961a4b77da10d897f82be9",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (good_reshot)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 601
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-good_light",
+   "class": "good_light",
+   "kind": "good",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-good_light.jpg",
+   "evidence_sha256": "f44e231003e851678f69427f085223a674437d93b47306037f85e4f196e13a53",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (good_light)",
+    "params": {
+     "side_light": [
+      0.85,
+      1.15
+     ],
+     "version": 2,
+     "new_clipped_frac": 0.0005
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-good_closeup",
+   "class": "good_closeup",
+   "kind": "good",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-good_closeup.jpg",
+   "evidence_sha256": "8479d03f65e52b810c5fca7e42197c3e8742220c8104b6b73cb5899570a0b374",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (good_closeup)",
+    "params": {
+     "crop_around": "act zone",
+     "min_frac": 0.55,
+     "upscale": false
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-good_act_edit",
+   "class": "good_act_edit",
+   "kind": "good",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": true,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-good_act_edit.jpg",
+   "evidence_sha256": "d9da9aaba273b66d4d61b5c7a7cf714f2d42a41145d5d0ce0aa4ffd789b35b2c",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (good_act_edit)",
+    "params": {
+     "paste_into": "act zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 602
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-blur_gaussian",
+   "class": "blur_gaussian",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-blur_gaussian.jpg",
+   "evidence_sha256": "b284730bf2c8584615241ab6a8f03ec0d2b91dd7293171cfb4a8bd3794c0ca73",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (blur_gaussian)",
+    "params": {
+     "sigma": 3
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-blur_motion",
+   "class": "blur_motion",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-blur_motion.jpg",
+   "evidence_sha256": "2b3c078366d4d9ee7b0f12b5c36a4ee8c6df6ce6ee704fee7d50730812095b78",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (blur_motion)",
+    "params": {
+     "length": 21,
+     "angle_deg": 30
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-dark",
+   "class": "dark",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-dark.jpg",
+   "evidence_sha256": "df93f242b585c35803dd8b9c22294d442f6c5112fd428541ca68cda2560efebf",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (dark)",
+    "params": {
+     "gain": 0.12
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-overexposed",
+   "class": "overexposed",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-overexposed.jpg",
+   "evidence_sha256": "ee3313b1145e5e976b34e88eb1ba9bb8fec0286df1849d8a6f3bee4327b57993",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (overexposed)",
+    "params": {
+     "gain": 2.8,
+     "offset": 50
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-glare",
+   "class": "glare",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-glare.jpg",
+   "evidence_sha256": "4c337b14537b64a7a6f702295feeb2206aa190a882058f05df104408fddc12a2",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (glare)",
+    "params": {
+     "frac": 0.06,
+     "centre": "act zone"
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-zone_cut",
+   "class": "zone_cut",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "retake",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-zone_cut.jpg",
+   "evidence_sha256": "b02ae2a6f6cbe5ba72ed9f2e4fb39252ba066077bd196aab43bf1ee827ba9325",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (zone_cut)",
+    "params": {
+     "cut_zone": "act",
+     "keep_frac": 0.25
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-replay_reference",
+   "class": "replay_reference",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "replay",
+   "expects_change": true,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-replay_reference.jpg",
+   "evidence_sha256": "0fc4d4dc111c2f790a0bc94a32e5ec6491f4910db3f4da9348af2e03c4b8ac58",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (replay_reference)",
+    "params": {
+     "of": "reference",
+     "jpeg_q": 70,
+     "resize": 0.8
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-replay_earlier",
+   "class": "replay_earlier",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "replay",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-replay_earlier.jpg",
+   "evidence_sha256": "ec27e9fe42cd9c8c0e69ab91cb4e618ff1256b96f1ba407fa2b06630e2c3136b",
+   "earlier": [
+    {
+     "name": "earlier evidence",
+     "path": "eval/cases/06-replay_earlier-earlier-0.jpg",
+     "sha256": "e6676b35ed32fedd980773014a69b3d01ff2ef0cef9fd126901ebf321282ffaf",
+     "accepted": false
+    }
+   ],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (replay_earlier)",
+    "params": {
+     "of": "an earlier evidence photo (a re-shot)",
+     "resize": 0.85,
+     "rotate_deg": 1.5,
+     "seed": 603
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-no_change",
+   "class": "no_change",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "no_change",
+   "expects_change": true,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-no_change.jpg",
+   "evidence_sha256": "99b8fd87d3be76ceb2afaedcd18f16622debad4188b07c0125f87766235b57fe",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (no_change)",
+    "params": {
+     "perspective_k": 0.1,
+     "noise_sigma": 3.0,
+     "seed": 604
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-touched_avoid",
+   "class": "touched_avoid",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "touched_avoid",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "eval/cases/06-touched_avoid.jpg",
+   "evidence_sha256": "3811a6e4252bce0752f3a004467989433076d0b915b792f2463915c00d6620c7",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "synthetic",
+    "source": "06-dining-node-white-cable",
+    "generator": "stepspotter.perception.synthetic (touched_avoid)",
+    "params": {
+     "paste_into": "avoid zone",
+     "cover": 0.6,
+     "perspective_k": 0.05,
+     "seed": 605
+    },
+    "rights": "our own photo (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-real_same_place-01",
+   "class": "real_same_place",
+   "kind": "good",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "evidence_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "real",
+    "source": "02-panel-inside -> 01-panel-overview",
+    "why": "the same panel, from across the room (real re-shot, another distance and angle)",
+    "rights": "our own photos (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-real_same_place-02",
+   "class": "real_same_place",
+   "kind": "good",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "evidence_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "real",
+    "source": "01-panel-overview -> 02-panel-inside",
+    "why": "the same panel, closer (real re-shot)",
+    "rights": "our own photos (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "02-real_same_place-03",
+   "class": "real_same_place",
+   "kind": "good",
+   "group": "02",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+   "reference_sha256": "6751011c4d84ad3b83b1780f30eb0dba169196df77d528020dac6ecedbcd2976",
+   "evidence": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "evidence_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "coax splitter",
+     "kind": "act",
+     "box": [
+      0.6,
+      0.36,
+      0.9,
+      0.56
+     ]
+    },
+    {
+     "label": "telecom module",
+     "kind": "avoid",
+     "box": [
+      0.14,
+      0.33,
+      0.52,
+      0.62
+     ]
+    }
+   ],
+   "step": {
+    "title": "Find the coax splitter",
+    "action": "Look inside the panel for the silver coax splitter.",
+    "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"
+   },
+   "provenance": {
+    "kind": "real",
+    "source": "02-panel-inside -> 03-telecom-module",
+    "why": "a close-up of the same panel's telecom module, taken at another time (cables moved)",
+    "rights": "our own photos (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "01-real_same_place-03",
+   "class": "real_same_place",
+   "kind": "good",
+   "group": "01",
+   "scene": "panel",
+   "split": "calibration",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+   "reference_sha256": "4c06508d4362b2763f184275e4890eaafba1c9fbb3bacd9f366e978949349905",
+   "evidence": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+   "evidence_sha256": "46f2c70a99ae9b4e943ea8f78cd129d02aa8fb3d408cd603c25bb44b3e2049e3",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "splitter and telecom module",
+     "kind": "act",
+     "box": [
+      0.12,
+      0.3,
+      0.48,
+      0.52
+     ]
+    },
+    {
+     "label": "mounting bracket",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.14,
+      0.99,
+      0.58
+     ]
+    }
+   ],
+   "step": {
+    "title": "Confirm the low-voltage panel",
+    "action": "Open the panel and check there are only low-voltage cables in it.",
+    "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"
+   },
+   "provenance": {
+    "kind": "real",
+    "source": "01-panel-overview -> 03-telecom-module",
+    "why": "a close-up of the same panel's telecom module, from the overview",
+    "rights": "our own photos (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-real_same_place-05",
+   "class": "real_same_place",
+   "kind": "good",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "evidence_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "real",
+    "source": "04-office-jack-front -> 05-office-jack-open",
+    "why": "the same wall jack, box opened and the jack pulled out (another view of the same place)",
+    "rights": "our own photos (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "04-real_wrong_place-06",
+   "class": "real_wrong_place",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "wrong_place",
+   "expects_change": null,
+   "reference": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "reference_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "evidence": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "evidence_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.82,
+      0.25,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "step": {
+    "title": "Snap the jack into the plate",
+    "action": "Push the keystone jack into the wall plate until it clicks.",
+    "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"
+   },
+   "provenance": {
+    "kind": "real",
+    "source": "04-office-jack-front -> 06-dining-node-white-cable",
+    "why": "a different room: the dining node, not the office jack",
+    "rights": "our own photos (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "05-real_wrong_place-06",
+   "class": "real_wrong_place",
+   "kind": "bad",
+   "group": "05",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "wrong_place",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "reference_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "evidence": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "evidence_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "keystone jack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.62,
+      0.55,
+      0.95
+     ]
+    },
+    {
+     "label": "wall box wiring",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.16,
+      0.85,
+      0.52
+     ]
+    }
+   ],
+   "step": {
+    "title": "Lay the pairs into the jack",
+    "action": "Lay the coloured wire pairs into the slots on the keystone jack.",
+    "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"
+   },
+   "provenance": {
+    "kind": "real",
+    "source": "05-office-jack-open -> 06-dining-node-white-cable",
+    "why": "a different room: the dining node, not the office wall box",
+    "rights": "our own photos (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-real_wrong_place-04",
+   "class": "real_wrong_place",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "wrong_place",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+   "evidence_sha256": "39a1aef938f326b4a9e1b45d0e80355a67c6497b31113c0485f173dc03a3232b",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "real",
+    "source": "06-dining-node-white-cable -> 04-office-jack-front",
+    "why": "a different room: the office jack, not the dining node",
+    "rights": "our own photos (scenes.json _rights)"
+   }
+  },
+  {
+   "id": "06-real_wrong_place-05",
+   "class": "real_wrong_place",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "wrong_place",
+   "expects_change": null,
+   "reference": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "reference_sha256": "8c5ae998848b11390492c622ff91bf23daba8403245355fe15ec942ee5e31f5f",
+   "evidence": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "evidence_sha256": "e6f0ce4bbf165845907f96b1dc102ee3f11a332ad013050d26b18267e8e9c1af",
+   "earlier": [],
+   "zones": [
+    {
+     "label": "white module",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.48,
+      0.9,
+      0.72
+     ]
+    },
+    {
+     "label": "router",
+     "kind": "avoid",
+     "box": [
+      0.1,
+      0.8,
+      0.6,
+      0.99
+     ]
+    }
+   ],
+   "step": {
+    "title": "Seat the cable in the module",
+    "action": "Push the white cable into the white module by the router.",
+    "evidence_required": "the white cable plugged into the white module next to the router"
+   },
+   "provenance": {
+    "kind": "real",
+    "source": "06-dining-node-white-cable -> 05-office-jack-open",
+    "why": "a different room: the office wall box, not the dining node",
+    "rights": "our own photos (scenes.json _rights)"
+   }
+  }
+ ]
+}
