@@ -64,6 +64,8 @@ def guide_answer(state: JobState, question: str, model_id: str | None = None) ->
     from strands import Agent
     from strands.session import FileSessionManager
 
+    from stepspotter.bedrock_client import bedrock_model, retry_strategy
+
     kwargs: dict = {
         "tools": [],  # a question may not move anything. See the module docstring.
         "system_prompt": ASK_SYSTEM,
@@ -72,8 +74,8 @@ def guide_answer(state: JobState, question: str, model_id: str | None = None) ->
             storage_dir=str(store.data_root() / "sessions"),
         ),
     }
-    if model_id:
-        kwargs["model"] = model_id
+    kwargs["model"] = bedrock_model(model_id)  # retries and timeouts: bedrock_client
+    kwargs["retry_strategy"] = retry_strategy()
     agent = Agent(**kwargs)
     return str(agent(f"{_context(state)}\n\nTheir question: {question}")).strip()
 

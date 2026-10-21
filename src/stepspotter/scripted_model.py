@@ -56,11 +56,16 @@ def _text_of(block: dict) -> str:
 
 
 class ScriptedModel(Model):
-    """Plays ``turns`` back. Counts its own calls; raises if the script runs out."""
+    """Plays ``turns`` back. Counts its own calls; raises if the script runs out.
 
-    def __init__(self, turns: list[Turn]) -> None:
+    ``fail_on`` maps a call number (1-based, counting every call this model has taken) to
+    an exception raised instead of answering — a Bedrock outage in the middle of a turn.
+    """
+
+    def __init__(self, turns: list[Turn], fail_on: dict[int, BaseException] | None = None) -> None:
         self.turns = turns
         self.calls = 0
+        self.fail_on: dict[int, BaseException] = dict(fail_on or {})
 
     # -- the abstract surface Strands needs -----------------------------------
     def get_config(self) -> dict:
@@ -100,6 +105,8 @@ class ScriptedModel(Model):
 
     async def stream(self, messages, tool_specs=None, system_prompt=None, **kwargs: Any) -> AsyncGenerator[dict, None]:
         self.calls += 1
+        if self.calls in self.fail_on:
+            raise self.fail_on[self.calls]
         turn_i, done, ctx = self._position(messages)
         if turn_i < 0 or turn_i >= len(self.turns):
             raise RuntimeError(f"the script has no turn {turn_i + 1}")

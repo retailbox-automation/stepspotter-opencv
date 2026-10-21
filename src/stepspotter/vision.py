@@ -22,7 +22,8 @@ from PIL import Image
 from pydantic import BaseModel
 
 from strands import Agent
-from strands.models import BedrockModel
+
+from stepspotter.bedrock_client import bedrock_model, retry_strategy
 
 M = TypeVar("M", bound=BaseModel)
 
@@ -57,15 +58,13 @@ def image_block(jpeg_bytes: bytes) -> dict:
 
 
 def make_agent(system_prompt: str, model_id: str | None = None) -> Agent:
-    """A fresh single-shot agent. No tools, no callback noise, no shared history."""
-    kwargs: dict = {"region_name": REGION}
-    mid = model_id or MODEL_ID
-    if mid:
-        kwargs["model_id"] = mid
+    """A fresh single-shot agent. No tools, no callback noise, no shared history.
+    Its Bedrock client retries (adaptive) and has timeouts — ``bedrock_client``."""
     return Agent(
-        model=BedrockModel(**kwargs),
+        model=bedrock_model(model_id or MODEL_ID, region_name=REGION),
         system_prompt=system_prompt,
         callback_handler=None,
+        retry_strategy=retry_strategy(),
     )
 
 

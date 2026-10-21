@@ -53,6 +53,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 
 from stepspotter import store
+from stepspotter.bedrock_client import is_model_busy
 from stepspotter.gate import StepGate
 from stepspotter.guide import JobService, build_tools
 from stepspotter.models import JobState
@@ -285,6 +286,18 @@ def create_app(
     def healthz() -> dict:
         return {"ok": True, "service": "stepspotter"}
 
+    # ---------------------------------------------------------------- model failures
+    def _model_failure(exc: Exception, fault: str, busy_after: str) -> HTTPException:
+        """Bedrock busy or throttling even after the client's retries (bedrock_client) is a
+        503 the person can act on — "try again in a minute" — not a 502 with the error text."""
+        if is_model_busy(exc):
+            return HTTPException(
+                status_code=503,
+                detail=f"The model is busy right now. Try again in a minute; {busy_after}",
+                headers={"Retry-After": "60"},
+            )
+        return HTTPException(status_code=502, detail=f"{fault}: {scrub(str(exc))[:300]}")
+
     # ---------------------------------------------------------------- jobs
     def _start_job(task: str, raw: bytes) -> JobState:
         """Plan one job from a task and photo bytes. The only path into the Planner.
@@ -302,7 +315,7 @@ def create_app(
         try:
             state = svc.start(task.strip(), str(tmp))
         except Exception as exc:  # noqa: BLE001 - a model failure is a user-facing message
-            raise HTTPException(status_code=502, detail=f"The planner could not answer: {exc}")
+            raise _model_failure(exc, "The planner could not answer", "no job was started.")
         # Move the start photo in beside the job, so a job folder is self-contained.
         home = store.cards_dir(state.job_id) / "start.jpg"
         try:
@@ -326,7 +339,7 @@ def create_app(
         try:
             verdict = svc.verify(state, str(dest))
         except Exception as exc:  # noqa: BLE001
-            raise HTTPException(status_code=502, detail=f"The checker could not answer: {exc}")
+            raise _model_failure(exc, "The checker could not answer", "this photo was not judged.")
         summary = _summary(state)
         return {"verdict": summary["verdict"], "job": summary, "raw_passed": verdict.passed}
 
@@ -383,7 +396,7 @@ def create_app(
         try:
             path, _boxes = svc.card(state, layout="photo")
         except Exception as exc:  # noqa: BLE001
-            raise HTTPException(status_code=502, detail=f"Could not draw the card: {exc}")
+            raise _model_failure(exc, "Could not draw the card", "the step text above still stands.")
         return FileResponse(str(path), media_type="image/jpeg")
 
     @app.post("/api/jobs/{job_id}/photo")
@@ -482,7 +495,7 @@ def create_app(
         try:
             path, _boxes = svc.card(state, layout="photo")
         except Exception as exc:  # noqa: BLE001
-            raise HTTPException(status_code=502, detail=f"Could not draw the card: {exc}")
+            raise _model_failure(exc, "Could not draw the card", "the step text above still stands.")
         return FileResponse(str(path), media_type="image/jpeg")
 
     @app.get("/api/jobs/{job_id}/perception/{ref}")
@@ -526,7 +539,8 @@ def create_app(
         except HTTPException:
             raise
         except Exception as exc:  # noqa: BLE001 - a model failure is a user-facing message
-            raise HTTPException(status_code=502, detail=f"The agent could not answer: {scrub(str(exc))[:300]}")
+            raise _model_failure(exc, "The agent could not answer",
+                                 "this message was not added to the conversation.")
         if out.get("job_id"):
             out["job"] = _summary(_job(out["job_id"]))
         return out

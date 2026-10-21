@@ -31,6 +31,7 @@ from strands import Agent, tool
 from strands.hooks import BeforeToolCallEvent, HookRegistry
 
 from stepspotter import marker, memory, planner, research, store, verifier
+from stepspotter.bedrock_client import bedrock_model, retry_strategy
 from stepspotter.gate import StepGate
 from stepspotter.models import Box, EvidenceRecord, JobState, Plan, Step, StepVerdict
 from stepspotter.perception.models import PerceptionReport
@@ -799,6 +800,7 @@ def build_agent(
         "tools": tools,
         "hooks": [gate, *(hooks or [])],
         "system_prompt": system_prompt,
+        "retry_strategy": retry_strategy(),
     }
     if quiet:
         # No streaming printer: on a server, stdout goes to the log, and the model's chat
@@ -806,8 +808,8 @@ def build_agent(
         kwargs["callback_handler"] = None
     if model is not None:  # a ready-made Strands model (the scripted one, in tests)
         kwargs["model"] = model
-    elif model_id:
-        kwargs["model"] = model_id
+    else:  # Bedrock, with retries and timeouts (bedrock_client); None = the SDK's default model
+        kwargs["model"] = bedrock_model(model_id)
     if session_id:
         from strands.session import FileSessionManager
 
