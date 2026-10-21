@@ -75,11 +75,19 @@ def ask_typed(
     schema: type[M],
     jpeg_bytes: bytes | None = None,
     model_id: str | None = None,
+    extra: list[tuple[str, bytes]] | None = None,
 ) -> M:
-    """One structured-output call, with or without a photo attached."""
+    """One structured-output call, with or without a photo attached.
+
+    ``extra`` is (caption, jpeg) pairs sent after the main photo, each preceded by its
+    caption — used to hand the verifier OpenCV's aligned crop of the work zone.
+    """
     blocks: list[dict] = [{"text": text}]
     if jpeg_bytes is not None:
         blocks.append(image_block(jpeg_bytes))
+    for caption, extra_jpeg in extra or []:
+        blocks.append({"text": caption})
+        blocks.append(image_block(extra_jpeg))
     agent = make_agent(system_prompt, model_id)
     result = agent(blocks, structured_output_model=schema)
     out = result.structured_output

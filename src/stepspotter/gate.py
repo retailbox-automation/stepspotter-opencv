@@ -14,6 +14,16 @@ Two escalation shapes, and they are not interchangeable:
     interrupt    -> the whole run stops and waits for a person.
                     "The battery is hot and swollen."
 A hazard must never be a cancel: a cancel lets the agent keep chatting past it.
+
+The OpenCV layer (``perception/``) adds two things here, read from
+``state.perception[current]`` — the report on the latest photo for this step:
+
+* ``touched_avoid`` (something changed in a do-not-touch zone) raises
+  ``interrupt("human_review")`` — a request for a person's approval, not a cancel. When
+  the run resumes with the person's answer, ``on_review`` records it.
+* any other blocking decision cancels ``advance_step`` with OpenCV's reason, even if a
+  passing verdict somehow sits beside it (defence in depth: in the normal path a
+  photo OpenCV refuses never gets a passing verdict, because the model is never asked).
 """
 
 from __future__ import annotations
@@ -38,9 +48,11 @@ class StepGate(HookProvider):
         self,
         state_for: Callable[[str | None], JobState | None],
         on_block: Callable[[str, dict], None] | None = None,
+        on_review: Callable[[JobState, Any], bool] | None = None,
     ) -> None:
         self.state_for = state_for
         self.on_block = on_block
+        self.on_review = on_review
         self.blocks: list[str] = []  # audit trail of every refusal, in order
 
     # -- SDK wiring ---------------------------------------------------------
@@ -70,7 +82,30 @@ class StepGate(HookProvider):
             )
             return
 
+        review = self.human_review(state)
+        if review is not None:
+            # A request for human approval. First pass: InterruptException, the run stops.
+            # On resume with the person's answer, interrupt() returns it here.
+            answer = event.interrupt(
+                name="human_review",
+                reason={
+                    "message": review,
+                    "needs": "a person to look at the do-not-touch zone and approve going on",
+                    "source": "opencv",
+                },
+            )
+            approved = bool(self.on_review(state, answer)) if self.on_review else False
+            self._block(
+                event,
+                ("A person approved the change. " if approved else "A person was asked to check it. ")
+                + "Send a new photo of the finished step before moving on.",
+                tool_input,
+            )
+            return
+
         reason = self.check(state, tool_input)
+        if reason is None:
+            reason = self.perception_block(state)
         if reason is not None:
             self._block(event, reason, tool_input)
 
@@ -88,6 +123,26 @@ class StepGate(HookProvider):
             return (
                 f"STOP: the photo for step {state.current + 1} shows something unsafe. "
                 f"{verdict.reason} Do not carry on. A person needs to look at this."
+            )
+        return None
+
+    def human_review(self, state: JobState) -> str | None:
+        """OpenCV saw a change where this step said not to touch: a person decides."""
+        rep = state.perception.get(state.current)
+        if rep is not None and rep.needs_human and not rep.overridden:
+            return (
+                f"HOLD for a person: on step {state.current + 1}, {rep.reason} "
+                "Someone needs to check it and approve before this job goes on."
+            )
+        return None
+
+    def perception_block(self, state: JobState) -> str | None:
+        """The stored OpenCV report still blocks this step, whatever else says."""
+        rep = state.perception.get(state.current)
+        if rep is not None and rep.blocks and not rep.needs_human:
+            return (
+                f"Blocked by the photo check (OpenCV, {rep.decision}): {rep.reason} "
+                f"{rep.instruction or ''}".strip()
             )
         return None
 

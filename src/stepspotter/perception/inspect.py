@@ -174,8 +174,14 @@ def inspect_full(
     earlier: Sequence[Earlier] = (),
     step_id: int | None = None,
     blur_faces: bool = True,
+    avoid_approved: bool = False,
 ) -> tuple[PerceptionReport, Detail]:
-    """Run the whole policy (see the module docstring). Returns (report, render detail)."""
+    """Run the whole policy (see the module docstring). Returns (report, render detail).
+
+    ``avoid_approved``: a person has already looked at a change in this step's
+    do-not-touch zone and said to go on, so that change is reported but no longer stops
+    the run (it would otherwise stop it again on every photo).
+    """
     t0 = time.perf_counter()
     timings: dict[str, float] = {}
     detail = Detail(zones=as_zones(zones))
@@ -322,7 +328,7 @@ def inspect_full(
 
     if ch.status == "measured":
         avoid_big = any(r.changed_frac >= T.AVOID_LARGE for r in ch.avoid)
-        if ch.avoid_touched and (not ch.act_changed or avoid_big):
+        if ch.avoid_touched and (not ch.act_changed or avoid_big) and not avoid_approved:
             worst = max(ch.avoid, key=lambda r: r.changed_frac)
             return done(_report(
                 "touched_avoid", "change_in_avoid",
@@ -355,6 +361,7 @@ def inspect_evidence(
     earlier: Sequence[Earlier] = (),
     step_id: int | None = None,
     blur_faces: bool = True,
+    avoid_approved: bool = False,
 ) -> PerceptionReport:
     """The report only. See the module docstring for the policy it applies."""
     rep, _detail = inspect_full(
@@ -365,6 +372,7 @@ def inspect_evidence(
         earlier=earlier,
         step_id=step_id,
         blur_faces=blur_faces,
+        avoid_approved=avoid_approved,
     )
     return rep
 
@@ -455,3 +463,29 @@ def _ok_reason(s: SceneMatch, c: ChangeReport, r: ReplayReport) -> str:
     if r.compared:
         bits.append(f"Not a repeat of {r.compared} earlier photo(s).")
     return " ".join(bits)
+
+
+def zone_crop_jpeg(rep: PerceptionReport, detail: Detail, max_px: int = 512) -> bytes | None:
+    """This photo, warped onto the reference and cropped around the work zone, as JPEG.
+
+    Only when the scene matched and a work zone exists — otherwise there is nothing
+    lined up to crop. Handed to the model as labelled context, never as the evidence.
+    """
+    if detail.warped is None or detail.valid is None or rep.scene is None or rep.scene.status != "matched":
+        return None
+    work = _work_zone(detail.zones)
+    if work is None:
+        return None
+    h, w = detail.warped.shape[:2]
+    x0, y0, x1, y1 = work[2]
+    pad_x, pad_y = 0.25 * (x1 - x0), 0.25 * (y1 - y0)
+    X0, Y0 = int(max(0.0, x0 - pad_x) * w), int(max(0.0, y0 - pad_y) * h)
+    X1, Y1 = int(min(1.0, x1 + pad_x) * w), int(min(1.0, y1 + pad_y) * h)
+    if X1 - X0 < 16 or Y1 - Y0 < 16:
+        return None
+    crop = detail.warped[Y0:Y1, X0:X1]
+    s = min(1.0, max_px / max(crop.shape[:2]))
+    if s < 1.0:
+        crop = cv2.resize(crop, None, fx=s, fy=s, interpolation=cv2.INTER_AREA)
+    ok, buf = cv2.imencode(".jpg", crop, [cv2.IMWRITE_JPEG_QUALITY, 85])
+    return buf.tobytes() if ok else None

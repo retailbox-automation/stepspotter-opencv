@@ -39,8 +39,20 @@ person reads it directly, so write it to them.
 Boxes are normalized [0,1] with (0,0) at the TOP-LEFT. Box only what you can see."""
 
 
-def verify_step(step: Step, photo_path: str, model_id: str | None = None) -> StepVerdict:
-    """Judge one photo against one step's evidence requirement."""
+def verify_step(
+    step: Step,
+    photo_path: str,
+    model_id: str | None = None,
+    context: str | None = None,
+    zone_crop: bytes | None = None,
+) -> StepVerdict:
+    """Judge one photo against one step's evidence requirement.
+
+    ``context`` is the OpenCV layer's findings on this photo (sharpness, whether it lines
+    up with the first photo, what changed where), and ``zone_crop`` this photo warped
+    onto the first photo and cropped to the work zone. Both are labelled as context:
+    the decision stays the model's, and the gate's. Neither is sent unless passed.
+    """
     jpeg, _img = load_photo(photo_path)
     prompt = (
         f"The person was asked to do step {step.id}: {step.title}\n"
@@ -50,6 +62,19 @@ def verify_step(step: Step, photo_path: str, model_id: str | None = None) -> Ste
         "clearly shows it. If the subject is not visible in this photo, answer "
         "passed=false and say so."
     )
-    verdict = ask_typed(VERIFIER_SYSTEM, prompt, StepVerdict, jpeg, model_id)
+    if context:
+        prompt += "\n\n" + context
+    extra = None
+    if zone_crop is not None:
+        extra = [
+            (
+                "Context from OpenCV: the photo above, lined up with the person's first "
+                "photo and cropped to the work zone, so you can see it closer. Judge the "
+                "photo above; this crop only shows where to look.",
+                zone_crop,
+            )
+        ]
+    verdict = ask_typed(VERIFIER_SYSTEM, prompt, StepVerdict, jpeg, model_id, extra=extra)
     verdict.step_id = step.id  # the model does not get to renumber the step it judged
+    verdict.source = "llm"
     return verdict

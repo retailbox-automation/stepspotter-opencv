@@ -5,13 +5,23 @@ Two files per job under ``data/jobs/``:
 * ``<job_id>.json``       — the JobState, rewritten on every change;
 * ``<job_id>.trace.jsonl`` — append-only, one JSON object per line: every tool call,
   every verdict, every gate refusal. Nothing that happened is only in a chat scroll.
+
+With ``STEPSPOTTER_TRACE_STDOUT=1`` the ``perception`` events and the ``limits`` rows are
+ALSO printed to stdout, one JSON object per line, for log-based metrics (CloudWatch
+metric filters read ``event``, ``decision``, ``reason_code``, ``llm_called``,
+``ms_total``, ``step_id`` off the ``perception`` line). Nothing else is mirrored — no task
+text, no chat, no plan — the caller's IP becomes a short salted hash, and file paths
+are cut to their basename. See ``stdout_line``.
 """
 
 from __future__ import annotations
 
 import datetime as _dt
+import hashlib
 import json
 import os
+import secrets
+import sys
 import uuid
 from pathlib import Path
 from typing import Any
@@ -65,6 +75,41 @@ def load(job_id: str) -> JobState:
     return JobState.model_validate_json(p.read_text())
 
 
+#: Events mirrored to stdout when STEPSPOTTER_TRACE_STDOUT=1. Everything else in a trace
+#: (task text, questions, answers, plans, verdict prose) stays in the job's own file.
+STDOUT_EVENTS = frozenset({"perception"})
+#: ...plus every row of the "limits" pseudo-job (refusals, the configured caps).
+STDOUT_JOBS = frozenset({"limits"})
+#: Row fields that hold a filesystem path: only the file name goes to stdout.
+_PATH_FIELDS = frozenset({"photo", "card", "img_match", "img_heatmap", "img_quality", "video"})
+_SALT = (os.environ.get("STEPSPOTTER_LOG_SALT") or secrets.token_hex(16)).encode()
+
+
+def _ip_tag(ip: object) -> str | None:
+    """A short salted hash of an address: the same caller groups together, nobody's IP
+    is in the log. The salt is per process unless STEPSPOTTER_LOG_SALT pins it."""
+    if not ip:
+        return None
+    return hashlib.sha256(_SALT + str(ip).encode()).hexdigest()[:10]
+
+
+def stdout_line(line: dict[str, Any]) -> dict[str, Any] | None:
+    """The stdout copy of one trace row, or None when the row must not leave the file."""
+    if line.get("event") not in STDOUT_EVENTS and line.get("job_id") not in STDOUT_JOBS:
+        return None
+    out: dict[str, Any] = {}
+    for key, value in line.items():
+        if key == "ip":
+            out["ip_tag"] = _ip_tag(value)
+        elif key in _PATH_FIELDS and isinstance(value, str) and value:
+            out[key] = os.path.basename(value)
+        elif isinstance(value, (bytes, bytearray)):
+            continue  # never photo bytes
+        else:
+            out[key] = value
+    return out
+
+
 def trace(job_id: str, event: str, **fields: Any) -> None:
     """Append one trace line. Best-effort: a broken trace must never break the repair."""
     line = {
@@ -78,6 +123,14 @@ def trace(job_id: str, event: str, **fields: Any) -> None:
             fh.write(json.dumps(line, default=str) + "\n")
     except Exception:  # noqa: BLE001 - never let logging take down the run
         pass
+    if os.environ.get("STEPSPOTTER_TRACE_STDOUT", "").strip() == "1":
+        try:
+            mirrored = stdout_line(line)
+            if mirrored is not None:
+                sys.stdout.write(json.dumps(mirrored, default=str, separators=(",", ":")) + "\n")
+                sys.stdout.flush()
+        except Exception:  # noqa: BLE001
+            pass
 
 
 def read_trace(job_id: str) -> list[dict]:

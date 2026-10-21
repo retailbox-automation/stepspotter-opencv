@@ -212,10 +212,17 @@ class JobState(BaseModel):
     llm_calls_saved: int = Field(
         default=0, description="photos refused by OpenCV before any model call, this job"
     )
+    approvals: dict[int, str] = Field(
+        default_factory=dict,
+        description="steps where a person checked a change in a do-not-touch zone and "
+        "approved going on, with what they said",
+    )
     created_at: str = Field(default_factory=_now)
     updated_at: str = Field(default_factory=_now)
 
-    @field_validator("verdicts", "card_paths", "box_sets", "perception", "perception_streak", mode="before")
+    @field_validator(
+        "verdicts", "card_paths", "box_sets", "perception", "perception_streak", "approvals", mode="before"
+    )
     @classmethod
     def _int_keys(cls, v: object) -> object:
         """JSON turns int keys into strings; turn them back on load."""

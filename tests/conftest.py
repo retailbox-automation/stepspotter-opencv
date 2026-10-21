@@ -36,6 +36,14 @@ def isolated_data(tmp_path, monkeypatch):
     """
     monkeypatch.setenv("STEPSPOTTER_DATA", str(tmp_path / "data"))
     monkeypatch.setenv("STEPSPOTTER_RESEARCH", "0")
+    # The OpenCV layer runs on every evidence photo by default (STEPSPOTTER_PERCEPTION
+    # unset = on, pinned by tests/test_perception_gate.py). The tests written before it
+    # existed submit flat single-colour JPEGs, or paths with no file behind them, as
+    # "photos" and fake the model's verdict — and a flat frame is exactly what OpenCV
+    # refuses as blank before any model is asked. Those tests are about the model path,
+    # the gate and the feed, so they run with the layer off; every test that is about the
+    # layer turns it on itself and feeds it real photos.
+    monkeypatch.setenv("STEPSPOTTER_PERCEPTION", "0")
     # The repo ships a read-only manual cache (data/manuals/) that the container image
     # copies in, and research.py reads it when the writable cache misses. A test must
     # not silently pass because the real ePX3030 answer was sitting there: point the
