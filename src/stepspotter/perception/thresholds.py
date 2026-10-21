@@ -57,6 +57,20 @@ DARK_FRAC_MAX = 0.6
 #: exposed copies (x3 +40) had 0.23-0.99; originals <= 0.007.
 BRIGHT_FRAC_MAX = 0.12
 
+#: ...and, since 21.10 (L1d), only when the photo is clipped WELL BEYOND the person's
+#: first photo of the place: near-white share at least this much above the reference's.
+#: A white scene is white in both photos. Calibrated on the CALIBRATION half of L2's set
+#: only (308 cases): every overexposed case exceeded its first photo by +0.216 to +0.966;
+#: no good photo by more than +0.063 (c34 close-up). The four good photos the absolute
+#: rule refused were one white scene (c20) whose first photo is itself 0.45 near-white:
+#: they sit within -0.18..+0.01 of it. 0.12 is about mid-way (geometric mean 0.117).
+OVEREXPOSED_MARGIN = 0.12
+
+#: With no readable first photo to compare with, only a photo more than half blown out is
+#: refused. Calibration: the brightest good photo had 0.466 (c20, a white scene); 8 of the
+#: 12 overexposed cases exceed 0.50.
+BRIGHT_FRAC_ABS_MAX = 0.50
+
 #: Grey-level standard deviation below which there is nothing in the frame (lens
 #: covered, blank wall, a flat test image). spike 21.10: originals >= 23.1.
 BLANK_STD = 8.0

@@ -107,7 +107,8 @@ STUCK_AFTER = 3
 
 #: The thresholds a report carries: the ones its decisions can depend on.
 _REPORTED = (
-    "WORK_PX", "DARK_MEAN", "DARK_FRAC_MAX", "BRIGHT_FRAC_MAX", "BLANK_STD", "SHARP_P90_MIN",
+    "WORK_PX", "DARK_MEAN", "DARK_FRAC_MAX", "BRIGHT_FRAC_MAX", "OVEREXPOSED_MARGIN", "BRIGHT_FRAC_ABS_MAX",
+    "BLANK_STD", "SHARP_P90_MIN",
     "SHARP_RATIO_MIN", "WEAK_FIT_INLIERS", "GLARE_BLOB_FRAC", "GLARE_ZONE_NEW_FRAC", "MIN_INLIERS", "MIN_INLIER_RATIO",
     "SCALE_MIN", "SCALE_MAX", "MIN_OVERLAP", "REPLAY_CORNER_SHIFT", "REPLAY_MAD",
     "REPLAY_CHANGED_FRAC", "CHANGE_DELTA", "ACT_CHANGED_MIN", "AVOID_CHANGED_MIN",
@@ -253,8 +254,16 @@ def inspect_full(
     common["privacy"] = priv
     t = lap("load", t)
 
-    # 2. quality on its own ------------------------------------------------------
-    q: QualityReport = quality.assess(ev_full, work_label)
+    # 2. quality (overexposure against the first photo, when there is one) ---------
+    ref_full_q = None
+    if reference is not None:
+        try:
+            ref_full_q = imgio.load(reference)
+        except imgio.Unreadable:
+            ref_full_q = None
+    q: QualityReport = quality.assess(
+        ev_full, work_label, quality.bright_frac(ref_full_q) if ref_full_q is not None else None
+    )
     t = lap("quality", t)
     common["quality"] = q
     if not q.ok:
@@ -264,12 +273,9 @@ def inspect_full(
     # 3. scene -------------------------------------------------------------------
     ref_w = ref_full = None
     match_rep: SceneMatch
-    if reference is not None:
-        try:
-            ref_full = imgio.load(reference)
-            ref_w = imgio.to_work(ref_full)
-        except imgio.Unreadable:
-            ref_w = ref_full = None
+    if ref_full_q is not None:
+        ref_full = ref_full_q
+        ref_w = imgio.to_work(ref_full)
     if ref_w is None:
         match_rep = SceneMatch(status="no_reference")
     else:
@@ -500,7 +506,10 @@ def _quality_reason(code: str, q: QualityReport) -> str:
     if code == "too_dark":
         return f"Too dark: mean brightness {q.mean:.0f} (needs {T.DARK_MEAN:.0f}), {q.dark_frac:.0%} near-black."
     if code == "overexposed":
-        return f"Washed out: {q.bright_frac:.0%} of the photo is near-white (max {T.BRIGHT_FRAC_MAX:.0%})."
+        return (
+            f"Washed out: {q.bright_frac:.0%} of the photo is near-white, far more than your first photo "
+            f"(the limit is {T.OVEREXPOSED_MARGIN:.0%} more than it; {T.BRIGHT_FRAC_ABS_MAX:.0%} without one)."
+        )
     if code == "blank":
         return f"Nothing in the frame: contrast {q.std:.1f} (needs {T.BLANK_STD:.0f})."
     if code == "blurry":

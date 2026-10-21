@@ -70,10 +70,30 @@ def test_every_real_photo_passes_quality(pid):
     ids=["blur", "dark", "overexposed", "small"],
 )
 def test_damage_is_named_and_comes_with_one_instruction(pid, damage, code):
-    q = quality.assess(damage(photo(pid)))
+    # judged as in a job: against the person's first photo of the place (the original)
+    q = quality.assess(damage(photo(pid)), ref_bright=quality.bright_frac(photo(pid)))
     assert not q.ok
     assert q.issues[0] == code, (pid, q.issues)
     assert q.instruction and q.instruction.count(".") <= 2  # one instruction, not a lecture
+
+
+def test_a_white_scene_is_not_overexposed_when_the_first_photo_is_just_as_white():
+    """L2's eval: a white scene (c20) was refused as washed out in every photo of it."""
+    white = synthetic.exposure(photo("02"), 2.4, 60)
+    first = quality.bright_frac(white)
+    assert first > T.BRIGHT_FRAC_MAX  # by the old absolute rule this scene is "washed out"
+    again = synthetic.perspective(white, 0.06, 5)
+    rep = inspect_evidence(again, white, zones("02"))
+    assert "overexposed" not in rep.quality.issues
+    against_normal = inspect_evidence(again, photo("02"), zones("02"))
+    assert against_normal.decision == "retake" and against_normal.reason_code == "overexposed"
+
+
+def test_without_a_first_photo_only_a_half_blown_photo_is_overexposed():
+    assert "overexposed" in quality.assess(synthetic.exposure(photo("04"), 3.0, 40)).issues
+    mild = synthetic.exposure(photo("02"), 2.4, 60)
+    assert T.BRIGHT_FRAC_MAX < quality.bright_frac(mild) < T.BRIGHT_FRAC_ABS_MAX
+    assert "overexposed" not in quality.assess(mild).issues
 
 
 def test_a_blank_frame_is_not_called_blurry():
