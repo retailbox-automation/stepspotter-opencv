@@ -1,0 +1,149 @@
+{
+ "status": "complete",
+ "rehearsal": false,
+ "started_utc": "2026-10-21T12:38:35+00:00",
+ "ended_utc": "2026-10-21T12:39:36+00:00",
+ "model": "arn:aws:bedrock:us-east-1:<account>:application-inference-profile/g67qa5czlj6i",
+ "job_id": "job-20261021-083837-ae77",
+ "bedrock_calls": 18,
+ "cap": 25,
+ "by_role": {
+  "guide": 12,
+  "planner": 1,
+  "marker": 1,
+  "verifier": 2,
+  "guide (permissive prompt)": 2
+ },
+ "input_tokens": 62251,
+ "output_tokens": 4766,
+ "usd_estimate_at_list_price": 0.2582,
+ "price_basis": "Anthropic list price for Claude Sonnet 4.6, $3 / $15 per million input / output tokens; Bedrock bills on its own price list",
+ "calls": [
+  {
+   "n": 1,
+   "role": "guide",
+   "input_tokens": 1999,
+   "output_tokens": 218,
+   "ms": 2095
+  },
+  {
+   "n": 2,
+   "role": "planner",
+   "input_tokens": 3817,
+   "output_tokens": 2041,
+   "ms": 22480
+  },
+  {
+   "n": 3,
+   "role": "guide",
+   "input_tokens": 2622,
+   "output_tokens": 116,
+   "ms": 1594
+  },
+  {
+   "n": 4,
+   "role": "marker",
+   "input_tokens": 3078,
+   "output_tokens": 314,
+   "ms": 3888
+  },
+  {
+   "n": 5,
+   "role": "guide",
+   "input_tokens": 3007,
+   "output_tokens": 185,
+   "ms": 2515
+  },
+  {
+   "n": 6,
+   "role": "guide",
+   "input_tokens": 3237,
+   "output_tokens": 127,
+   "ms": 1631
+  },
+  {
+   "n": 7,
+   "role": "guide",
+   "input_tokens": 3438,
+   "output_tokens": 78,
+   "ms": 1809
+  },
+  {
+   "n": 8,
+   "role": "guide",
+   "input_tokens": 3563,
+   "output_tokens": 121,
+   "ms": 1349
+  },
+  {
+   "n": 9,
+   "role": "guide",
+   "input_tokens": 3790,
+   "output_tokens": 152,
+   "ms": 1784
+  },
+  {
+   "n": 10,
+   "role": "verifier",
+   "input_tokens": 5030,
+   "output_tokens": 219,
+   "ms": 3532
+  },
+  {
+   "n": 11,
+   "role": "guide",
+   "input_tokens": 4017,
+   "output_tokens": 104,
+   "ms": 1894
+  },
+  {
+   "n": 12,
+   "role": "guide",
+   "input_tokens": 4174,
+   "output_tokens": 106,
+   "ms": 1388
+  },
+  {
+   "n": 13,
+   "role": "guide",
+   "input_tokens": 4353,
+   "output_tokens": 120,
+   "ms": 1666
+  },
+  {
+   "n": 14,
+   "role": "verifier",
+   "input_tokens": 3666,
+   "output_tokens": 453,
+   "ms": 5619
+  },
+  {
+   "n": 15,
+   "role": "guide",
+   "input_tokens": 4553,
+   "output_tokens": 64,
+   "ms": 1490
+  },
+  {
+   "n": 16,
+   "role": "guide",
+   "input_tokens": 4646,
+   "output_tokens": 118,
+   "ms": 2602
+  },
+  {
+   "n": 17,
+   "role": "guide (permissive prompt)",
+   "input_tokens": 1544,
+   "output_tokens": 85,
+   "ms": 1092
+  },
+  {
+   "n": 18,
+   "role": "guide (permissive prompt)",
+   "input_tokens": 1717,
+   "output_tokens": 145,
+   "ms": 1850
+  }
+ ]
+}
