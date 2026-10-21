@@ -1,0 +1,74 @@
+{
+  "_about": "The six real photos this repo ships, their scene, and work / do-not-touch zones placed BY HAND on 2026-10-21 (lane CT2010-OCV1 L1) by looking at each photo on a 10% grid. Not model output. Boxes are normalised [x0, y0, x1, y1], origin top-left, same convention as stepspotter.models.Box. Used by tests/test_perception*.py and eval/build_set.py.",
+  "_rights": "Photos of Mikhail Oskola's own house, taken by him; published in the public StepSpotter repo with his permission on 2026-09-09. No people in frame except a hand in 05 and 06.",
+  "_split": "Eval split is by SCENE, never by case: calibration = scene 'panel' (01, 02, 03); test = scenes 'office-jack' and 'dining-node' (04, 05, 06). Variants of one photo never land in both halves, and no case mixes photos from both halves.",
+  "photos": {
+    "01": {
+      "file": "src/stepspotter/web/demo_photos/01-panel-overview.jpg",
+      "name": "01-panel-overview",
+      "scene": "panel",
+      "what": "the structured-wiring panel from across the room, door off",
+      "zones": [
+        {"label": "splitter and telecom module", "kind": "act", "box": [0.12, 0.30, 0.48, 0.52]},
+        {"label": "mounting bracket", "kind": "avoid", "box": [0.80, 0.14, 0.99, 0.58]}
+      ],
+      "step": {"title": "Confirm the low-voltage panel", "action": "Open the panel and check there are only low-voltage cables in it.", "evidence_required": "the open structured-wiring panel in one wide frame, with no circuit breakers in it"}
+    },
+    "02": {
+      "file": "src/stepspotter/web/demo_photos/02-panel-inside.jpg",
+      "name": "02-panel-inside",
+      "scene": "panel",
+      "what": "inside the same panel, closer: coax splitter, telecom module, cables",
+      "zones": [
+        {"label": "coax splitter", "kind": "act", "box": [0.60, 0.36, 0.90, 0.56]},
+        {"label": "telecom module", "kind": "avoid", "box": [0.14, 0.33, 0.52, 0.62]}
+      ],
+      "step": {"title": "Find the coax splitter", "action": "Look inside the panel for the silver coax splitter.", "evidence_required": "the inside of the panel with the silver coax splitter and its cables visible"}
+    },
+    "03": {
+      "file": "fixtures/onq-keystone-smoke/steps/03-telecom-landing.jpg",
+      "name": "03-telecom-module",
+      "scene": "panel",
+      "what": "close-up of the telecom module in the same panel, taken at a different time (cables moved)",
+      "zones": [
+        {"label": "punch-down ports", "kind": "act", "box": [0.12, 0.42, 0.72, 0.62]},
+        {"label": "coax splitter", "kind": "avoid", "box": [0.10, 0.24, 0.55, 0.38]}
+      ],
+      "step": {"title": "Confirm the run lands at the module", "action": "Check the cable is punched down into one of the module's numbered ports.", "evidence_required": "a close-up of the telecom module with wire pairs punched into a numbered port block"}
+    },
+    "04": {
+      "file": "src/stepspotter/web/demo_photos/04-office-jack-front.jpg",
+      "name": "04-office-jack-front",
+      "scene": "office-jack",
+      "what": "a yellow keystone jack in a wall plate, straight on",
+      "zones": [
+        {"label": "keystone jack", "kind": "act", "box": [0.22, 0.38, 0.80, 0.80]},
+        {"label": "wall beside the plate", "kind": "avoid", "box": [0.82, 0.25, 0.99, 0.70]}
+      ],
+      "step": {"title": "Snap the jack into the plate", "action": "Push the keystone jack into the wall plate until it clicks.", "evidence_required": "the keystone jack seated flush in the wall plate, seen from the front"}
+    },
+    "05": {
+      "file": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+      "name": "05-office-jack-open",
+      "scene": "office-jack",
+      "what": "the same wall box opened, a hand holding the keystone jack out with wire pairs laid in",
+      "zones": [
+        {"label": "keystone jack", "kind": "act", "box": [0.30, 0.62, 0.55, 0.95]},
+        {"label": "wall box wiring", "kind": "avoid", "box": [0.45, 0.16, 0.85, 0.52]}
+      ],
+      "step": {"title": "Lay the pairs into the jack", "action": "Lay the coloured wire pairs into the slots on the keystone jack.", "evidence_required": "the keystone jack held out of the open wall box with the coloured pairs laid into it"}
+    },
+    "06": {
+      "file": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+      "name": "06-dining-node-white-cable",
+      "scene": "dining-node",
+      "what": "a wall node by the router: a white cable from the wall into a white module, a hand holding it",
+      "zones": [
+        {"label": "white module", "kind": "act", "box": [0.48, 0.48, 0.90, 0.72]},
+        {"label": "router", "kind": "avoid", "box": [0.10, 0.80, 0.60, 0.99]}
+      ],
+      "step": {"title": "Seat the cable in the module", "action": "Push the white cable into the white module by the router.", "evidence_required": "the white cable plugged into the white module next to the router"}
+    }
+  },
+  "split": {"calibration": ["panel"], "test": ["office-jack", "dining-node"]}
+}
