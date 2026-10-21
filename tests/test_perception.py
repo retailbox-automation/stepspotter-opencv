@@ -406,3 +406,19 @@ def test_the_generators_are_deterministic():
     a = synthetic.perspective(synthetic.sensor_noise(photo("03"), 4, 1), 0.1, 2)
     b = synthetic.perspective(synthetic.sensor_noise(photo("03"), 4, 1), 0.1, 2)
     assert np.array_equal(a, b)
+
+
+@pytest.mark.skipif(
+    __import__("stepspotter.perception.privacy", fromlist=["model_path"]).model_path() is None,
+    reason="YuNet is not installed (tools/fetch_models.sh); faces are reported unchecked instead",
+)
+@pytest.mark.parametrize("pid", IDS)
+def test_with_the_detector_installed_the_six_photos_have_no_faces_to_blur(pid):
+    """Runs only where the model file is present. None of the six photos shows a face
+    (two show a hand), so the detector must find none and leave the pixels alone. A
+    positive test needs a photo of a face we have the right to use; the repo has none."""
+    from stepspotter.perception import privacy
+
+    out, rep = privacy.blur_faces(photo(pid))
+    assert rep.faces_checked is True and rep.faces_blurred == 0, (pid, rep)
+    assert np.array_equal(out, photo(pid))
