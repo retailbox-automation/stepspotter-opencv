@@ -19,6 +19,59 @@ There is one instance (`MinSize = MaxSize = 1`) on purpose. Job state lives on t
 
 To check which caps the running image actually enforces, without shell access: `GET /api/jobs/limits/trace`. Its `configured` row lists the caps and today's counts. Refusals appear there too.
 
+## Budget read-back (live deployment)
+
+Read with `aws budgets describe-budget`, `describe-notifications-for-budget` and `describe-subscribers-for-notification` at 2026-10-21T11:32:04Z, right after phase 1 and before the service existed. The cost allocation tag `project` was Active (activated 2026-10-21T11:28:32Z).
+
+```json
+{
+    "BudgetName": "stepspotter-opencv",
+    "BudgetLimit": {
+        "Amount": "15.0",
+        "Unit": "USD"
+    },
+    "TimeUnit": "MONTHLY",
+    "BudgetType": "COST",
+    "CostFilters": {
+        "TagKeyValue": [
+            "user:project$stepspotter-opencv"
+        ]
+    },
+    "CostTypes": {
+        "IncludeTax": true,
+        "IncludeSubscription": true,
+        "UseBlended": false,
+        "IncludeRefund": false,
+        "IncludeCredit": false,
+        "IncludeUpfront": true,
+        "IncludeRecurring": true,
+        "IncludeOtherSubscription": true,
+        "IncludeSupport": false,
+        "IncludeDiscount": true,
+        "UseAmortized": false
+    },
+    "FilterExpression": null
+}
+{
+    "Notifications": [
+        {
+            "NotificationType": "ACTUAL",
+            "ComparisonOperator": "GREATER_THAN",
+            "Threshold": 80.0,
+            "NotificationState": "OK"
+        }
+    ]
+}
+{
+    "Subscribers": [
+        {
+            "SubscriptionType": "EMAIL",
+            "Address": "admin@retailbox-automation.com"
+        }
+    ]
+}
+```
+
 ## Where to look
 
 | Question | Place |
