@@ -297,16 +297,71 @@ def test_the_index_we_ship_is_honest_about_every_url():
         assert entry["what"] and entry["host"], key
 
 
-def test_every_baked_entry_is_loadable_and_grounds_a_plan():
-    """A baked file with no excerpt would ship a demo that silently is not grounded."""
+def test_every_bundled_entry_is_link_only_and_grounds_a_plan_from_fetched_pages(tmp_path):
+    """The repo ships links, never manual text — and a link still grounds a plan.
+
+    Every bundled entry must load, point at the maker's own PDF with page numbers, and
+    carry NO excerpt (the licence of the manuals is not ours to publish). Given the page
+    text by an injected fetch (offline, as the runtime would get it from the PDF), the
+    same entry becomes usable and the Planner prompt carries the pages with their markers.
+    """
+    from stepspotter import planner
+
     baked = sorted(p for p in REPO_INDEX.parent.glob("*.json") if p.name != research.INDEX_NAME)
-    assert baked, "no manual is baked into the image"
+    assert baked, "no manual is bundled with the image"
     for path in baked:
-        res = research.Research.model_validate_json(path.read_text())
-        assert res.status == "found" and res.usable, path.name
-        assert res.manual_url and res.manual_pages, path.name
+        raw = json.loads(path.read_text())
+        res = research.Research.model_validate(raw)
+        assert res.status == "found", path.name
+        assert res.manual_url and res.manual_url.startswith("https://"), path.name
+        assert res.manual_pages, path.name
+        assert res.excerpt == "" and not res.usable, f"{path.name} carries manual text"
         assert res.manual_path is None, f"{path.name} points at a PDF that is not shipped"
         assert path.name == f"{slug(res.product)}.json"
+        # nothing else in the file is long enough to be copied prose either
+        long = [k for k, v in raw.items() if isinstance(v, str) and len(v) > 400]
+        assert not long, (path.name, long)
+
+        asked: list[tuple[str, list[int]]] = []
+
+        def fetch_fn(url: str, pages: list[int]) -> dict[int, str]:
+            asked.append((url, list(pages)))
+            return {p: f"ASSEMBLY\nstand-in text for page {p}" for p in pages}
+
+        grounded = research.hydrate(res, fetch_fn=fetch_fn)
+        assert asked == [(res.manual_url, res.manual_pages)], path.name
+        assert grounded.usable, path.name
+        block = planner.manual_block(grounded)
+        for p in res.manual_pages:
+            assert f"[p.{p}]" in block, (path.name, p)
+        assert "page text: from an injected page fetch" in grounded.trail[-1]
+
+
+def test_a_manual_that_cannot_be_fetched_is_found_but_not_grounded():
+    res = research.Research(product="Westinghouse ePX3030", status="found", manual_url=MANUAL_PDF, manual_pages=[10])
+
+    def broken(url, pages):
+        raise OSError("no network")
+
+    out = research.hydrate(res, fetch_fn=broken)
+    assert out.status == "found" and not out.usable
+    assert "page text unavailable" in out.note
+
+
+def test_a_lookup_never_writes_manual_text_into_the_cache_entry(bundled, tmp_path, monkeypatch):
+    """In a source checkout the cache entry IS a tracked file: it gets the link, the
+    gitignored page cache gets the words, and the next run is still offline."""
+    monkeypatch.setattr(research, "read_pdf_pages", lambda path: _pages())
+    download, _ = fake_download(tmp_path)
+    found = research_product(TASK, search_fn=lambda q: [Hit(title="manual", url=MANUAL_PDF)], download_fn=download)
+    assert found.usable
+    entry = json.loads(research.cache_path("Westinghouse ePX3030").read_text())
+    assert entry["excerpt"] == "" and entry["manual_url"] == MANUAL_PDF
+    pages = research.page_text_path("Westinghouse ePX3030")
+    assert pages.parent.name == research.PAGES_DIR and "ASSEMBLY" in pages.read_text()
+    research._PAGE_TEXT.clear()  # a new process: only the disk cache is left
+    again = research_product(TASK, search_fn=exploding_search, download_fn=exploding_search)
+    assert again.usable and "the page cache" in again.trail[-1]
 
 
 # -- the source has to reach the screen, not just the object ------------------------

@@ -1,17 +1,17 @@
-"""Bake one model's manual into the cache that ships inside the container image.
+"""Bake one model's manual LINK into the cache that ships inside the container image.
 
     python tools/bake_manual_cache.py "Westinghouse ePX3030" \
         https://cdn.westinghouseoutdoorpower.com/owners_manuals/ePX3030_manual_web.pdf
 
-App Runner's filesystem is ephemeral: a lookup written on one request is gone by the
-next container, so every judge's first run would go out to a search engine — and on
-2026-09-11 DuckDuckGo answered this machine with HTTP 202 for every query. The answer
-is to ship the answer. This writes ``data/manuals/<slug>.json`` with the assembly
-excerpt, the page numbers and the manufacturer's URL, and deliberately does NOT keep
-the PDF: the excerpt is what the planner reads, and an 11 MB binary does not belong in
-a public repo. ``manual_path`` is therefore null in a baked entry, and the note says so.
+App Runner's filesystem is ephemeral, and a search engine is a moving part, so the image
+carries the answer to "where is this model's manual": the manufacturer's URL and the
+pages that matter. It does NOT carry the manual's words — this repository is public and
+the text is the manufacturer's. At runtime ``research.hydrate`` fetches the PDF from that
+URL and reads the listed pages into a gitignored page cache. This tool downloads the PDF
+once only to find those page numbers, then deletes it; nothing but the link and the
+page list is written.
 
-Run it from a checkout with the network up; the image then needs neither.
+Run it from a checkout with the network up.
 """
 
 from __future__ import annotations
@@ -42,13 +42,13 @@ def bake(product: str, url: str, out_dir: Path) -> int:
         product=product,
         status="found",
         manual_url=url,
-        manual_path=None,  # the excerpt travels; the 11 MB PDF does not
+        manual_path=None,  # neither the PDF nor its text travels with the image
         manual_pages=excerpt.pages,
-        excerpt=excerpt.text,
+        excerpt="",  # never: the manual's words are the manufacturer's, fetched at runtime
         source="index",
         trail=[f"baked from {url} by tools/bake_manual_cache.py"],
         note=excerpt.note
-        or "cached excerpt only — the PDF itself is not shipped, open manual_url for it",
+        or "link and page numbers only; the page text is fetched from manual_url at runtime",
     )
     out_dir.mkdir(parents=True, exist_ok=True)
     dest = out_dir / f"{research.slug(product)}.json"
@@ -58,7 +58,7 @@ def bake(product: str, url: str, out_dir: Path) -> int:
     Path(pdf).unlink(missing_ok=True)
     if scratch.is_dir() and not any(scratch.iterdir()):
         scratch.rmdir()
-    print(f"  {len(pages)} pages read, pages {excerpt.pages} kept, {len(excerpt.text)} chars")
+    print(f"  {len(pages)} pages read; pages {excerpt.pages} listed (no text written)")
     print(f"  wrote {dest}")
     return 0
 

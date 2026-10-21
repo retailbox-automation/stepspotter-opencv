@@ -11,6 +11,13 @@ no manual is still a repair. Three seams are injectable (``search_fn``,
 ``download_fn``, ``fetch_fn``) so the tests run offline, and the whole module can be
 switched off with ``STEPSPOTTER_RESEARCH=0`` — which returns before any socket opens.
 
+No manual text is ever stored in a tracked file. The cache entries (``<slug>.json``)
+are link-only: the manufacturer's URL and the page numbers. When a plan needs the words,
+``hydrate`` gets them for this run — from memory, from a page-text cache that is
+gitignored and kept out of the image (``data/manuals/_pages/``), or by fetching the
+official PDF and reading the listed pages. The repository therefore ships nothing copied
+from a manual; the image fetches it from the maker at runtime.
+
 No API key anywhere, and five places to look, in this order: the cache written by an
 earlier run, the cache baked into the container image, a hand-checked index of models
 we film with, DuckDuckGo, and Brave. Whichever one answers is written into the job's
@@ -788,8 +795,108 @@ def _store_cached(res: Research) -> None:
             if previous is not None and previous.status == "found":
                 return
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(res.model_dump_json(indent=2))
+        # Link-only, always: in a source checkout this IS a tracked file, and the
+        # repository ships no text copied from a manual. The words go to the gitignored
+        # page cache instead, where hydrate() finds them next time.
+        if res.excerpt.strip():
+            _remember_pages(res, list(res.manual_pages), res.excerpt)
+            _PAGE_TEXT[_mem_key(res.manual_url or "", list(res.manual_pages))] = res.excerpt
+        p.write_text(res.model_copy(update={"excerpt": "", "manual_path": None}).model_dump_json(indent=2))
     except Exception:  # noqa: BLE001
+        pass
+
+
+#: Gitignored (``data/manuals/*`` ignores everything but the listed entries) and kept out
+#: of the image (.dockerignore): the page text fetched from a manual at runtime, and the
+#: PDF it came from while it is being read.
+PAGES_DIR = "_pages"
+PDF_DIR = "_pdf"
+
+#: Page text already fetched in this process, keyed by (data root, url, pages) — the
+#: data root too, so two runtimes (or two tests) never share each other's answers.
+_PAGE_TEXT: dict[tuple[str, str, tuple[int, ...]], str] = {}
+
+
+def _mem_key(url: str, pages: list[int]) -> tuple[str, str, tuple[int, ...]]:
+    return (str(writable_manuals_dir()), url, tuple(pages))
+
+
+def page_text_path(product: str) -> Path:
+    return writable_manuals_dir() / PAGES_DIR / f"{slug(product)}.json"
+
+
+def _pages_from_pdf(url: str, pages: list[int], download_fn: Callable[..., str | None] | None) -> dict[int, str]:
+    """Download the official PDF, read the listed pages, delete the PDF."""
+    if download_fn is not None:
+        path = download_fn(url)
+    else:
+        path = download(url, dest_dir=str(writable_manuals_dir() / PDF_DIR))
+    if not path:
+        return {}
+    try:
+        text = read_pdf_pages(path)
+    finally:
+        if download_fn is None:
+            Path(path).unlink(missing_ok=True)
+    return {p: text[p - 1] for p in pages if 0 < p <= len(text)}
+
+
+def hydrate(
+    res: Research,
+    fetch_fn: Callable[[str, list[int]], dict[int, str]] | None = None,
+    download_fn: Callable[..., str | None] | None = None,
+) -> Research:
+    """Give a link-only entry the text of its listed pages, for this run only.
+
+    ``fetch_fn(url, pages) -> {page: text}`` is the injectable seam (tests pass page text
+    straight in; production leaves it None and the official PDF is fetched). Order:
+    an excerpt already present wins; then memory; then the gitignored page cache; then
+    the network. A failure leaves the entry ``found`` but not ``usable``, with a note,
+    so the trace says the plan was not grounded and why.
+    """
+    if res.status != "found" or res.excerpt.strip() or not res.manual_url or not res.manual_pages:
+        return res
+    pages = list(res.manual_pages)
+    key = _mem_key(res.manual_url, pages)
+    text, how = _PAGE_TEXT.get(key, ""), "memory"
+    if not text:
+        try:
+            cached = json.loads(page_text_path(res.product).read_text())
+            if cached.get("url") == res.manual_url and cached.get("pages") == pages:
+                text, how = cached.get("text") or "", "the page cache"
+        except (OSError, ValueError):
+            text = ""
+    if not text:
+        how = "an injected page fetch" if fetch_fn is not None else "the manufacturer's PDF, fetched now"
+        try:
+            got = fetch_fn(res.manual_url, pages) if fetch_fn is not None else _pages_from_pdf(
+                res.manual_url, pages, download_fn
+            )
+        except Exception as exc:  # noqa: BLE001 - an unreachable manual is not a broken repair
+            got = {}
+            how = f"{how} (failed: {type(exc).__name__})"
+        parts = [f"[p.{p}]\n{(got.get(p) or '').strip()}" for p in pages if (got.get(p) or "").strip()]
+        text = "\n\n".join(parts)[:MAX_EXCERPT_CHARS]
+        if text:
+            _remember_pages(res, pages, text)
+    if not text:
+        return res.model_copy(
+            update={
+                "note": (res.note + " " if res.note else "")
+                + f"page text unavailable ({how}); the plan is not grounded on the manual this time",
+                "trail": [*res.trail, f"page text: none from {how}"],
+            }
+        )
+    _PAGE_TEXT[key] = text
+    return res.model_copy(update={"excerpt": text, "trail": [*res.trail, f"page text: from {how}"]})
+
+
+def _remember_pages(res: Research, pages: list[int], text: str) -> None:
+    try:
+        p = page_text_path(res.product)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps({"url": res.manual_url, "pages": pages, "text": text}))
+    except OSError:
         pass
 
 
@@ -799,6 +906,7 @@ def research_product(
     download_fn: Callable[[str], str | None] | None = None,
     fetch_fn: Callable[..., tuple[int, str]] | None = None,
     use_cache: bool = True,
+    pages_fn: Callable[[str, list[int]], dict[int, str]] | None = None,
 ) -> Research:
     """Everything the planner gets to know about the product, or an honest empty answer.
 
@@ -824,7 +932,7 @@ def research_product(
     if use_cache:
         cached, _where = _load_cached(product)
         if cached is not None:
-            return cached
+            return hydrate(cached, fetch_fn=pages_fn, download_fn=download_fn)
         trail.append("cache: nothing cached for this model yet")
     else:
         trail.append("cache: skipped (--fresh)")

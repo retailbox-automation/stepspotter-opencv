@@ -14,12 +14,11 @@ spikes/out/
 data/*
 !data/demo/
 !data/demo/**
-# The manual cache baked into the container image. Only the hand-checked excerpts
-# listed below are source and travel with the repo. Everything else in this directory
-# is ignored on purpose: a runtime lookup writes its own <model>.json here carrying
-# manual_path — the absolute path of the PDF on whoever's machine ran it — and this
-# repo is public. Adding a model with tools/bake_manual_cache.py means adding a line
-# here too, which is the moment to decide that excerpt should be published.
+# The manual cache baked into the container image. Only the hand-checked LINKS listed
+# below (URL + page numbers, no manual text) are source and travel with the repo.
+# Everything else in this directory is ignored on purpose: the page text fetched at
+# runtime (_pages/), the PDF while it is read (_pdf/), and any other lookup's entry.
+# Adding a model with tools/bake_manual_cache.py means adding a line here too.
 !data/manuals/
 data/manuals/*
 !data/manuals/index.json

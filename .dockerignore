@@ -8,6 +8,9 @@ data/**
 !data/manuals
 !data/manuals/*.json
 data/manuals/_tmp
+# runtime only: page text fetched from a manual, and the PDF while it is read
+data/manuals/_pages
+data/manuals/_pdf
 docs/
 tests/
 spike/
