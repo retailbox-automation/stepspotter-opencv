@@ -356,3 +356,22 @@ def test_submit_video_picks_the_sharp_frame_and_checks_it(job, part):
     assert "picked frame 2" in res["content"], res["content"]
     assert len(model.calls) == 1 and "video-01-01.jpg" in model.calls[0]["photo"]
     assert any(r["event"] == "keyframes" for r in store.read_trace(state.job_id))
+
+
+def test_two_looks_before_a_submit_keep_two_sets_of_pictures(job):
+    """The live run of 21.10 lost turn 2's picture: the second probe overwrote the first."""
+    _service, state, gate, tools, _model, tmp = job
+    for name, img in (("blur.jpg", synthetic.gaussian_blur(photo("02"), 4)), ("other.jpg", photo("04"))):
+        run_tool_through_gate(gate, tools, "inspect_photo", {"job_id": state.job_id, "photo_path": save(tmp, img, name)})
+    rows = perception_rows(state)
+    assert [r["mode"] for r in rows] == ["probe", "probe"]
+    assert rows[0]["img_quality"] != rows[1]["img_quality"]
+    assert all(Path(r["img_quality"]).is_file() for r in rows)
+
+
+def test_inspect_photo_without_a_job_says_nothing_was_checked(job):
+    """Live run 21.10: the agent read a bare 'No job pre-check.' as a passed safety check."""
+    _service, _state, gate, tools, model, _tmp = job
+    res = run_tool_through_gate(gate, tools, "inspect_photo", {"job_id": "pre-check", "photo_path": "x.jpg"})
+    assert "NOTHING WAS CHECKED" in res["content"] and "start_job" in res["content"]
+    assert model.calls == []

@@ -366,8 +366,16 @@ class JobService:
         )
 
     def inspect_only(self, state: JobState, photo_path: str) -> PerceptionReport:
-        """OpenCV on a photo the agent is considering. No verdict, no streak, no model."""
-        attempt = 1 + sum(1 for rec in state.evidence if rec.step == state.current)
+        """OpenCV on a photo the agent is considering. No verdict, no streak, no model.
+
+        Probes are numbered by the probes already on disk for this step, not by the
+        evidence count: two looks before one submit used to share a number, and the
+        second overwrote the first one's pictures (the recorded live run of 21.10).
+        """
+        step_no = state.current + 1
+        folder = store.cards_dir(state.job_id) / "perception"
+        taken = {f.name.rsplit("-", 1)[0] for f in folder.glob(f"step-{step_no:02d}-probe-*.jpg")} if folder.is_dir() else set()
+        attempt = len(taken) + 1
         rep, _crop = self.perceive(state, photo_path, attempt, tag="probe")
         self._trace_perception(state, rep, photo_path, attempt, mode="probe")
         return rep
@@ -665,7 +673,10 @@ def build_tools(service: JobService) -> list[Any]:
         """
         state = service.get(job_id)
         if state is None:
-            return f"No job {job_id}."
+            return (
+                f"No job {job_id}: NOTHING WAS CHECKED. inspect_photo looks at a photo sent for a "
+                "step of an existing job; start the job with start_job first."
+            )
         if state.done:
             return "This job is already finished."
         rep = service.inspect_only(state, photo_path)
