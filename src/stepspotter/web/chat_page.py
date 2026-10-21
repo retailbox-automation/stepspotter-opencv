@@ -496,7 +496,10 @@ function node(m){
       + esc(m.reason) + '</p>' + skip + '</div>';
   }
   else if(m.kind === "perception"){
-    const tone = m.needs_human ? "stop" : (m.blocks ? "bad" : (m.overridden ? "" : "ok"));
+    // Green only for "OpenCV saw nothing wrong". A photo it could not place is not a pass:
+    // it was routed to the two-photo check, so it is drawn neutral.
+    const tone = m.needs_human ? "stop" : (m.blocks ? "bad"
+               : ((m.overridden || m.route === "llm_two_image") ? "" : "ok"));
     const ms = (typeof m.ms_total === "number") ? Math.round(m.ms_total) + " ms" : "";
     const meta = m.probe
       ? (ms + (m.route === "llm_two_image" ? " · next: the model compares it with your first photo"
