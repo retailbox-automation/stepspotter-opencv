@@ -3,8 +3,8 @@
 Form: opencv26.devpost.com. Fields and their ids come from the Devpost MCP
 `get_submission_requirements` (`docs/opencv26/RULES-LIVE-2026-10-21.md` in the
 hackathon project). Placeholders in double braces are filled before Submit:
-`{{EVAL:…}}` from `docs/EVAL.md`, `{{VIDEO:url}}`, `{{FINAL:head commit}}`,
-`{{DEPLOY:…}}`. Submit is pressed by Mikhail only.
+`{{VIDEO:url}}`, `{{FINAL:head commit}}`, `{{ZIP:…}}`, `{{SCREENSHOT:…}}`; every
+evaluation number is from `docs/EVAL.md` / `eval/results/*.json` at `750d152`. Submit is pressed by Mikhail only.
 
 ## Project name
 
