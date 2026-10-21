@@ -226,6 +226,7 @@ def run(config: str, max_llm_calls: int, dry_run: bool, split: str, only: list[s
 
         usage.install()
     calls = 0
+    errors_in_row = 0  # three failed calls in a row stop the spending (credentials, quota)
     rows: list[dict[str, Any]] = []
     would_call: list[dict] = []
     for c in cases:
@@ -266,11 +267,12 @@ def run(config: str, max_llm_calls: int, dry_run: bool, split: str, only: list[s
             if dry_run:
                 would_call.append({"id": c["id"], "evidence": c["evidence"], "step": c["step"]["title"], "mode": mode})
                 llm = {"status": "dry_run", "mode": mode}
-            elif calls >= max_llm_calls:
-                llm = {"status": "skipped_cap", "mode": mode}
+            elif calls >= max_llm_calls or errors_in_row >= 3:
+                llm = {"status": "skipped_cap" if calls >= max_llm_calls else "skipped_after_errors", "mode": mode}
             else:
                 llm = _call(verify, usage, c, **call_kwargs)
                 calls += 1
+                errors_in_row = errors_in_row + 1 if llm["status"] == "error" else 0
             row["llm"] = llm
         # what the gate would do with this case under this config
         blocked: bool | None

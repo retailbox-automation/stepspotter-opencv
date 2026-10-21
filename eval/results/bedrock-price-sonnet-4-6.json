@@ -1,0 +1,35 @@
+{
+ "retrieved_at": "2026-10-21T12:34:50+00:00",
+ "how": "aws pricing get-products --region us-east-1 --service-code AmazonBedrockFoundationModels --filters Type=TERM_MATCH,Field=regionCode,Value=us-east-1 Type=TERM_MATCH,Field=model,Value=\"Claude Sonnet 4.6\"",
+ "human_page": "https://aws.amazon.com/bedrock/pricing/",
+ "prices": [
+  {
+   "usagetype": "USE1-MP:USE1_InputTokenCount_Global-Units",
+   "description": "AWS Marketplace software usage|us-east-1|Million Input Tokens Global",
+   "usd_per_1M": "3.0000000000",
+   "effectiveDate": "2026-09-01T00:00:00Z",
+   "publicationDate": "2026-10-12T08:40:08Z"
+  },
+  {
+   "usagetype": "USE1-MP:USE1_OutputTokenCount_Global-Units",
+   "description": "AWS Marketplace software usage|us-east-1|Million Response Tokens Global",
+   "usd_per_1M": "15.0000000000",
+   "effectiveDate": "2026-09-01T00:00:00Z",
+   "publicationDate": "2026-10-12T08:40:08Z"
+  },
+  {
+   "usagetype": "USE1-MP:USE1_OutputTokenCount-Units",
+   "description": "AWS Marketplace software usage|us-east-1|Million Response Tokens Regional CRIS",
+   "usd_per_1M": "16.5000000000",
+   "effectiveDate": "2026-09-01T00:00:00Z",
+   "publicationDate": "2026-10-12T08:40:08Z"
+  },
+  {
+   "usagetype": "USE1-MP:USE1_InputTokenCount-Units",
+   "description": "AWS Marketplace software usage|us-east-1|Million Input Tokens Regional CRIS",
+   "usd_per_1M": "3.3000000000",
+   "effectiveDate": "2026-09-01T00:00:00Z",
+   "publicationDate": "2026-10-12T08:40:08Z"
+  }
+ ]
+}

@@ -1,0 +1,1602 @@
+{
+ "price": {
+  "input_usd_per_1M": 3.0,
+  "output_usd_per_1M": 15.0,
+  "source": "aws pricing get-products --region us-east-1 --service-code AmazonBedrockFoundationModels --filters Type=TERM_MATCH,Field=regionCode,Value=us-east-1 Type=TERM_MATCH,Field=model,Value=\"Claude Sonnet 4.6\"",
+  "publicationDate": "2026-10-12T08:40:08Z",
+  "retrieved_at": "2026-10-21T12:34:50+00:00",
+  "human_page": "https://aws.amazon.com/bedrock/pricing/"
+ },
+ "runs": {
+  "llm": {
+   "ran_at": "2026-10-21T12:28:19+00:00",
+   "code": {
+    "eval_worktree_head": "082fabd76e7fdabc8b96b582d2618e7a0ad75642",
+    "main_head": "43c1520d22a84abd675a3e396bf606be6d4d92cb",
+    "l1_checkout_head": "43c1520d22a84abd675a3e396bf606be6d4d92cb",
+    "stepspotter_imported_from": "this checkout's src/"
+   },
+   "model_id": "Strands/Bedrock default (global.anthropic.claude-sonnet-4-6)",
+   "llm_calls_made": 54,
+   "max_llm_calls": 54,
+   "manifest_sha256": "ba6e8ddf57e2ce428d3b0d406fae8a1cfb168bc0af070c90e5f7db16707c02ff"
+  },
+  "llm2": {
+   "ran_at": "2026-10-21T12:31:56+00:00",
+   "code": {
+    "eval_worktree_head": "082fabd76e7fdabc8b96b582d2618e7a0ad75642",
+    "main_head": "c7c84e0fab9b9b99fa4971b97217feadbb215bac",
+    "l1_checkout_head": "c7c84e0fab9b9b99fa4971b97217feadbb215bac",
+    "stepspotter_imported_from": "this checkout's src/"
+   },
+   "model_id": "Strands/Bedrock default (global.anthropic.claude-sonnet-4-6)",
+   "llm_calls_made": 54,
+   "max_llm_calls": 54,
+   "manifest_sha256": "ba6e8ddf57e2ce428d3b0d406fae8a1cfb168bc0af070c90e5f7db16707c02ff"
+  },
+  "combined": {
+   "ran_at": "2026-10-21T12:33:41+00:00",
+   "code": {
+    "eval_worktree_head": "082fabd76e7fdabc8b96b582d2618e7a0ad75642",
+    "main_head": "c7c84e0fab9b9b99fa4971b97217feadbb215bac",
+    "l1_checkout_head": "c7c84e0fab9b9b99fa4971b97217feadbb215bac",
+    "stepspotter_imported_from": "this checkout's src/"
+   },
+   "model_id": "Strands/Bedrock default (global.anthropic.claude-sonnet-4-6)",
+   "llm_calls_made": 24,
+   "max_llm_calls": 42,
+   "manifest_sha256": "ba6e8ddf57e2ce428d3b0d406fae8a1cfb168bc0af070c90e5f7db16707c02ff"
+  }
+ },
+ "by_class": [
+  {
+   "class": "real_same_place",
+   "kind": "good",
+   "n": 5,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons",
+    "onq"
+   ],
+   "A": {
+    "false_blocks": 1,
+    "accepted": 4,
+    "routed": 0
+   },
+   "A'": {
+    "false_blocks": 2,
+    "accepted": 3,
+    "routed": 0
+   },
+   "B": {
+    "false_blocks": 2,
+    "accepted": 1,
+    "routed": 2
+   },
+   "C": {
+    "false_blocks": 4,
+    "accepted": 1,
+    "routed": 0
+   }
+  },
+  {
+   "class": "real_wrong_place",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "onq"
+   ],
+   "A": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "B": {
+    "caught": 0,
+    "missed": 0,
+    "routed": 2
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "good_light",
+   "kind": "good",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "A'": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "B": {
+    "false_blocks": 1,
+    "accepted": 1,
+    "routed": 0
+   },
+   "C": {
+    "false_blocks": 1,
+    "accepted": 1,
+    "routed": 0
+   }
+  },
+  {
+   "class": "real_lookalike",
+   "kind": "bad",
+   "n": 6,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 2,
+    "missed": 4,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 6,
+    "missed": 0,
+    "routed": 0
+   },
+   "B": {
+    "caught": 1,
+    "missed": 0,
+    "routed": 5
+   },
+   "C": {
+    "caught": 6,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "replay_reference",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 1,
+    "missed": 1,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "good_reshot",
+   "kind": "good",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "A'": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "B": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "C": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   }
+  },
+  {
+   "class": "no_change",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "overexposed",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "dark",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "good_closeup",
+   "kind": "good",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "false_blocks": 1,
+    "accepted": 1,
+    "routed": 0
+   },
+   "A'": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "B": {
+    "false_blocks": 1,
+    "accepted": 1,
+    "routed": 0
+   },
+   "C": {
+    "false_blocks": 2,
+    "accepted": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "good_rotate",
+   "kind": "good",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "A'": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "B": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "C": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   }
+  },
+  {
+   "class": "wrong_place_mirror",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "B": {
+    "caught": 0,
+    "missed": 1,
+    "routed": 1
+   },
+   "C": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   }
+  },
+  {
+   "class": "zone_cut",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 1,
+    "missed": 1,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 1,
+    "missed": 1,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "glare",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 1,
+    "missed": 1,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "good_act_edit",
+   "kind": "good",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "A'": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "B": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "C": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   }
+  },
+  {
+   "class": "touched_avoid",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "good_view_light",
+   "kind": "good",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "false_blocks": 1,
+    "accepted": 1,
+    "routed": 0
+   },
+   "A'": {
+    "false_blocks": 1,
+    "accepted": 1,
+    "routed": 0
+   },
+   "B": {
+    "false_blocks": 0,
+    "accepted": 2,
+    "routed": 0
+   },
+   "C": {
+    "false_blocks": 1,
+    "accepted": 1,
+    "routed": 0
+   }
+  },
+  {
+   "class": "blur_gaussian",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 1,
+    "missed": 1,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 1,
+    "missed": 1,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "real_replay_annotated",
+   "kind": "bad",
+   "n": 1,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 0,
+    "missed": 1,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 0,
+    "missed": 1,
+    "routed": 0
+   },
+   "B": {
+    "caught": 1,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 1,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "replay_exact",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 1,
+    "missed": 1,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "blur_motion",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "replay_earlier",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "test"
+   ],
+   "source": [
+    "commons"
+   ],
+   "A": {
+    "caught": 0,
+    "missed": 2,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 1,
+    "missed": 1,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "real_wrong_place_same_room",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "calibration"
+   ],
+   "source": [
+    "own-video"
+   ],
+   "A": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "B": {
+    "caught": 0,
+    "missed": 0,
+    "routed": 2
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  },
+  {
+   "class": "real_blur",
+   "kind": "bad",
+   "n": 2,
+   "split": [
+    "calibration"
+   ],
+   "source": [
+    "own-video"
+   ],
+   "A": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   },
+   "C": {
+    "caught": 2,
+    "missed": 0,
+    "routed": 0
+   }
+  }
+ ],
+ "slices": {
+  "sample (all)": {
+   "A": {
+    "caught": 15,
+    "bad": 37,
+    "false_blocks": 3,
+    "good": 17,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 23,
+    "bad": 37,
+    "false_blocks": 3,
+    "good": 17,
+    "routed": 0
+   },
+   "B": {
+    "caught": 26,
+    "bad": 37,
+    "false_blocks": 4,
+    "good": 17,
+    "routed": 12
+   },
+   "C": {
+    "caught": 35,
+    "bad": 37,
+    "false_blocks": 8,
+    "good": 17,
+    "routed": 0
+   }
+  },
+  "test half": {
+   "A": {
+    "caught": 11,
+    "bad": 33,
+    "false_blocks": 3,
+    "good": 17,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 19,
+    "bad": 33,
+    "false_blocks": 3,
+    "good": 17,
+    "routed": 0
+   },
+   "B": {
+    "caught": 24,
+    "bad": 33,
+    "false_blocks": 4,
+    "good": 17,
+    "routed": 10
+   },
+   "C": {
+    "caught": 31,
+    "bad": 33,
+    "false_blocks": 8,
+    "good": 17,
+    "routed": 0
+   }
+  },
+  "test half, real photos only": {
+   "A": {
+    "caught": 4,
+    "bad": 9,
+    "false_blocks": 1,
+    "good": 5,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 8,
+    "bad": 9,
+    "false_blocks": 2,
+    "good": 5,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "bad": 9,
+    "false_blocks": 2,
+    "good": 5,
+    "routed": 9
+   },
+   "C": {
+    "caught": 9,
+    "bad": 9,
+    "false_blocks": 4,
+    "good": 5,
+    "routed": 0
+   }
+  },
+  "test half, synthetic only": {
+   "A": {
+    "caught": 7,
+    "bad": 24,
+    "false_blocks": 2,
+    "good": 12,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 11,
+    "bad": 24,
+    "false_blocks": 1,
+    "good": 12,
+    "routed": 0
+   },
+   "B": {
+    "caught": 22,
+    "bad": 24,
+    "false_blocks": 2,
+    "good": 12,
+    "routed": 1
+   },
+   "C": {
+    "caught": 22,
+    "bad": 24,
+    "false_blocks": 4,
+    "good": 12,
+    "routed": 0
+   }
+  },
+  "own video (calibration half)": {
+   "A": {
+    "caught": 4,
+    "bad": 4,
+    "false_blocks": 0,
+    "good": 0,
+    "routed": 0
+   },
+   "A'": {
+    "caught": 4,
+    "bad": 4,
+    "false_blocks": 0,
+    "good": 0,
+    "routed": 0
+   },
+   "B": {
+    "caught": 2,
+    "bad": 4,
+    "false_blocks": 0,
+    "good": 0,
+    "routed": 2
+   },
+   "C": {
+    "caught": 4,
+    "bad": 4,
+    "false_blocks": 0,
+    "good": 0,
+    "routed": 0
+   }
+  }
+ },
+ "perf": {
+  "A": {
+   "checks": 54,
+   "model_calls": 54,
+   "model_calls_avoided": 0,
+   "two_image_calls": 0,
+   "input_tokens": 173387,
+   "output_tokens": 11165,
+   "usd": 0.6876,
+   "usd_per_100_checks": 1.273,
+   "e2e_ms_p50": 2988.8,
+   "e2e_ms_p95": 3738.4,
+   "model_ms_p50": 2988.8,
+   "model_ms_p95": 3738.4
+  },
+  "A'": {
+   "checks": 54,
+   "model_calls": 54,
+   "model_calls_avoided": 0,
+   "two_image_calls": 54,
+   "input_tokens": 258473,
+   "output_tokens": 13216,
+   "usd": 0.9737,
+   "usd_per_100_checks": 1.803,
+   "e2e_ms_p50": 3688.6,
+   "e2e_ms_p95": 5026.6,
+   "model_ms_p50": 3688.6,
+   "model_ms_p95": 5026.6
+  },
+  "C": {
+   "checks": 54,
+   "model_calls": 24,
+   "model_calls_avoided": 30,
+   "two_image_calls": 12,
+   "input_tokens": 98585,
+   "output_tokens": 5835,
+   "usd": 0.3833,
+   "usd_per_100_checks": 0.71,
+   "e2e_ms_p50": 95.0,
+   "e2e_ms_p95": 5158.9,
+   "model_ms_p50": 3802.6,
+   "model_ms_p95": 5445.4
+  },
+  "B": {
+   "checks": 54,
+   "model_calls": 0,
+   "usd": 0.0,
+   "usd_per_100_checks": 0.0,
+   "e2e_ms_p50": 59.7,
+   "e2e_ms_p95": 153.5
+  }
+ },
+ "per_mode": {
+  "single": {
+   "calls": 66,
+   "in": 213800,
+   "out": 13953,
+   "usd": 0.8507,
+   "usd_per_call": 0.01289
+  },
+  "two_image": {
+   "calls": 66,
+   "in": 316645,
+   "out": 16263,
+   "usd": 1.1939,
+   "usd_per_call": 0.01809
+  }
+ },
+ "total_model_calls": 132,
+ "total_usd": 2.0446,
+ "c_caught_by": {
+  "model": 9,
+  "opencv, expected reason": 19,
+  "opencv, other reason": 7
+ },
+ "c_differs_from_a": [
+  {
+   "id": "c03-good_light",
+   "class": "good_light",
+   "kind": "good",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "glare",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 43.99
+   },
+   "A": "model passed=True: The network cabinet is open and clearly shows patch panel units in the upper section with multiple cables landed into their ports.",
+   "A_prime": "model passed=True, same_place=True: The open network cabinet is clearly visible with patch panel ports and their cabled connections showing in the upper section of the rack.",
+   "C": "OpenCV retake (glare), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": false,
+   "C_reason": "opencv, other reason (glare)",
+   "figure": "eval/results/figures/c-vs-a-c03-good_light.jpg"
+  },
+  {
+   "id": "c03-real_lookalike-c05",
+   "class": "real_lookalike",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "place_unconfirmed",
+    "reason_code": "place_unconfirmed",
+    "route": "llm_two_image",
+    "inliers": 10,
+    "scene_status": "not_matched",
+    "change": null,
+    "ms_total": 81.75
+   },
+   "A": "model passed=True: The open network cabinet is clearly visible with multiple patch panel rows fully populated with RJ45 ports and numerous red, yellow, and green cables landed across them.",
+   "A_prime": "model passed=False, same_place=False: The second photo shows a different network cabinet filled entirely with patch panels and coloured patch cables, but it is clearly a different cabinet and location from the first photo (different enclosure style, different contents, brick wall background vs. plain wall), so this does not confirm the correct cabinet was opened.",
+   "C": "OpenCV place_unconfirmed -> model passed=False, same_place=False: The second photo shows a patch panel cabinet clearly, but it is a completely different cabinet in a different location (white open-frame rack with brick wall background, vs. the black enclosed Legrand cabinet in the first photo), so this is not the same place.",
+   "A_prime_agrees_with_C": true,
+   "C_right": true,
+   "C_reason": "model",
+   "figure": "eval/results/figures/c-vs-a-c03-real_lookalike-c05.jpg"
+  },
+  {
+   "id": "c03-replay_reference",
+   "class": "replay_reference",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "replay",
+    "reason_code": "replay",
+    "route": "opencv_block",
+    "inliers": 1651,
+    "scene_status": "matched",
+    "change": null,
+    "ms_total": 154.93
+   },
+   "A": "model passed=True: The network cabinet is open and clearly shows patch panel units in the upper portion of the rack with multiple cables landing into their ports.",
+   "A_prime": "model passed=True, same_place=True: The second photo shows the same open network cabinet with patch panel ports and their cables clearly visible in the upper section of the rack.",
+   "C": "OpenCV replay (replay), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, expected reason",
+   "figure": "eval/results/figures/c-vs-a-c03-replay_reference.jpg"
+  },
+  {
+   "id": "c05-no_change",
+   "class": "no_change",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "no_change",
+    "reason_code": "no_change_in_zone",
+    "route": "opencv_block",
+    "inliers": 1123,
+    "scene_status": "matched",
+    "change": "measured",
+    "ms_total": 84.06
+   },
+   "A": "model passed=True: The open network cabinet is clearly visible with multiple patch panel rows and their red, yellow, and green cables all in plain view.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same open network cabinet with multiple patch panel rows and their cables (red, yellow, green) fully visible.",
+   "C": "OpenCV no_change (no_change_in_zone), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, expected reason",
+   "figure": "eval/results/figures/c-vs-a-c05-no_change.jpg"
+  },
+  {
+   "id": "c05-overexposed",
+   "class": "overexposed",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "overexposed",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 32.4
+   },
+   "A": "model passed=True: The open network cabinet is clearly visible with multiple patch panel rows and their associated red and yellow cables landing on the ports.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same open network cabinet with multiple patch panel rows and their coloured cables visible, confirming the patch panel has been found.",
+   "C": "OpenCV retake (overexposed), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, expected reason",
+   "figure": "eval/results/figures/c-vs-a-c05-overexposed.jpg"
+  },
+  {
+   "id": "c05-real_lookalike-c03",
+   "class": "real_lookalike",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "place_unconfirmed",
+    "reason_code": "place_unconfirmed",
+    "route": "llm_two_image",
+    "inliers": 15,
+    "scene_status": "not_matched",
+    "change": null,
+    "ms_total": 93.1
+   },
+   "A": "model passed=True: The network cabinet is open and clearly shows patch panel units with multiple ports and cables landing on them in the upper section of the rack.",
+   "A_prime": "model passed=False, same_place=False: The second photo shows a different network cabinet (dark/black rack with servers and active equipment) — not the same white open-door patch panel cabinet from the first photo, so this is a different location and the correct patch panel is not confirmed.",
+   "C": "OpenCV place_unconfirmed -> model passed=False, same_place=False: The second photo shows a different network cabinet (dark Legrand rack with servers and active equipment) — not the same white open-frame patch panel cabinet shown in the first photo, so this does not confirm the correct cabinet was found.",
+   "A_prime_agrees_with_C": true,
+   "C_right": true,
+   "C_reason": "model",
+   "figure": "eval/results/figures/c-vs-a-c05-real_lookalike-c03.jpg"
+  },
+  {
+   "id": "c07-good_closeup",
+   "class": "good_closeup",
+   "kind": "good",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "glare",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 9.27
+   },
+   "A": "model passed=True: The photo clearly shows a Panduit patch panel with numbered ports and cables plugged in, confirming the patch panel has been located and is visible.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same Panduit patch panel with numbered ports and their cable connectors visible, confirming the patch panel has been located.",
+   "C": "OpenCV retake (glare), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": false,
+   "C_reason": "opencv, other reason (glare)",
+   "figure": "eval/results/figures/c-vs-a-c07-good_closeup.jpg"
+  },
+  {
+   "id": "c08-zone_cut",
+   "class": "zone_cut",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "zone_out_of_frame",
+    "route": "opencv_block",
+    "inliers": 612,
+    "scene_status": "matched",
+    "change": null,
+    "ms_total": 38.68
+   },
+   "A": "model passed=True: The open network cabinet is clearly visible with multiple patch panels (Ortronics and Systimax brands) showing labeled ports and orange patch cables landed in them.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same network cabinet with the same patch panels (Ortronics/Panduit rows with orange cables and the Systimax 1100PSE panel below), confirming the patch panel and its landed cables are visible.",
+   "C": "OpenCV retake (zone_out_of_frame), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, expected reason",
+   "figure": "eval/results/figures/c-vs-a-c08-zone_cut.jpg"
+  },
+  {
+   "id": "c09-glare",
+   "class": "glare",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "glare",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 34.86
+   },
+   "A": "model passed=True: The open network cabinet is clearly visible with multiple patch panels populated with ports and cables (orange fiber and yellow/other patch cables) landing on them.",
+   "A_prime": "model passed=False, same_place=True: The second photo is the same cabinet but a large bright glare (flash reflection) obscures several of the patch panel rows in the upper-right section, making the ports and their cables in that area not clearly visible.",
+   "C": "OpenCV retake (glare), no model call",
+   "A_prime_agrees_with_C": true,
+   "C_right": true,
+   "C_reason": "opencv, expected reason",
+   "figure": "eval/results/figures/c-vs-a-c09-glare.jpg"
+  },
+  {
+   "id": "c09-overexposed",
+   "class": "overexposed",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "overexposed",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 36.14
+   },
+   "A": "model passed=True: The open network cabinet is clearly visible with multiple patch panels populated with cables (orange, yellow, and black) in both rack sections.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same open network cabinet with multiple patch panels and their cables visibly landed on the ports.",
+   "C": "OpenCV retake (overexposed), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, expected reason",
+   "figure": "eval/results/figures/c-vs-a-c09-overexposed.jpg"
+  },
+  {
+   "id": "c09-real_same_place-c10",
+   "class": "real_same_place",
+   "kind": "good",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "place_unconfirmed",
+    "reason_code": "place_unconfirmed",
+    "route": "llm_two_image",
+    "inliers": 6,
+    "scene_status": "not_matched",
+    "change": null,
+    "ms_total": 83.34
+   },
+   "A": "model passed=True: The open network rack is clearly visible with multiple patch panel units on the right side showing rows of populated ports with yellow cables landed into them.",
+   "A_prime": "model passed=False, same_place=True: The second photo shows the same cabinet from the side/rear angle, so the patch panel port faces and their landed cables are not visible — only the cable management spine is shown.",
+   "C": "OpenCV place_unconfirmed -> model passed=False, same_place=True: The second photo shows the rack from the side/rear — the patch panel ports and their landed cables are not visible from this angle.",
+   "A_prime_agrees_with_C": true,
+   "C_right": false,
+   "C_reason": "model",
+   "figure": "eval/results/figures/c-vs-a-c09-real_same_place-c10.jpg"
+  },
+  {
+   "id": "c09-touched_avoid",
+   "class": "touched_avoid",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "touched_avoid",
+    "reason_code": "change_in_avoid",
+    "route": "opencv_block",
+    "inliers": 1224,
+    "scene_status": "matched",
+    "change": "measured",
+    "ms_total": 124.91
+   },
+   "A": "model passed=True: The open network rack is clearly visible with multiple patch panels populated with cables on both the left and right sections.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same open network cabinet with multiple patch panels and their cables visible across the upper portion of both rack sections.",
+   "C": "OpenCV touched_avoid (change_in_avoid), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, expected reason",
+   "figure": "eval/results/figures/c-vs-a-c09-touched_avoid.jpg"
+  },
+  {
+   "id": "c10-touched_avoid",
+   "class": "touched_avoid",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "touched_avoid",
+    "reason_code": "change_in_avoid",
+    "route": "opencv_block",
+    "inliers": 1205,
+    "scene_status": "matched",
+    "change": "measured",
+    "ms_total": 105.64
+   },
+   "A": "model passed=True: The open network rack is clearly visible with multiple patch panel modules populated with yellow cables along the right-hand cable management side, confirming the patch panel and its room cable terminations are accessible.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same open network rack with the patch panel ports and their yellow cables visible along the right-hand vertical cable manager, confirming the patch panel has been located.",
+   "C": "OpenCV touched_avoid (change_in_avoid), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, expected reason",
+   "figure": "eval/results/figures/c-vs-a-c10-touched_avoid.jpg"
+  },
+  {
+   "id": "c21-blur_gaussian",
+   "class": "blur_gaussian",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "blurry",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 18.63
+   },
+   "A": "model passed=True: The junction box is open and clearly shows multiple wires (black, white, red, and a green wire nut, plus orange wire nuts) visible inside the open box cavity in the wall.",
+   "A_prime": "model passed=True, same_place=True: The second photo shows the same open junction box with the wires (green wire nut, red wire nut, pink/white/grey cables) clearly visible inside, confirming the cover is off and the interior is accessible.",
+   "C": "OpenCV retake (blurry), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, expected reason",
+   "figure": "eval/results/figures/c-vs-a-c21-blur_gaussian.jpg"
+  },
+  {
+   "id": "c22-real_lookalike-c31",
+   "class": "real_lookalike",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "place_unconfirmed",
+    "reason_code": "place_unconfirmed",
+    "route": "llm_two_image",
+    "inliers": 5,
+    "scene_status": "not_matched",
+    "change": null,
+    "ms_total": 109.86
+   },
+   "A": "model passed=True: The drain trap (P-trap) is clearly visible and in sharp focus, with its slip-nut joint clearly shown at the centre of the frame.",
+   "A_prime": "model passed=False, same_place=False: The second photo shows a corroded metal P-trap mounted on a yellow-painted wall — a completely different location and fixture from the white plastic bottle-trap under the tiled sink in the first photo.",
+   "C": "OpenCV place_unconfirmed -> model passed=False, same_place=False: The second photo shows a corroded metal P-trap mounted on a bright yellow wall — a completely different location from the white plastic bottle-trap under a tiled sink in the first photo.",
+   "A_prime_agrees_with_C": true,
+   "C_right": true,
+   "C_reason": "model",
+   "figure": "eval/results/figures/c-vs-a-c22-real_lookalike-c31.jpg"
+  },
+  {
+   "id": "c22-real_replay_annotated-c23",
+   "class": "real_replay_annotated",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "glare",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 39.26
+   },
+   "A": "model passed=True: The sink trap and its slip-nut joints are clearly visible and in focus under the sink, with the trap body and upper nut joints well lit and sharp.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same sink trap with its slip-nut joints in focus, dry and with no visible drops at the joints.",
+   "C": "OpenCV retake (glare), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, other reason (glare)",
+   "figure": "eval/results/figures/c-vs-a-c22-real_replay_annotated-c23.jpg"
+  },
+  {
+   "id": "c22-real_same_place-c24",
+   "class": "real_same_place",
+   "kind": "good",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "glare",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 34.19
+   },
+   "A": "model passed=True: The drain trap (bottle-trap style) under the sink is clearly visible and in focus, with its slip-nut joints shown at the top and sides of the trap body.",
+   "A_prime": "model passed=True, same_place=True: The second photo shows the same sink trap from a slightly wider angle, with the slip-nut joints clearly visible and the trap appearing dry with no visible drips or moisture at the joints.",
+   "C": "OpenCV retake (glare), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": false,
+   "C_reason": "opencv, other reason (glare)",
+   "figure": "eval/results/figures/c-vs-a-c22-real_same_place-c24.jpg"
+  },
+  {
+   "id": "c22-replay_exact",
+   "class": "replay_exact",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "glare",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 35.44
+   },
+   "A": "model passed=True: The sink trap (bottle trap) and its slip-nut joints are clearly visible and in focus under the sink.",
+   "A_prime": "model passed=False, same_place=True: The second photo appears to be identical to the first — no wiping has been done and there is no evidence the trap was dried and inspected; the two images look like the same unmodified shot.",
+   "C": "OpenCV retake (glare), no model call",
+   "A_prime_agrees_with_C": true,
+   "C_right": true,
+   "C_reason": "opencv, other reason (glare)",
+   "figure": "eval/results/figures/c-vs-a-c22-replay_exact.jpg"
+  },
+  {
+   "id": "c23-no_change",
+   "class": "no_change",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "glare",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 41.28
+   },
+   "A": "model passed=True: The drain trap and its slip-nut joints are clearly visible and in focus under the sink, with the trap body and connection joints well lit and dry-looking.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same sink trap and its slip-nut joints in focus, dry and visible, from the same location as the first photo.",
+   "C": "OpenCV retake (glare), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, other reason (glare)",
+   "figure": "eval/results/figures/c-vs-a-c23-no_change.jpg"
+  },
+  {
+   "id": "c24-real_same_place-c22",
+   "class": "real_same_place",
+   "kind": "good",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "glare",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 33.42
+   },
+   "A": "model passed=True: The sink trap (bottle trap) is clearly visible under the sink with its slip-nut joints in sharp focus, showing the joints are dry with no visible drips or moisture.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same sink trap from a closer angle, with the slip-nut joints at the top and bottom of the bottle trap in sharp focus and no visible moisture or new drips at the joints.",
+   "C": "OpenCV retake (glare), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": false,
+   "C_reason": "opencv, other reason (glare)",
+   "figure": "eval/results/figures/c-vs-a-c24-real_same_place-c22.jpg"
+  },
+  {
+   "id": "c24-replay_reference",
+   "class": "replay_reference",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "glare",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 24.03
+   },
+   "A": "model passed=True: The drain trap (bottle trap) under the sink is clearly visible and in focus, with its slip-nut joints shown at the top inlet and around the trap body.",
+   "A_prime": "model passed=False, same_place=True: The second photo is virtually identical to the first — the trap and its slip-nut joints are visible but there is no evidence the trap was wiped dry or inspected; the photo appears to be a duplicate of the starting image rather than a new close-up showing dry, examined joints.",
+   "C": "OpenCV retake (glare), no model call",
+   "A_prime_agrees_with_C": true,
+   "C_right": true,
+   "C_reason": "opencv, other reason (glare)",
+   "figure": "eval/results/figures/c-vs-a-c24-replay_reference.jpg"
+  },
+  {
+   "id": "c27-replay_exact",
+   "class": "replay_exact",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "replay",
+    "reason_code": "replay",
+    "route": "opencv_block",
+    "inliers": 1335,
+    "scene_status": "matched",
+    "change": null,
+    "ms_total": 51.48
+   },
+   "A": "model passed=True: Water is clearly running from the tap into the basin.",
+   "A_prime": "model passed=True, same_place=True: Water is clearly running from the tap into the basin in the evidence photo.",
+   "C": "OpenCV replay (replay), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, expected reason",
+   "figure": "eval/results/figures/c-vs-a-c27-replay_exact.jpg"
+  },
+  {
+   "id": "c30-replay_earlier",
+   "class": "replay_earlier",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "blurry",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 16.16
+   },
+   "A": "model passed=True: The P-trap and its slip-nut joints are clearly visible and in focus, and a water drop is actively forming at the bottom of the trap, confirming the leak check was performed.",
+   "A_prime": "model passed=False, same_place=True: The trap joints are visible but the trap has not been wiped dry — an active water drip is still hanging from the bottom of the trap, so no dry inspection could have taken place.",
+   "C": "OpenCV retake (blurry), no model call",
+   "A_prime_agrees_with_C": true,
+   "C_right": true,
+   "C_reason": "opencv, other reason (blurry)",
+   "figure": "eval/results/figures/c-vs-a-c30-replay_earlier.jpg"
+  },
+  {
+   "id": "c31-real_lookalike-c24",
+   "class": "real_lookalike",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "glare",
+    "route": "opencv_block",
+    "inliers": null,
+    "scene_status": null,
+    "change": null,
+    "ms_total": 42.55
+   },
+   "A": "model passed=True: The drain trap (bottle trap) under the sink is clearly visible and in focus, with its slip-nut joints at the top and sides well shown.",
+   "A_prime": "model passed=False, same_place=False: The second photo shows a completely different sink trap (white plastic bottle-trap under a ceramic basin with white tiles) — not the same corroded brass P-trap on a yellow wall shown in the first photo.",
+   "C": "OpenCV retake (glare), no model call",
+   "A_prime_agrees_with_C": true,
+   "C_right": true,
+   "C_reason": "opencv, other reason (glare)",
+   "figure": "eval/results/figures/c-vs-a-c31-real_lookalike-c24.jpg"
+  },
+  {
+   "id": "c39-replay_earlier",
+   "class": "replay_earlier",
+   "kind": "bad",
+   "split": "test",
+   "source": "commons",
+   "opencv": {
+    "decision": "retake",
+    "reason_code": "blurry_vs_reference",
+    "route": "opencv_block",
+    "inliers": 736,
+    "scene_status": "matched",
+    "change": null,
+    "ms_total": 42.85
+   },
+   "A": "model passed=True: The downspout and its outlet at the bottom are clearly visible, terminating into a stone drain basin at ground level.",
+   "A_prime": "model passed=True, same_place=True: The second photo clearly shows the same downspout at the same location, with its outlet and the stone catch basin at the bottom clearly visible.",
+   "C": "OpenCV retake (blurry_vs_reference), no model call",
+   "A_prime_agrees_with_C": false,
+   "C_right": true,
+   "C_reason": "opencv, other reason (blurry_vs_reference)",
+   "figure": "eval/results/figures/c-vs-a-c39-replay_earlier.jpg"
+  }
+ ]
+}
