@@ -3,6 +3,7 @@
 #
 #   AWS credentials in the environment (any normal AWS CLI setup), then:
 #     BUDGET_EMAIL=you@example.com infra/deploy.sh --yes
+#   (`infra/deploy.sh --yes --infra-only` stops after phase 1: Budget, ECR, S3, CodeBuild, IAM.)
 #
 # What it does, in order (re-running it is safe; each step is idempotent):
 #   1. refuses a dirty working tree - what runs is exactly `git rev-parse HEAD`;
@@ -133,6 +134,11 @@ T1=$(now)
 REPO_NAME="$(stack_output RepositoryName)"
 BUCKET="$(stack_output SourceBucketName)"
 PROJECT="$(stack_output BuildProjectName)"
+if [ "${2:-}" = "--infra-only" ]; then
+  # Stop after phase 1, e.g. to read the Budget back before anything starts billing by the hour.
+  say "infra only: repo $REPO_NAME, bucket $BUCKET, build project $PROJECT, budget $(stack_output BudgetName) ($((T1 - T0))s)"
+  exit 0
+fi
 
 # 3 ---------------------------------------------------------------- image
 image_digest() {
