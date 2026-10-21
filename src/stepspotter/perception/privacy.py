@@ -42,8 +42,10 @@ def model_path() -> Path | None:
 
 
 def _quiet():
-    """OpenCV 5's DNN prints a 'targets not supported' warning on every detector call —
-    noise in the service log that reads like a fault. Errors still come through."""
+    """OpenCV 5.0's DNN prints "Targets are not supported by the new graph engine" once,
+    when a detector is created (not on every detect call — reproduced by the docs lane on
+    21.10). It reads like a fault in the service log, so warnings are muted from here on;
+    errors still come through."""
     try:
         cv2.utils.logging.setLogLevel(cv2.utils.logging.LOG_LEVEL_ERROR)
     except AttributeError:  # pragma: no cover - older builds
