@@ -497,7 +497,8 @@ Resources:
   # ------------------------------------------------------------------ metrics from the trace
   # The app prints one JSON object per trace event to stdout (STEPSPOTTER_TRACE_STDOUT=1);
   # App Runner ships stdout to the application log group it creates for the service.
-  # Six decisions x 1 metric + calls saved + calls made + latency = 9 custom metrics.
+  # Seven decisions (ok, retake, replay, no_change, touched_avoid, place_unconfirmed, skipped)
+  # x 1 metric + calls saved + calls made + latency = 10 custom metrics.
   DecisionsFilter:
     Type: AWS::Logs::MetricFilter
     Condition: WithService

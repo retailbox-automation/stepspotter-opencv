@@ -21,6 +21,6 @@ phases:
       # The image must be the architecture the service runs, or App Runner fails after the push, not before.
       - test "$(docker image inspect --format '{{.Architecture}}' "${REPO_URI}:${IMAGE_TAG}")" = "${IMAGE_ARCH}"
       # Import smoke inside the built image: OpenCV 5 and the app package load on this architecture.
-      - docker run --rm --entrypoint python "${REPO_URI}:${IMAGE_TAG}" -c "import platform, cv2, numpy, stepspotter.web.app; print('arch', platform.machine(), 'cv2', cv2.__version__, 'numpy', numpy.__version__)"
+      - docker run --rm --entrypoint python "${REPO_URI}:${IMAGE_TAG}" -c "import platform, cv2, numpy, stepspotter.web.app; from stepspotter.perception import privacy; p=privacy.model_path(); assert p is not None, 'YuNet missing'; privacy._detector(p); print('arch', platform.machine(), 'cv2', cv2.__version__, 'numpy', numpy.__version__, 'yunet', p.name)"
       - docker push "${REPO_URI}:${IMAGE_TAG}"
       - docker inspect --format '{{index .RepoDigests 0}}' "${REPO_URI}:${IMAGE_TAG}"
