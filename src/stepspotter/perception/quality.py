@@ -88,9 +88,20 @@ def largest_blob_frac(mask: np.ndarray) -> float:
     return float(stats[1:, cv2.CC_STAT_AREA].max()) / float(mask.size)
 
 
-def assess(img: np.ndarray, zone: str | None = None) -> QualityReport:
-    """Quality of one photo on its own. ``img`` is BGR at any size (original preferred:
-    the size check needs it; everything else runs on a 512 px copy)."""
+def bright_frac(img: np.ndarray) -> float:
+    """Share of near-white pixels (>= 245) on the quality copy — the overexposure metric."""
+    g = _grey_small(img)
+    return float((g >= 245).mean())
+
+
+def assess(img: np.ndarray, zone: str | None = None, ref_bright: float | None = None) -> QualityReport:
+    """Quality of one photo. ``img`` is BGR at any size (original preferred: the size
+    check needs it; everything else runs on a small copy).
+
+    ``ref_bright`` is the near-white share of the person's first photo of the place, when
+    there is one: overexposure is then judged against it (OVEREXPOSED_MARGIN) — a white
+    scene is white in both photos. Without it, only BRIGHT_FRAC_ABS_MAX refuses.
+    """
     h, w = img.shape[:2]
     g = _grey_small(img)
     hist = cv2.calcHist([g], [0], None, [256], [0, 256]).ravel() / float(g.size)
@@ -107,18 +118,26 @@ def assess(img: np.ndarray, zone: str | None = None) -> QualityReport:
         issues.append("too_small")
     if mean < T.DARK_MEAN or dark > T.DARK_FRAC_MAX:
         issues.append("too_dark")
-    if bright > T.BRIGHT_FRAC_MAX:
+    if ref_bright is None:
+        over = bright > T.BRIGHT_FRAC_ABS_MAX
+    else:
+        over = bright > T.BRIGHT_FRAC_MAX and bright - ref_bright >= T.OVEREXPOSED_MARGIN
+    if over:
         issues.append("overexposed")
     if std < T.BLANK_STD and "too_dark" not in issues and "overexposed" not in issues:
         issues.append("blank")
     if sharp < T.SHARP_P90_MIN and not ({"too_dark", "overexposed", "blank"} & set(issues)):
         issues.append("blurry")
+    # Glare on its own is a note, never a refusal: whether it covers the work zone is
+    # decided after alignment (inspect.py, GLARE_ZONE_NEW_FRAC).
+    notes: list[str] = []
     if blob > T.GLARE_BLOB_FRAC and "overexposed" not in issues:
-        issues.append("glare")
+        notes.append("glare")
 
     return QualityReport(
         ok=not issues,
         issues=issues,
+        notes=notes,
         instruction=instruction_for(issues[0], zone) if issues else None,
         width=w,
         height=h,

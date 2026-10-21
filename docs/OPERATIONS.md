@@ -92,13 +92,13 @@ The metrics come from CloudWatch Logs metric filters over JSON lines the app pri
 **What goes to CloudWatch Logs (14 days):**
 - App Runner request logs and the app server's access log (method, path, status). The socket peer is App Runner's proxy, not the visitor.
 - The JSON trace lines the app prints to stdout. The intended content is perception decisions and their metrics (sharpness, exposure, match/overlap figures, timings, `llm_called`), keyed by job id and step id. These lines carry no image data.
-- Rate-limit refusals from `limits.py`. These include the caller address taken from `X-Forwarded-For` when App Runner supplies it.
+- Rate-limit rows from `limits.py` (refusals, the configured caps, which header identified the caller). The caller address is **not** in them: `store.py` replaces it with `ip_tag`, the first 10 hex characters of a salted SHA-256 of the address, so repeat callers group together without the address being logged. The salt is random per process unless `STEPSPOTTER_LOG_SALT` pins it; with a per-process salt the same caller gets a new tag after every restart or deploy.
 
-**What we don't log:** image bytes, image URLs outside the instance, credentials, or request headers other than the forwarded address on a refusal.
+**What we don't log:** image bytes, image URLs outside the instance, credentials, request headers, or the caller's address (only its salted tag, above).
 
-**Status at this commit:** the template sets `STEPSPOTTER_TRACE_STDOUT=1`, but the stdout mirror lives in the application code (`src/stepspotter/store.py`), which the OpenCV lane is changing. The per-job trace also records task text and chat questions/answers. The stdout mirror should carry only `perception` and `limits` events, so that this text doesn't reach CloudWatch. Recheck this section against `store.py` after that lane merges.
+**Status at this commit:** checked against `src/stepspotter/store.py` (`stdout_line`, `STDOUT_EVENTS`, `STDOUT_JOBS`) and its test `tests/test_trace_stdout.py`. With `STEPSPOTTER_TRACE_STDOUT=1` only two kinds of trace row reach stdout: `perception` events and rows of the `limits` pseudo-job. Everything else in a job's trace (task text, plans, verdict prose, chat questions and answers) stays in the job's own file on the instance's disk and never reaches CloudWatch. In the mirrored rows, file paths are cut to their basename and byte values are dropped.
 
-**Faces.** The perception layer is designed to blur faces before a photo goes to the model (`perception/privacy.py`, YuNet). Whether it ran is reported per photo as `faces_checked`. Read that field; don't assume it ran.
+**Faces.** The perception layer blurs faces in the stored photo before it goes to the model (`perception/privacy.py`, YuNet from opencv_zoo, MIT). The image build fetches the model and checks its SHA256 (`perception/fetch_yunet.py`, run by the Dockerfile); without the file nothing is blurred. Whether it ran is reported per photo as `faces_checked`. Read that field; don't assume it ran.
 
 ## Access
 

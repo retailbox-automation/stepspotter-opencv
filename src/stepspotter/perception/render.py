@@ -138,13 +138,13 @@ def quality_image(rep: PerceptionReport, width: int = 560) -> np.ndarray | None:
         ("sharpness", q.sharpness_p90, T.SHARP_P90_MIN, True, max(200.0, T.SHARP_P90_MIN * 4)),
         ("brightness", q.mean, T.DARK_MEAN, True, 255.0),
         ("washed-out share", q.bright_frac, T.BRIGHT_FRAC_MAX, False, 0.5),
-        ("largest glare patch", q.glare_blob_frac, T.GLARE_BLOB_FRAC, False, 0.03),
+        ("glare patch (note only)", q.glare_blob_frac, T.GLARE_BLOB_FRAC, False, 0.03),
     ]
     row_h, label_w = 30, 170
     img = np.full((row_h * len(bars) + 14, width, 3), 255, np.uint8)
     for i, (name, val, thr, low_bad, top) in enumerate(bars):
         y = 10 + i * row_h
-        bad = val < thr if low_bad else val > thr
+        bad = (val < thr if low_bad else val > thr) and not name.endswith("(note only)")
         x0, x1 = label_w, width - 70
         frac = min(max(val / top, 0.0), 1.0)
         cv2.putText(img, name, (8, y + 17), FONT, 0.5, INK, 1, cv2.LINE_AA)

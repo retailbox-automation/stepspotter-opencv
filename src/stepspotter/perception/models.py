@@ -44,7 +44,8 @@ class QualityReport(BaseModel):
     """Can this photo be judged at all, before anyone asks what is in it?"""
 
     ok: bool
-    issues: list[str] = Field(default_factory=list, description="reason codes, worst first")
+    issues: list[str] = Field(default_factory=list, description="blocking reason codes, worst first")
+    notes: list[str] = Field(default_factory=list, description="advisory only, e.g. glare away from the work zone")
     instruction: str | None = None
     width: int = 0
     height: int = 0
@@ -143,6 +144,9 @@ class PerceptionReport(BaseModel):
     timings_ms: dict[str, float] = Field(default_factory=dict)
     artifacts: dict[str, str] = Field(
         default_factory=dict, description="rendered images: match, heatmap, quality"
+    )
+    advisories: list[str] = Field(
+        default_factory=list, description="things seen that do not block, said to the person anyway"
     )
     overridden: bool = Field(
         default=False,

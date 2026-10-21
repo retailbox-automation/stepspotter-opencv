@@ -1,0 +1,180 @@
+{
+ "status": "complete",
+ "rehearsal": false,
+ "started_utc": "2026-10-21T13:11:27+00:00",
+ "ended_utc": "2026-10-21T13:12:04+00:00",
+ "model": "arn:aws:bedrock:us-east-1:<account>:application-inference-profile/g67qa5czlj6i",
+ "job_id": "job-20261021-091129-071c",
+ "plan": "fixed plan from data/demo/agentic-opencv/plan.json (not the live Planner)",
+ "script": "v2",
+ "bedrock_calls": 17,
+ "cap": 20,
+ "by_role": {
+  "guide": 13,
+  "marker": 1,
+  "verifier": 2,
+  "guide (permissive prompt)": 1
+ },
+ "input_tokens": 57519,
+ "output_tokens": 2380,
+ "usd_estimate_at_list_price": 0.2083,
+ "price_basis": "Anthropic list price for Claude Sonnet 4.6, $3 / $15 per million input / output tokens; Bedrock bills on its own price list",
+ "calls": [
+  {
+   "n": 1,
+   "role": "guide",
+   "input_tokens": 1999,
+   "output_tokens": 120,
+   "ms": 2107
+  },
+  {
+   "n": 2,
+   "role": "guide",
+   "input_tokens": 2322,
+   "output_tokens": 65,
+   "ms": 1004
+  },
+  {
+   "n": 3,
+   "role": "marker",
+   "input_tokens": 3052,
+   "output_tokens": 321,
+   "ms": 5932
+  },
+  {
+   "n": 4,
+   "role": "guide",
+   "input_tokens": 2637,
+   "output_tokens": 209,
+   "ms": 2832
+  },
+  {
+   "n": 5,
+   "role": "guide",
+   "input_tokens": 2891,
+   "output_tokens": 123,
+   "ms": 1480
+  },
+  {
+   "n": 6,
+   "role": "guide",
+   "input_tokens": 3088,
+   "output_tokens": 65,
+   "ms": 1820
+  },
+  {
+   "n": 7,
+   "role": "guide",
+   "input_tokens": 3193,
+   "output_tokens": 125,
+   "ms": 1468
+  },
+  {
+   "n": 8,
+   "role": "guide",
+   "input_tokens": 3422,
+   "output_tokens": 104,
+   "ms": 1282
+  },
+  {
+   "n": 9,
+   "role": "verifier",
+   "input_tokens": 5028,
+   "output_tokens": 231,
+   "ms": 3635
+  },
+  {
+   "n": 10,
+   "role": "guide",
+   "input_tokens": 3634,
+   "output_tokens": 125,
+   "ms": 2159
+  },
+  {
+   "n": 11,
+   "role": "guide",
+   "input_tokens": 3811,
+   "output_tokens": 106,
+   "ms": 1245
+  },
+  {
+   "n": 12,
+   "role": "guide",
+   "input_tokens": 3990,
+   "output_tokens": 125,
+   "ms": 1499
+  },
+  {
+   "n": 13,
+   "role": "verifier",
+   "input_tokens": 3648,
+   "output_tokens": 280,
+   "ms": 3062
+  },
+  {
+   "n": 14,
+   "role": "guide",
+   "input_tokens": 4182,
+   "output_tokens": 132,
+   "ms": 1941
+  },
+  {
+   "n": 15,
+   "role": "guide",
+   "input_tokens": 4396,
+   "output_tokens": 65,
+   "ms": 1170
+  },
+  {
+   "n": 16,
+   "role": "guide",
+   "input_tokens": 4683,
+   "output_tokens": 164,
+   "ms": 2127
+  },
+  {
+   "n": 17,
+   "role": "guide (permissive prompt)",
+   "input_tokens": 1543,
+   "output_tokens": 20,
+   "ms": 1089
+  }
+ ],
+ "follow_up": {
+  "what": "permissive-prompt turn only, recorded afterwards with --gate-turn-on on the same job",
+  "status": "complete",
+  "started_utc": "2026-10-21T13:13:41+00:00",
+  "ended_utc": "2026-10-21T13:13:44+00:00",
+  "bedrock_calls": 2,
+  "cap": 3,
+  "by_role": {
+   "guide (permissive prompt)": 2
+  },
+  "input_tokens": 3223,
+  "output_tokens": 184,
+  "usd_estimate_at_list_price": 0.0124,
+  "price_basis": "Anthropic list price for Claude Sonnet 4.6, $3 / $15 per million input / output tokens; Bedrock bills on its own price list",
+  "calls": [
+   {
+    "n": 1,
+    "role": "guide (permissive prompt)",
+    "input_tokens": 1544,
+    "output_tokens": 85,
+    "ms": 1205
+   },
+   {
+    "n": 2,
+    "role": "guide (permissive prompt)",
+    "input_tokens": 1679,
+    "output_tokens": 99,
+    "ms": 1901
+   }
+  ]
+ },
+ "total_with_follow_up": {
+  "bedrock_calls": 19,
+  "input_tokens": 60742,
+  "output_tokens": 2564,
+  "usd_estimate_at_list_price": 0.2207
+ }
+}
