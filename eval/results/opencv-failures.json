@@ -1,19 +1,29 @@
 {
  "counts": {
-  "FALSE BLOCK": 30,
-  "MISSED": 1,
-  "WRONG REASON": 34
+  "MISSED": 13,
+  "FALSE BLOCK": 3,
+  "WRONG REASON": 3
  },
  "cases": [
   {
-   "id": "01-good_view_light",
-   "what": "FALSE BLOCK",
+   "id": "03-glare",
+   "what": "MISSED",
    "split": "calibration",
    "source": "onq",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 1238
+  },
+  {
+   "id": "04-glare",
+   "what": "MISSED",
+   "split": "test",
+   "source": "onq",
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 471
   },
   {
    "id": "06-good_view_light",
@@ -26,14 +36,14 @@
    "inliers": 1218
   },
   {
-   "id": "c03-good_light",
-   "what": "FALSE BLOCK",
-   "split": "test",
+   "id": "c01-glare",
+   "what": "MISSED",
+   "split": "calibration",
    "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 1518
   },
   {
    "id": "c04-good_view_light",
@@ -46,16 +56,6 @@
    "inliers": 1147
   },
   {
-   "id": "c07-good_closeup",
-   "what": "FALSE BLOCK",
-   "split": "test",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
    "id": "c08-wrong_place_mirror",
    "what": "MISSED",
    "split": "test",
@@ -66,264 +66,74 @@
    "inliers": 55
   },
   {
-   "id": "c19-good_closeup",
-   "what": "FALSE BLOCK",
+   "id": "c10-glare",
+   "what": "MISSED",
+   "split": "test",
+   "source": "commons",
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 1416
+  },
+  {
+   "id": "c11-glare",
+   "what": "MISSED",
    "split": "calibration",
    "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 1331
   },
   {
-   "id": "c20-good_rotate",
-   "what": "FALSE BLOCK",
+   "id": "c13-glare",
+   "what": "MISSED",
    "split": "calibration",
    "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "overexposed",
-   "inliers": null
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 909
   },
   {
-   "id": "c20-good_light",
-   "what": "FALSE BLOCK",
+   "id": "c14-glare",
+   "what": "MISSED",
    "split": "calibration",
    "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "overexposed",
-   "inliers": null
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 1448
   },
   {
-   "id": "c20-good_closeup",
-   "what": "FALSE BLOCK",
+   "id": "c15-glare",
+   "what": "MISSED",
+   "split": "test",
+   "source": "commons",
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 1665
+  },
+  {
+   "id": "c25-glare",
+   "what": "MISSED",
    "split": "calibration",
    "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "overexposed",
-   "inliers": null
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 1548
   },
   {
-   "id": "c20-good_act_edit",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "overexposed",
-   "inliers": null
-  },
-  {
-   "id": "c20-replay_exact",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "overexposed",
-   "inliers": null
-  },
-  {
-   "id": "c20-replay_earlier",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "overexposed",
-   "inliers": null
-  },
-  {
-   "id": "c20-no_change",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "no_change",
-   "decision": "retake",
-   "reason_code": "overexposed",
-   "inliers": null
-  },
-  {
-   "id": "c22-wrong_place_mirror",
-   "what": "WRONG REASON",
+   "id": "c27-glare",
+   "what": "MISSED",
    "split": "test",
    "source": "commons",
-   "expected": "wrong_place",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c22-replay_exact",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c22-replay_reference",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c22-replay_earlier",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c22-no_change",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "no_change",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c23-good_reshot",
-   "what": "FALSE BLOCK",
-   "split": "test",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c23-wrong_place_mirror",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "wrong_place",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c23-no_change",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "no_change",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c23-touched_avoid",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "touched_avoid",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c24-good_reshot",
-   "what": "FALSE BLOCK",
-   "split": "test",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c24-good_view_light",
-   "what": "FALSE BLOCK",
-   "split": "test",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c24-good_act_edit",
-   "what": "FALSE BLOCK",
-   "split": "test",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c24-replay_exact",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c24-replay_reference",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c24-no_change",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "no_change",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c24-touched_avoid",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "touched_avoid",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c25-good_light",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c25-good_view_light",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 652
   },
   {
    "id": "c30-good_view_light",
@@ -356,234 +166,24 @@
    "inliers": null
   },
   {
-   "id": "c33-good_closeup",
-   "what": "FALSE BLOCK",
+   "id": "c33-glare",
+   "what": "MISSED",
    "split": "calibration",
    "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c34-good_rotate",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c34-good_reshot",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c34-good_closeup",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c34-replay_exact",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c34-replay_reference",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c34-no_change",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "no_change",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c34-touched_avoid",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "touched_avoid",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c35-good_act_edit",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c35-replay_exact",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c38-replay_earlier",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "blurry_vs_reference",
-   "inliers": 601
-  },
-  {
-   "id": "c39-replay_earlier",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "blurry_vs_reference",
-   "inliers": 736
-  },
-  {
-   "id": "c40-good_rotate",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c40-good_reshot",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c40-good_light",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c40-wrong_place_mirror",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "wrong_place",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c40-replay_earlier",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "replay",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c22-real_same_place-c24",
-   "what": "FALSE BLOCK",
-   "split": "test",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c24-real_same_place-c22",
-   "what": "FALSE BLOCK",
-   "split": "test",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c33-real_same_place-c34",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c34-real_same_place-c35",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c36-real_same_place-c37",
-   "what": "FALSE BLOCK",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "ok",
-   "decision": "retake",
-   "reason_code": "blurry_vs_reference",
-   "inliers": 44
+   "expected": "retake",
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 1464
   },
   {
    "id": "c22-real_replay_annotated-c23",
-   "what": "WRONG REASON",
+   "what": "MISSED",
    "split": "test",
    "source": "commons",
    "expected": "replay",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
+   "decision": "ok",
+   "reason_code": "ok",
+   "inliers": 1512
   },
   {
    "id": "c19-real_lookalike-c20",
@@ -593,66 +193,6 @@
    "expected": "wrong_place",
    "decision": "retake",
    "reason_code": "overexposed",
-   "inliers": null
-  },
-  {
-   "id": "c29-real_lookalike-v0042",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "wrong_place",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c30-real_lookalike-c23",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "wrong_place",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c31-real_lookalike-c24",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "wrong_place",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c31-real_lookalike-c22",
-   "what": "WRONG REASON",
-   "split": "test",
-   "source": "commons",
-   "expected": "wrong_place",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c32-real_lookalike-v0042",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "wrong_place",
-   "decision": "retake",
-   "reason_code": "glare",
-   "inliers": null
-  },
-  {
-   "id": "c36-real_lookalike-c40",
-   "what": "WRONG REASON",
-   "split": "calibration",
-   "source": "commons",
-   "expected": "wrong_place",
-   "decision": "retake",
-   "reason_code": "glare",
    "inliers": null
   }
  ]

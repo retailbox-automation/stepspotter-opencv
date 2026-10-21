@@ -11,7 +11,75 @@ same step text and the same verifier code:
 | **B** — OpenCV 5 only | `inspect_full`: quality, scene match, replay, change in zones. No model | 0 |
 | **C** — the shipped gate | OpenCV first. A block ends there (`opencv_block`). A photo OpenCV cannot line up goes to the two-photo check (`llm_two_image`, must answer `same_place`). Everything else goes to the one-photo check with OpenCV's aligned crop of the work zone (`llm_single`) | 0 or 1 |
 
-**Short answer, with its limits.** On the 50 held-out (test-half) cases sent to the model,
+## Headline — after the glare fix (main `ea0354d`)
+
+After the first run, L1 changed the quality rules (`4f915a0`, `3a99c25`), calibrating on the
+**calibration half only**:
+- glare refuses a photo only if it newly covers at least 10 % of the work zone; otherwise it
+  is advisory;
+- overexposure is judged against the first photo;
+- the relative-blur bar is now 0.22.
+
+This lane then re-ran OpenCV alone on all 548 cases and C on the **same frozen 54-case
+sample**, which made 31 model calls. A and A′ were not re-run: the model and its inputs did not
+change. The results below are on the 50 test-half cases; calls, money and time cover all 54
+checks.
+
+| | A — model, 1 photo | A′ — model, 2 photos | C before the fix | **C after the fix** |
+|---|---:|---:|---:|---:|
+| bad photos refused (of 33) | 11 | 19 | 31 | **30** |
+| good photos wrongly refused (of 17) | 3 | 3 | 8 | **4** |
+| … without the 2 mislabelled same-place pairs (of 15) | 2 | 1 | 6 | **2** |
+| model calls for 54 checks | 54 | 54 | 24 | 31 (14 two-photo) |
+| time p50 / p95 | 2 989 / 3 738 ms | 3 689 / 5 027 ms | 95 / 5 159 ms | 2 920 / 4 556 ms |
+| $ per 100 checks (token count × list price) | 1.27 | 1.80 | 0.71 | 0.89 |
+
+```
+python eval/run.py --config combined --sample --max-llm-calls 58   # C after (spend; made 31)
+python eval/compare.py                                              # eval/results/compare.md
+```
+
+- **Good photos wrongly refused: 8 → 4 of 17.** All 4 remaining are model refusals after
+  OpenCV let the photo through: the 2 mislabelled same-place pairs (see the label audit), the
+  c08 close-up and the c15 view-and-light case. Without the mislabelled pair, C refuses 2 of 15
+  good photos, the same as A (2/15); A′ refuses 1/15.
+- **Bad photos refused: 31 → 30 of 33.** The 3 that got through are the 2 mirror twins, which
+  every configuration passes, and the real annotated resend c22→c23. Before the fix C had
+  refused that one only through glare, the wrong reason. Now OpenCV does not treat it as a
+  replay, because the drawn circle counts as a change, and the model accepts it.
+- **Who refused C's bad photos** (whole sample, 34): OpenCV for the reason the case was built for 22, the model 11, OpenCV
+  for another reason 1. Before the fix: 19 / 9 / 7.
+- **The price of fewer false refusals:** more photos reach the model. C made 31 calls instead
+  of 24, its median time is 2.9 s instead of 0.1 s, and it costs $0.89 per 100 checks instead
+  of $0.71.
+- **C against A:** C decided differently from A in 20 cases and was right in 19. The one
+  wrong case is c09→c10, a mislabelled good. A′ agreed with C in 9 of the 20. Pictures:
+  `eval/results/compare.md`, `eval/results/figures/c-vs-a-*.jpg`.
+- **OpenCV alone after the fix** (`eval/results/opencv.md`, 13:17:15Z):
+  - test half: 130 bad photos blocked and 6 passed, with 38 further cases sent to the
+    two-photo check; 2 of 66 good photos wrongly blocked (was 10); p50 / p95 68 / 111 ms;
+  - calibration half: 141 blocked and 7 passed, with 55 sent to the two-photo check; 1 of
+    103 good photos wrongly blocked (was 20).
+- **Unmodified real photos** (`eval/results/originals.md`): 0 of 56 refused (was 8).
+  - Of the 4 video frames labelled blurred by eye, OpenCV now refuses 1: the whip pan, for
+    blur. The other 3 go on to the model. Before the fix it refused 3 of them, 2 for the
+    wrong reason (glare, overexposure).
+  - The smeared trap frame f0195 still passes the blur check.
+- **What the fix costs:** 11 of 23 synthetic glare discs now pass OpenCV, 4 of 11 in the test
+  half. A disc covering 6 % of the frame covers less than 10 % of a large work zone. They go
+  on to the model check; in C's sample both glare cases were still refused by OpenCV.
+  - On the original 99 OnQ cases the result is now 58 caught, 32 accepted, 7 sent to the
+    two-photo check and 2 missed (03-glare, 04-glare).
+  - Every failure is in `eval/results/opencv-failures.json` and
+    `eval/results/figures/opencv-failures-01..02.jpg`: 3 false blocks (`good_view_light` read
+    as `touched_avoid` twice and as `blurry` once), 13 misses (11 glare discs, the c08 mirror,
+    c22→c23) and 3 refusals for another reason.
+- **Lane spend:** 163 model calls of the 190 cap (A 54, A′ 54, C before 24, C after 31),
+  about $2.53 from token counts.
+
+## Before the glare fix
+
+**Before the glare fix (main `43c1520`), with its limits.** On the 50 held-out (test-half) cases sent to the model,
 C refused 31 of 33 bad photos against 11 of 33 for A and 19 of 33 for A′, made 24 model
 calls for 54 checks instead of 54, and cost $0.71 per 100 checks against $1.27 (A) and
 $1.80 (A′). It also wrongly refused **8 of 17 good photos against 3 of 17** for A and A′:
@@ -33,11 +101,17 @@ cases per synthetic class and 1–6 per real class, one run each.
   The `main` branch moved to `c7c84e0` and later during the model runs. It only added
   docs and tools; `src/stepspotter/perception`, `verifier.py`, `vision.py` and `models.py`
   are unchanged between `43c1520` and `c867804` (`git diff --stat 43c1520 c867804 -- src/stepspotter/perception src/stepspotter/verifier.py`).
-- The B run (`opencv.json`, 12:25:07Z) was made with the harness exactly as committed in `082fabd`
+- The B run (`opencv-before-glare-fix.json`, 12:25:07Z) was made with the harness exactly as committed in `082fabd`
   a minute later, so its `eval_worktree_head` field reads the parent, `43c1520`.
 - Model: `global.anthropic.claude-sonnet-4-6` (Strands default, `STEPSPOTTER_MODEL` unset), us-east-1.
 - Model runs: A 2026-10-21T12:28:19Z, A′ 12:31:56Z, C 12:33:41Z (UTC, from the result files).
   The runs used eval `082fabd` plus a stop-after-3-errors guard, which was committed afterwards and never triggered (0 errors).
+- After the glare fix: main `ea0354d` merged into `eval2` as `e28400a`; B 13:17:15Z, C 13:19:23Z. `main`
+  moved to `3f75518` during the C run, which touched only `perception/render.py`, a drawing
+  module that decides nothing.
+- Earlier result files are kept with a `-before-glare-fix` suffix, and their pictures are under
+  `eval/results/figures/before-glare-fix/`. Running the commands below now reproduces the after-fix
+  files; for the before files, check out `f76495a`.
 - OpenCV 5.0.0, numpy 2.5.4, YuNet installed (`faces_checked: true` in B and C rows).
   Timings come from a shared Mac Studio under other load (`nice -n 15`). They are not App Runner timings.
 
@@ -96,7 +170,7 @@ rack). The model refused both in A′ and C, with reasons that are right about t
 visible"). They are still scored as false blocks below. Without them C has 6 false
 blocks out of 15, A′ 1/15 and A 2/15.
 
-## Results 1 — the three configurations on the model sample
+## Results 1 — the three configurations on the model sample (before the glare fix)
 
 ```
 python eval/run.py --make-sample                                    # eval/llm_sample.json, 54 ids, hash per class
@@ -109,8 +183,8 @@ python eval/compare.py                                              # tables, $,
 The sample was drawn from the manifest alone and committed (`082fabd`) **before** any model
 call. It has 50 test-half cases (every real class at up to 6, 2 Commons cases per synthetic
 class) plus 4 own-video cases from the calibration half. Full table:
-`eval/results/compare.md`. Per-case answers with the model's own words:
-`eval/results/{llm,llm2,combined}-sample.md`.
+`eval/results/compare-before-glare-fix.md`. Per-case answers with the model's own words:
+`eval/results/{llm,llm2}-sample.md` and `eval/results/combined-sample-before-glare-fix.md`.
 
 | class (sample) | kind | n | A | A′ | B | C |
 |---|---|---:|---|---|---|---|
@@ -143,7 +217,7 @@ B's real-photo column leaves out 7 bad and 2 good real photos that it routed to 
 
 Who caught C's 35 bad photos on the whole sample: OpenCV for the reason the case was built
 for **19**, the model **9**, OpenCV for **another** reason **7** (right outcome, wrong
-reason: mostly the glare rule on the white Hong Kong basin, `eval/results/compare.json` → `c_caught_by`).
+reason: mostly the glare rule on the white Hong Kong basin, `eval/results/compare-before-glare-fix.json` → `c_caught_by`).
 
 **Calls, latency, money** (54 checks each; Bedrock price from the AWS Price List API,
 `AmazonBedrockFoundationModels`, us-east-1, Claude Sonnet 4.6 global on-demand: $3.00 per
@@ -166,10 +240,10 @@ two photos $0.0181 (66 calls, mean 4 798 input tokens).
 **Spent on this evaluation: 132 model calls (A 54 + A′ 54 + C 24) of the 150 cap, $2.04 by
 token count.**
 
-### Where C decided differently from A (25 cases) — the trace that OpenCV changes a later decision
+### Where C decided differently from A (25 cases, before the glare fix) — the trace that OpenCV changes a later decision
 
 Every case with its image pair, OpenCV's numbers and both answers is in
-`eval/results/compare.md` (figures under `eval/results/figures/c-vs-a-*.jpg`). C was right
+`eval/results/compare-before-glare-fix.md` (figures under `eval/results/figures/before-glare-fix/c-vs-a-*.jpg`). C was right
 in 20 and wrong in 5. Of the 20, OpenCV decided 13 for the reason the case was built for or
 by routing to the two-photo check, and 7 for another reason (glare or blur). A′ agreed with
 C in 9 of the 25.
@@ -183,9 +257,9 @@ C in 9 of the 25.
 | c05-no_change (test) | passed | `no_change` | the work zone did not change |
 | c22-real_same_place-c24 (test) | passed (right) | **refused: glare** (wrong) | white porcelain read as a glare blob |
 
-![a real look-alike: A passes, C's two-photo check refuses](../eval/results/figures/c-vs-a-c03-real_lookalike-c05.jpg)
+![a real look-alike: A passes, C's two-photo check refuses](../eval/results/figures/before-glare-fix/c-vs-a-c03-real_lookalike-c05.jpg)
 
-![a real re-shot of the same trap: A passes, C refuses it on glare — OpenCV's mistake](../eval/results/figures/c-vs-a-c22-real_same_place-c24.jpg)
+![a real re-shot of the same trap: A passes, C refuses it on glare — OpenCV's mistake](../eval/results/figures/before-glare-fix/c-vs-a-c22-real_same_place-c24.jpg)
 
 ### A′ against C
 
@@ -198,14 +272,14 @@ C in 9 of the 25.
 - **A′ costs 2.5× C per check and is slower at the median** (3.7 s against 0.1 s), and it
   wrongly refused fewer good photos (3/17 against 8/17).
 
-## Results 2 — OpenCV alone on all 548 cases (B)
+## Results 2 — OpenCV alone on all 548 cases (B, before the glare fix)
 
 ```
 STEPSPOTTER_MODELS=<dir with face_detection_yunet_2023mar.onnx> python eval/run.py --config opencv   # no network
 python eval/failures.py          # pictures of every failure
 ```
 
-`eval/results/opencv.md` (2026-10-21T12:25:07Z), test half / calibration half:
+`eval/results/opencv-before-glare-fix.md` (2026-10-21T12:25:07Z), test half / calibration half:
 
 | | test (240) | calibration (308) |
 |---|---|---|
@@ -226,10 +300,10 @@ before (`ff97511`, docs/PERCEPTION.md run 2) 64/64 bad caught and 3/35 good wron
 0 good wrongly blocked, and 7 routed to the two-photo check: the 3 same-place re-shots and the 4
 different-room pairs, which are no longer refused by OpenCV.
 
-### Unmodified real photos through the quality check
+### Unmodified real photos through the quality check (before the glare fix)
 
 ```
-python eval/originals.py         # eval/results/originals.md
+python eval/originals.py         # at f76495a: eval/results/originals-before-glare-fix.md
 ```
 
 | photos | n | refused by OpenCV |
@@ -245,13 +319,13 @@ by the glare rule (largest saturated blob ≥ 0.5 % of the frame): the white por
 bright pavement) and a flashlight hot spot. This is the largest real weakness found. With the stuck rule a person is not
 trapped (the 4th refusal goes to the model), but three wasted retakes is a bad experience.
 
-### Every OpenCV failure, with pictures
+### Every OpenCV failure, with pictures (before the glare fix)
 
-`eval/results/figures/opencv-failures-01..06.jpg`, listed in `eval/results/opencv-failures.json`:
+`eval/results/figures/before-glare-fix/opencv-failures-01..06.jpg`, listed in `eval/results/opencv-failures-before-glare-fix.json`:
 30 good photos wrongly blocked, 1 bad photo passed, 34 bad photos blocked for a reason other than the
 one they were built for.
 
-![OpenCV failures, sheet 1](../eval/results/figures/opencv-failures-01.jpg)
+![OpenCV failures, sheet 1](../eval/results/figures/before-glare-fix/opencv-failures-01.jpg)
 
 1. **Glare on white surfaces** (above): 22 of the 30 false blocks have reason `glare` (4 more
    `overexposed`), and 26 of the 34 wrong-reason catches are `glare` on the same photos. On real white-basin and white-wall

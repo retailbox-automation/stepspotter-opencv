@@ -1,5 +1,5 @@
 {
- "ran_at": "2026-10-21T12:22:09+00:00",
+ "ran_at": "2026-10-21T13:17:17+00:00",
  "summary": {
   "onq / good": {
    "n": 6,
@@ -8,26 +8,19 @@
   },
   "commons / good": {
    "n": 40,
-   "refused": 7,
-   "reasons": {
-    "overexposed": 1,
-    "glare": 6
-   }
+   "refused": 0,
+   "reasons": {}
   },
   "own-video / good": {
    "n": 10,
-   "refused": 1,
-   "reasons": {
-    "glare": 1
-   }
+   "refused": 0,
+   "reasons": {}
   },
   "own-video / blurred": {
    "n": 4,
-   "refused": 3,
+   "refused": 1,
    "reasons": {
-    "overexposed": 1,
-    "blurry": 1,
-    "glare": 1
+    "blurry": 1
    }
   },
   "own-video / borderline": {
@@ -44,7 +37,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 30.25,
+   "ms_total": 36.79,
    "sharpness_p90": 292.41,
    "glare_blob_frac": 0.00206,
    "bright_frac": 0.007
@@ -56,7 +49,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 17.4,
+   "ms_total": 19.68,
    "sharpness_p90": 164.59,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -68,7 +61,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 18.97,
+   "ms_total": 21.9,
    "sharpness_p90": 1072.51,
    "glare_blob_frac": 8e-05,
    "bright_frac": 0.0021
@@ -80,7 +73,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 18.34,
+   "ms_total": 19.08,
    "sharpness_p90": 73.71,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -92,7 +85,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 18.31,
+   "ms_total": 20.2,
    "sharpness_p90": 330.85,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -104,7 +97,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 18.47,
+   "ms_total": 18.41,
    "sharpness_p90": 318.94,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -116,7 +109,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 37.56,
+   "ms_total": 36.44,
    "sharpness_p90": 4124.64,
    "glare_blob_frac": 0.0001,
    "bright_frac": 0.0013
@@ -128,7 +121,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 41.71,
+   "ms_total": 44.42,
    "sharpness_p90": 8811.22,
    "glare_blob_frac": 6e-05,
    "bright_frac": 0.0027
@@ -140,7 +133,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 29.89,
+   "ms_total": 32.05,
    "sharpness_p90": 1061.62,
    "glare_blob_frac": 0.00269,
    "bright_frac": 0.0038
@@ -152,7 +145,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 18.93,
+   "ms_total": 18.98,
    "sharpness_p90": 6308.19,
    "glare_blob_frac": 0.00065,
    "bright_frac": 0.007
@@ -164,7 +157,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 28.67,
+   "ms_total": 28.9,
    "sharpness_p90": 3605.24,
    "glare_blob_frac": 0.00041,
    "bright_frac": 0.0029
@@ -176,7 +169,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 16.4,
+   "ms_total": 18.64,
    "sharpness_p90": 1582.27,
    "glare_blob_frac": 0.00232,
    "bright_frac": 0.0076
@@ -188,7 +181,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 17.03,
+   "ms_total": 18.64,
    "sharpness_p90": 2856.24,
    "glare_blob_frac": 0.00081,
    "bright_frac": 0.0095
@@ -200,7 +193,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 35.12,
+   "ms_total": 34.9,
    "sharpness_p90": 802.97,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -212,7 +205,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 33.29,
+   "ms_total": 33.99,
    "sharpness_p90": 740.91,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -224,7 +217,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 15.21,
+   "ms_total": 16.49,
    "sharpness_p90": 3268.59,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -236,7 +229,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 46.15,
+   "ms_total": 51.48,
    "sharpness_p90": 3032.62,
    "glare_blob_frac": 6e-05,
    "bright_frac": 0.0001
@@ -248,7 +241,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 36.77,
+   "ms_total": 42.94,
    "sharpness_p90": 1488.09,
    "glare_blob_frac": 0.00019,
    "bright_frac": 0.0016
@@ -260,7 +253,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 7.8,
+   "ms_total": 7.49,
    "sharpness_p90": 3739.56,
    "glare_blob_frac": 8e-05,
    "bright_frac": 0.0003
@@ -272,7 +265,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 33.91,
+   "ms_total": 36.04,
    "sharpness_p90": 3266.38,
    "glare_blob_frac": 0.00122,
    "bright_frac": 0.0086
@@ -284,7 +277,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 18.7,
+   "ms_total": 18.32,
    "sharpness_p90": 248.74,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -296,7 +289,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 16.71,
+   "ms_total": 17.86,
    "sharpness_p90": 346.57,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -308,7 +301,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 17.82,
+   "ms_total": 17.56,
    "sharpness_p90": 316.52,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -320,7 +313,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 17.38,
+   "ms_total": 17.42,
    "sharpness_p90": 549.79,
    "glare_blob_frac": 0.00478,
    "bright_frac": 0.0131
@@ -330,9 +323,9 @@
    "source": "commons",
    "file": "eval/cases/public/commons/c20-Junction-box-with-white-wires.jpg",
    "label": "good",
-   "decision": "retake",
-   "reason_code": "overexposed",
-   "ms_total": 17.75,
+   "decision": "ok",
+   "reason_code": "ok",
+   "ms_total": 18.82,
    "sharpness_p90": 337.08,
    "glare_blob_frac": 0.2236,
    "bright_frac": 0.4529
@@ -344,7 +337,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 18.42,
+   "ms_total": 20.8,
    "sharpness_p90": 3457.29,
    "glare_blob_frac": 0.00079,
    "bright_frac": 0.0015
@@ -354,9 +347,9 @@
    "source": "commons",
    "file": "eval/cases/public/commons/c22-HK-public-toilet-bathing-hand-sink-drain.jpg",
    "label": "good",
-   "decision": "retake",
-   "reason_code": "glare",
-   "ms_total": 32.54,
+   "decision": "ok",
+   "reason_code": "ok",
+   "ms_total": 40.23,
    "sharpness_p90": 2187.95,
    "glare_blob_frac": 0.02029,
    "bright_frac": 0.0597
@@ -366,9 +359,9 @@
    "source": "commons",
    "file": "eval/cases/public/commons/c23-HK-public-toilet-bathing-hand-sink-drain.jpg",
    "label": "good",
-   "decision": "retake",
-   "reason_code": "glare",
-   "ms_total": 33.57,
+   "decision": "ok",
+   "reason_code": "ok",
+   "ms_total": 35.93,
    "sharpness_p90": 2178.91,
    "glare_blob_frac": 0.02012,
    "bright_frac": 0.0583
@@ -378,9 +371,9 @@
    "source": "commons",
    "file": "eval/cases/public/commons/c24-HK-public-toilet-bathing-hand-sink-drain.jpg",
    "label": "good",
-   "decision": "retake",
-   "reason_code": "glare",
-   "ms_total": 34.22,
+   "decision": "ok",
+   "reason_code": "ok",
+   "ms_total": 38.17,
    "sharpness_p90": 1680.14,
    "glare_blob_frac": 0.07686,
    "bright_frac": 0.1098
@@ -392,7 +385,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 14.49,
+   "ms_total": 17.13,
    "sharpness_p90": 664.29,
    "glare_blob_frac": 0.00043,
    "bright_frac": 0.0023
@@ -404,7 +397,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 13.87,
+   "ms_total": 18.81,
    "sharpness_p90": 961.42,
    "glare_blob_frac": 0.00024,
    "bright_frac": 0.0011
@@ -416,7 +409,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 14.67,
+   "ms_total": 15.25,
    "sharpness_p90": 1129.34,
    "glare_blob_frac": 0.00027,
    "bright_frac": 0.0012
@@ -428,7 +421,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 16.84,
+   "ms_total": 19.21,
    "sharpness_p90": 206.75,
    "glare_blob_frac": 1e-05,
    "bright_frac": 0.0
@@ -440,7 +433,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 16.99,
+   "ms_total": 18.51,
    "sharpness_p90": 59.07,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -452,7 +445,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 35.15,
+   "ms_total": 35.53,
    "sharpness_p90": 1171.35,
    "glare_blob_frac": 8e-05,
    "bright_frac": 0.0032
@@ -464,7 +457,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 21.41,
+   "ms_total": 21.18,
    "sharpness_p90": 455.61,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -476,7 +469,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 34.9,
+   "ms_total": 35.32,
    "sharpness_p90": 1296.12,
    "glare_blob_frac": 0.00362,
    "bright_frac": 0.0094
@@ -486,9 +479,9 @@
    "source": "commons",
    "file": "eval/cases/public/commons/c34-Kohler-Farmhouse-Sink-1940-3-of-4.jpg",
    "label": "good",
-   "decision": "retake",
-   "reason_code": "glare",
-   "ms_total": 32.38,
+   "decision": "ok",
+   "reason_code": "ok",
+   "ms_total": 36.13,
    "sharpness_p90": 1261.6,
    "glare_blob_frac": 0.00972,
    "bright_frac": 0.0344
@@ -498,9 +491,9 @@
    "source": "commons",
    "file": "eval/cases/public/commons/c35-Kohler-Farmhouse-Sink-1940-4-of-4.jpg",
    "label": "good",
-   "decision": "retake",
-   "reason_code": "glare",
-   "ms_total": 32.38,
+   "decision": "ok",
+   "reason_code": "ok",
+   "ms_total": 36.8,
    "sharpness_p90": 1792.18,
    "glare_blob_frac": 0.00596,
    "bright_frac": 0.0281
@@ -512,7 +505,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 18.75,
+   "ms_total": 20.79,
    "sharpness_p90": 10179.4,
    "glare_blob_frac": 9e-05,
    "bright_frac": 0.0096
@@ -524,7 +517,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 34.46,
+   "ms_total": 37.82,
    "sharpness_p90": 2599.71,
    "glare_blob_frac": 0.00017,
    "bright_frac": 0.0079
@@ -536,7 +529,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 19.45,
+   "ms_total": 19.93,
    "sharpness_p90": 16418.02,
    "glare_blob_frac": 0.00149,
    "bright_frac": 0.007
@@ -548,7 +541,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 18.88,
+   "ms_total": 21.0,
    "sharpness_p90": 10585.03,
    "glare_blob_frac": 7e-05,
    "bright_frac": 0.0023
@@ -558,9 +551,9 @@
    "source": "commons",
    "file": "eval/cases/public/commons/c40-Protector-de-bajante-de-fundici-n-01.jpg",
    "label": "good",
-   "decision": "retake",
-   "reason_code": "glare",
-   "ms_total": 65.46,
+   "decision": "ok",
+   "reason_code": "ok",
+   "ms_total": 75.11,
    "sharpness_p90": 1934.7,
    "glare_blob_frac": 0.01111,
    "bright_frac": 0.0602
@@ -572,7 +565,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 56.71,
+   "ms_total": 71.2,
    "sharpness_p90": 1443.52,
    "glare_blob_frac": 7e-05,
    "bright_frac": 0.0015
@@ -584,7 +577,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 39.68,
+   "ms_total": 48.18,
    "sharpness_p90": 335.17,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -596,7 +589,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 30.01,
+   "ms_total": 29.28,
    "sharpness_p90": 342.35,
    "glare_blob_frac": 0.00368,
    "bright_frac": 0.0546
@@ -606,9 +599,9 @@
    "source": "own-video",
    "file": "eval/cases/public/own-sink-video/f0042.jpg",
    "label": "good",
-   "decision": "retake",
-   "reason_code": "glare",
-   "ms_total": 29.97,
+   "decision": "ok",
+   "reason_code": "ok",
+   "ms_total": 25.94,
    "sharpness_p90": 816.08,
    "glare_blob_frac": 0.00622,
    "bright_frac": 0.066
@@ -620,7 +613,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 25.18,
+   "ms_total": 27.71,
    "sharpness_p90": 472.11,
    "glare_blob_frac": 0.00167,
    "bright_frac": 0.0096
@@ -632,7 +625,7 @@
    "label": "blurred",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 25.1,
+   "ms_total": 26.53,
    "sharpness_p90": 55.07,
    "glare_blob_frac": 0.00271,
    "bright_frac": 0.0054
@@ -642,9 +635,9 @@
    "source": "own-video",
    "file": "eval/cases/public/own-sink-video/f0240.jpg",
    "label": "blurred",
-   "decision": "retake",
-   "reason_code": "overexposed",
-   "ms_total": 24.92,
+   "decision": "ok",
+   "reason_code": "ok",
+   "ms_total": 27.09,
    "sharpness_p90": 70.31,
    "glare_blob_frac": 0.02029,
    "bright_frac": 0.1219
@@ -656,7 +649,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 23.59,
+   "ms_total": 29.17,
    "sharpness_p90": 310.03,
    "glare_blob_frac": 0.00013,
    "bright_frac": 0.0285
@@ -668,7 +661,7 @@
    "label": "borderline",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 25.08,
+   "ms_total": 26.7,
    "sharpness_p90": 86.31,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -680,7 +673,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 24.34,
+   "ms_total": 26.47,
    "sharpness_p90": 423.6,
    "glare_blob_frac": 3e-05,
    "bright_frac": 0.0256
@@ -692,7 +685,7 @@
    "label": "borderline",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 25.63,
+   "ms_total": 26.48,
    "sharpness_p90": 48.45,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0068
@@ -704,7 +697,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 24.33,
+   "ms_total": 25.92,
    "sharpness_p90": 624.08,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0356
@@ -716,7 +709,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 27.47,
+   "ms_total": 24.53,
    "sharpness_p90": 1170.04,
    "glare_blob_frac": 1e-05,
    "bright_frac": 0.0435
@@ -728,7 +721,7 @@
    "label": "blurred",
    "decision": "retake",
    "reason_code": "blurry",
-   "ms_total": 27.44,
+   "ms_total": 22.57,
    "sharpness_p90": 4.9,
    "glare_blob_frac": 0.0,
    "bright_frac": 0.0
@@ -738,9 +731,9 @@
    "source": "own-video",
    "file": "eval/cases/public/own-sink-video/f0900.jpg",
    "label": "blurred",
-   "decision": "retake",
-   "reason_code": "glare",
-   "ms_total": 26.21,
+   "decision": "ok",
+   "reason_code": "ok",
+   "ms_total": 23.7,
    "sharpness_p90": 91.51,
    "glare_blob_frac": 0.01849,
    "bright_frac": 0.0896
@@ -752,7 +745,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 25.01,
+   "ms_total": 25.77,
    "sharpness_p90": 645.81,
    "glare_blob_frac": 4e-05,
    "bright_frac": 0.0143
@@ -764,7 +757,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 24.78,
+   "ms_total": 24.94,
    "sharpness_p90": 408.41,
    "glare_blob_frac": 3e-05,
    "bright_frac": 0.0566
@@ -776,7 +769,7 @@
    "label": "good",
    "decision": "ok",
    "reason_code": "ok",
-   "ms_total": 26.06,
+   "ms_total": 24.7,
    "sharpness_p90": 1028.11,
    "glare_blob_frac": 0.00261,
    "bright_frac": 0.0226
