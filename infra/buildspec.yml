@@ -1,0 +1,26 @@
+# CodeBuild spec for the StepSpotter OpenCV image (project <service>-build, infra/template.yaml).
+# Input: a `git archive HEAD` zip that infra/deploy.sh uploaded to S3.
+# Output: one single-arch image REPO_URI:IMAGE_TAG in ECR (tags are immutable).
+# Every command runs in its own shell; a failing command fails the phase and the build.
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  pre_build:
+    commands:
+      - echo "building ${REPO_URI}:${IMAGE_TAG} for linux/${IMAGE_ARCH} on $(uname -m)"
+      - aws ecr get-login-password --region "${AWS_REGION}" | docker login --username AWS --password-stdin "${REPO_URI%%/*}"
+      # Base image from ECR Public (Docker Hub's anonymous pull limit hits shared build IPs).
+      # Logging in raises the ECR Public pull quota; if it fails, the anonymous pull still works.
+      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws || echo "ecr-public login skipped; pulling anonymously"
+  build:
+    commands:
+      - docker build --platform "linux/${IMAGE_ARCH}" --build-arg "BASE_IMAGE=${BASE_IMAGE}" --label "org.opencontainers.image.revision=${IMAGE_TAG}" -t "${REPO_URI}:${IMAGE_TAG}" .
+      # The image must be the architecture the service runs, or App Runner fails after the push, not before.
+      - test "$(docker image inspect --format '{{.Architecture}}' "${REPO_URI}:${IMAGE_TAG}")" = "${IMAGE_ARCH}"
+      # Import smoke inside the built image: OpenCV 5 and the app package load on this architecture.
+      - docker run --rm --entrypoint python "${REPO_URI}:${IMAGE_TAG}" -c "import platform, cv2, numpy, stepspotter.web.app; print('arch', platform.machine(), 'cv2', cv2.__version__, 'numpy', numpy.__version__)"
+      - docker push "${REPO_URI}:${IMAGE_TAG}"
+      - docker inspect --format '{{index .RepoDigests 0}}' "${REPO_URI}:${IMAGE_TAG}"
