@@ -1,0 +1,499 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "StepSpotter × OpenCV 5 on AWS — what runs in the deployed image",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/retailbox-automation/stepspotter-opencv",
+      "revision": "43c1520d22a84abd675a3e396bf606be6d4d92cb"
+    },
+    "views": [
+      {
+        "id": "photo-gate",
+        "label": "A photo through the gate",
+        "focus": [
+          "phone",
+          "web",
+          "opencv",
+          "verifier",
+          "bedrock",
+          "gate",
+          "store"
+        ],
+        "note": "OpenCV 5 runs first; only a photo it lets through reaches the model; the gate hook decides advance_step."
+      },
+      {
+        "id": "operations",
+        "label": "Observability and spend",
+        "focus": [
+          "store",
+          "cloudwatch",
+          "alerts"
+        ],
+        "note": "Perception rows go to stdout as JSON; CloudWatch metric filters, alarms and a Budget watch them."
+      },
+      {
+        "id": "delivery",
+        "label": "One-command delivery",
+        "focus": [
+          "deploy",
+          "codebuild",
+          "ecr",
+          "web"
+        ],
+        "note": "infra/deploy.sh: git archive to S3, CodeBuild x86_64 with an import smoke, ECR digest, App Runner."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "phone",
+      "type": "frontend",
+      "label": "Phone browser",
+      "sublabel": "photo or video per step",
+      "tag": "For judges button",
+      "pos": [
+        30,
+        166
+      ],
+      "size": [
+        150,
+        70
+      ],
+      "sources": [
+        {
+          "path": "src/stepspotter/web/chat_page.py",
+          "line": 304,
+          "label": "judge button"
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "type": "backend",
+      "label": "FastAPI web app",
+      "sublabel": "JobService · /api/inspect",
+      "tag": "uvicorn :8080",
+      "pos": [
+        286,
+        166
+      ],
+      "size": [
+        170,
+        70
+      ],
+      "sources": [
+        {
+          "path": "src/stepspotter/web/app.py",
+          "line": 256,
+          "label": "routes"
+        },
+        {
+          "path": "src/stepspotter/guide.py",
+          "line": 396,
+          "label": "JobService.verify"
+        }
+      ]
+    },
+    {
+      "id": "opencv",
+      "type": "backend",
+      "label": "OpenCV 5.0.0 perception",
+      "sublabel": "blur · place · replay · change",
+      "tag": "no model call",
+      "pos": [
+        566,
+        166
+      ],
+      "size": [
+        188,
+        70
+      ],
+      "sources": [
+        {
+          "path": "src/stepspotter/perception/inspect.py",
+          "line": 181,
+          "label": "inspect_full"
+        },
+        {
+          "path": "src/stepspotter/perception/scene.py",
+          "line": 61,
+          "label": "findHomography"
+        },
+        {
+          "path": "src/stepspotter/perception/change.py",
+          "line": 54,
+          "label": "absdiff"
+        }
+      ]
+    },
+    {
+      "id": "verifier",
+      "type": "backend",
+      "label": "Verifier",
+      "sublabel": "Strands Agent, typed verdict",
+      "pos": [
+        870,
+        166
+      ],
+      "size": [
+        172,
+        70
+      ],
+      "sources": [
+        {
+          "path": "src/stepspotter/verifier.py",
+          "line": 61,
+          "label": "verify_step"
+        },
+        {
+          "path": "src/stepspotter/vision.py",
+          "line": 65,
+          "label": "Agent + BedrockModel"
+        }
+      ]
+    },
+    {
+      "id": "bedrock",
+      "type": "cloud",
+      "label": "Amazon Bedrock",
+      "sublabel": "Claude Sonnet 4.6",
+      "tag": "tagged app inference profile",
+      "pos": [
+        1150,
+        166
+      ],
+      "size": [
+        172,
+        70
+      ],
+      "sources": [
+        {
+          "path": "infra/template.yaml",
+          "line": 355,
+          "label": "AppInferenceProfile"
+        },
+        {
+          "path": "infra/template.yaml",
+          "line": 409,
+          "label": "InvokeOneModel IAM"
+        }
+      ]
+    },
+    {
+      "id": "gate",
+      "type": "security",
+      "label": "StepGate",
+      "sublabel": "BeforeToolCall hook",
+      "tag": "cancel_tool · interrupt",
+      "pos": [
+        286,
+        420
+      ],
+      "size": [
+        170,
+        70
+      ],
+      "sources": [
+        {
+          "path": "src/stepspotter/gate.py",
+          "line": 64,
+          "label": "before_tool_call"
+        },
+        {
+          "path": "src/stepspotter/gate.py",
+          "line": 118,
+          "label": "cancel_tool"
+        },
+        {
+          "path": "src/stepspotter/gate.py",
+          "line": 91,
+          "label": "interrupt human_review"
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "Job state + trace",
+      "sublabel": "/tmp, ephemeral",
+      "pos": [
+        566,
+        416
+      ],
+      "size": [
+        190,
+        70
+      ],
+      "sources": [
+        {
+          "path": "src/stepspotter/store.py",
+          "line": 113,
+          "label": "trace"
+        },
+        {
+          "path": "infra/template.yaml",
+          "line": 468,
+          "label": "STEPSPOTTER_DATA"
+        }
+      ]
+    },
+    {
+      "id": "cloudwatch",
+      "type": "cloud",
+      "label": "Amazon CloudWatch",
+      "sublabel": "metric filters · dashboard",
+      "tag": "3 alarms",
+      "pos": [
+        1150,
+        416
+      ],
+      "size": [
+        172,
+        70
+      ],
+      "sources": [
+        {
+          "path": "infra/template.yaml",
+          "line": 502,
+          "label": "metric filters"
+        },
+        {
+          "path": "infra/template.yaml",
+          "line": 547,
+          "label": "alarms"
+        },
+        {
+          "path": "infra/template.yaml",
+          "line": 606,
+          "label": "dashboard"
+        }
+      ]
+    },
+    {
+      "id": "alerts",
+      "type": "security",
+      "label": "SNS email + Budget",
+      "sublabel": "Budget $15 · email",
+      "pos": [
+        1150,
+        656
+      ],
+      "size": [
+        172,
+        70
+      ],
+      "sources": [
+        {
+          "path": "infra/template.yaml",
+          "line": 177,
+          "label": "Budget"
+        },
+        {
+          "path": "infra/template.yaml",
+          "line": 160,
+          "label": "AlertTopic"
+        }
+      ]
+    },
+    {
+      "id": "deploy",
+      "type": "external",
+      "label": "infra/deploy.sh --yes",
+      "sublabel": "git archive HEAD → S3",
+      "pos": [
+        30,
+        656
+      ],
+      "size": [
+        150,
+        70
+      ],
+      "sources": [
+        {
+          "path": "infra/deploy.sh",
+          "line": 156,
+          "label": "git archive"
+        }
+      ]
+    },
+    {
+      "id": "codebuild",
+      "type": "cloud",
+      "label": "AWS CodeBuild",
+      "sublabel": "x86_64 + import smoke",
+      "pos": [
+        286,
+        656
+      ],
+      "size": [
+        170,
+        70
+      ],
+      "sources": [
+        {
+          "path": "infra/template.yaml",
+          "line": 322,
+          "label": "BuildProject"
+        },
+        {
+          "path": "infra/buildspec.yml",
+          "line": 22,
+          "label": "arch check"
+        }
+      ]
+    },
+    {
+      "id": "ecr",
+      "type": "database",
+      "label": "Amazon ECR",
+      "sublabel": "pulled by digest",
+      "pos": [
+        566,
+        656
+      ],
+      "size": [
+        190,
+        70
+      ],
+      "sources": [
+        {
+          "path": "infra/template.yaml",
+          "line": 212,
+          "label": "Repository"
+        }
+      ],
+      "tag": "immutable tags"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "AWS us-east-1 · one CloudFormation stack (infra/template.yaml)",
+      "wraps": [
+        "web",
+        "opencv",
+        "verifier",
+        "bedrock",
+        "gate",
+        "store",
+        "cloudwatch",
+        "alerts",
+        "codebuild",
+        "ecr"
+      ],
+      "pad": 26
+    },
+    {
+      "kind": "security-group",
+      "label": "App Runner · 1 instance · x86_64 · 1 vCPU / 2 GB",
+      "wraps": [
+        "web",
+        "opencv",
+        "verifier",
+        "gate",
+        "store"
+      ],
+      "pad": 16
+    }
+  ],
+  "connections": [
+    {
+      "from": "phone",
+      "to": "web",
+      "label": "HTTPS",
+      "variant": "emphasis"
+    },
+    {
+      "from": "web",
+      "to": "opencv",
+      "label": "evidence first",
+      "variant": "emphasis"
+    },
+    {
+      "from": "opencv",
+      "to": "verifier",
+      "label": "not blocked",
+      "variant": "emphasis"
+    },
+    {
+      "from": "verifier",
+      "to": "bedrock",
+      "label": "Converse",
+      "variant": "security"
+    },
+    {
+      "from": "web",
+      "to": "gate",
+      "label": "advance_step",
+      "labelDy": 24
+    },
+    {
+      "from": "opencv",
+      "to": "store",
+      "label": "PerceptionReport",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "from": "store",
+      "to": "gate",
+      "label": "state.perception"
+    },
+    {
+      "from": "store",
+      "to": "cloudwatch",
+      "label": "stdout JSON rows",
+      "variant": "dashed"
+    },
+    {
+      "from": "cloudwatch",
+      "to": "alerts",
+      "label": "alarm",
+      "labelDy": 24
+    },
+    {
+      "from": "deploy",
+      "to": "codebuild",
+      "label": "source zip"
+    },
+    {
+      "from": "codebuild",
+      "to": "ecr",
+      "label": "push"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "OpenCV 5 decides before the model",
+      "items": [
+        "Laplacian, calcHist, connectedComponentsWithStats: blur, light, glare (perception/quality.py:65, :96, :85)",
+        "SIFT + knnMatch + findHomography(USAC_MAGSAC): same place (imgio.py:88, scene.py:55, :61)",
+        "warpPerspective, CLAHE, absdiff, morphologyEx: change per zone (change.py:40, imgio.py:60, change.py:54, :56)",
+        "FaceDetectorYN blur before storing or sending (privacy.py:57); YuNet fetched and checksum-checked at image build (Dockerfile:44)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Gate and human control",
+      "items": [
+        "advance_step runs through a Strands HookRegistry with StepGate (web/gated.py:23, guide.py:861)",
+        "Blocking OpenCV report: cancel_tool with OpenCV's reason (gate.py:141, :118)",
+        "Place not confirmed: pass only with same_place=true from the two-photo check (gate.py:153)",
+        "Change in a do-not-touch zone: interrupt('human_review') (gate.py:91)"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Not on this page",
+      "items": [
+        "The Guide agent loop that calls inspect_photo itself runs from the CLI (guide.py:761, cli.py:195), not from the public page",
+        "No COOL, no S3 for photos, no AgentCore in this stack"
+      ]
+    }
+  ]
+}
