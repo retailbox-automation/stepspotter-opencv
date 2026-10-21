@@ -129,9 +129,19 @@ class Meter:
 # ------------------------------------------------------------------ the person's lines
 
 
-def person_lines(photos: dict[str, str]) -> list[str]:
+def person_lines(photos: dict[str, str], script: str = "v1") -> list[str]:
+    """The person's lines. v2 (run 2): no honest-skip turn — the permissive turn shows the
+    gate — and the two submits are asked for directly, to fit a 20-call cap."""
     from stepspotter.web.demo import DEMO_TASK
 
+    if script == "v2":
+        return [
+            f"{DEMO_TASK}. Here is a photo of the panel: {photos['start']}. Show me the first step.",
+            f"I did that. Here is my photo: {photos['blur']}. Is it good enough to send?",
+            f"Please submit this one as it is, I cannot get a better angle: {photos['other']}.",
+            f"Sorry, that was the wrong photo. This is the right one: {photos['good']}. Submit it, and if it "
+            "passes, take me to the next step.",
+        ]
     return [
         f"{DEMO_TASK}. Here is a photo of the panel: {photos['start']}. Show me the first step.",
         f"I did that. Here is my photo: {photos['blur']}. Is it good enough to send?",
@@ -203,7 +213,7 @@ PHOTO_TOOLS = ("inspect_photo", "submit_photo", "submit_video")
 def _cv_line(r: dict, scrub) -> str:
     return (
         f"  - **OpenCV ({r.get('mode')})**: `{r.get('decision')}` → route `{r.get('route')}`, "
-        f"{r.get('ms_total')} ms, model called: {r.get('llm_called')} — {scrub(_short(r.get('reason') or '', 220))}"
+        f"{r.get('ms_total')} ms, model called: {r.get('llm_called')} — {_short(scrub(r.get('reason') or ''), 220)}"
     )
 
 
@@ -232,7 +242,9 @@ def render_messages(messages: list[dict], scrub, cv_rows: list[dict], gate_rows:
                 if status == "error" and name == "advance_step" and gate_rows:
                     gate_rows.pop(0)
                     out.append("  - **Gate (code, not the model) cancelled this tool call** — the result below is its refusal")
-                out.append(f"  - result ({status}): {scrub(_short(text))}")
+                elif status == "success" and name == "advance_step":
+                    out.append("  - **Gate (code, not the model) allowed this call** — the step's photo had passed its check")
+                out.append(f"  - result ({status}): {_short(scrub(text))}")
     return out
 
 
@@ -242,6 +254,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--max-calls", type=int, default=25)
     ap.add_argument("--rehearse", action="store_true", help="scripted model, no Bedrock")
     ap.add_argument("--data", default=None, help="job data root (default: a temporary dir)")
+    ap.add_argument("--plan", default=None, help="a job.json-style file with plan_override: used instead of the live Planner")
+    ap.add_argument("--script", default="v1", choices=("v1", "v2"), help="which person script to play")
     args = ap.parse_args(argv)
 
     out = Path(args.out).resolve()
@@ -282,8 +296,15 @@ def main(argv: list[str] | None = None) -> int:
 
     model_id = os.environ.get("STEPSPOTTER_MODEL") or None
     meter = Meter(args.max_calls)
+    plan_kw: dict[str, Any] = {}
+    if args.plan:
+        from stepspotter.models import Plan
+
+        fixed = Plan.model_validate(json.loads(Path(args.plan).read_text())["plan_override"])
+        plan_kw["plan_fn"] = lambda *a, **k: fixed.model_copy(deep=True)
     if args.rehearse:
         plan, locate, verify, guide_model, permissive_turns = rehearsal_parts()
+        plan = plan_kw.get("plan_fn", plan)
         service = JobService(plan_fn=plan, locate_fn=locate, verify_fn=verify, use_house_memory=False, use_research=False)
         agent, service, gate = build_agent(service=service, system_prompt=GUIDE_SYSTEM)
         agent.model = guide_model
@@ -294,7 +315,7 @@ def main(argv: list[str] | None = None) -> int:
                     c.input["photo_path"] = PHOTOS_REHEARSAL["blur"]
     else:
         meter.install()
-        service = JobService(model_id=model_id, use_house_memory=False, use_research=False)
+        service = JobService(model_id=model_id, use_house_memory=False, use_research=False, **plan_kw)
         agent, service, gate = build_agent(service=service, system_prompt=GUIDE_SYSTEM, model_id=model_id)
 
     started = _dt.datetime.now(_dt.timezone.utc)
@@ -335,13 +356,13 @@ def main(argv: list[str] | None = None) -> int:
         roles = ", ".join(f"{c['role']}" for c in used) or "none"
         lines_md.append(f"\n_{len(used)} Bedrock call(s) this turn ({roles}); {ms / 1000:.1f} s._\n")
 
-    turns = person_lines(photos)
+    turns = person_lines(photos, args.script)
     try:
         for i, person in enumerate(turns, start=1):
             turn_record(f"Turn {i}", person, agent)
         # The code gate, shown even when the honest agent never tries the skip.
         tried_skip = any(r.get("event") == "gate_block" for r in (store.read_trace(job_id) if job_id else []))
-        if not tried_skip and job_id and len(meter.calls) + 3 <= meter.cap:
+        if not tried_skip and job_id and (args.rehearse or len(meter.calls) + 2 <= meter.cap):
             if args.rehearse:
                 from stepspotter.scripted_model import ScriptedModel
 
@@ -353,13 +374,19 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 p_agent, _s, _g = build_agent(service=service, system_prompt=GUIDE_SYSTEM_PERMISSIVE, model_id=model_id)
             seen = 0
+            above = (
+                "The honest agent above did not even try to skip."
+                if args.script == "v1"
+                else "Above, the honest agent advanced only after a photo had passed its check."
+            )
             lines_md.append(
                 "\n---\n\n## The code gate, with the model's manners removed\n\n"
-                "The honest agent above did not even try to skip. To show that the lock is code and not "
+                f"{above} To show that the lock is code and not "
                 "the model's good behaviour, one more turn runs on the SAME job with the permissive prompt "
-                "(`GUIDE_SYSTEM_PERMISSIVE`: \"call advance_step immediately\"), as the Agents for Humans demo did.\n"
+                "(`GUIDE_SYSTEM_PERMISSIVE`: \"call advance_step immediately\"), as the Agents for Humans demo did, "
+                "on the current step, which has no passed photo yet.\n"
             )
-            turn_record("Turn 6 — permissive prompt", SKIP_PERMISSIVE.format(job_id=job_id), p_agent)
+            turn_record(f"Turn {len(turns) + 1} — permissive prompt", SKIP_PERMISSIVE.format(job_id=job_id), p_agent)
     except CapReached as exc:
         status = f"stopped: {exc}"
         lines_md.append(f"\n**Run stopped:** {exc}\n")
@@ -376,6 +403,9 @@ def main(argv: list[str] | None = None) -> int:
         "ended_utc": ended.isoformat(timespec="seconds"),
         "model": (re.sub(r":\d{12}:", ":<account>:", model_id) if model_id else "Strands default") if not args.rehearse else "scripted",
         "job_id": job_id,
+        "plan": (f"fixed plan from {os.path.relpath(Path(args.plan).resolve(), ROOT)} (not the live Planner)"
+                 if args.plan else "live Planner"),
+        "script": args.script,
         **summary,
     }
     (out / "run.json").write_text(json.dumps(run, indent=1) + "\n")
@@ -401,10 +431,11 @@ def main(argv: list[str] | None = None) -> int:
         + (f", {run['input_tokens']} input / {run['output_tokens']} output tokens, "
            f"≈ ${run['usd_estimate_at_list_price']} at list price" if not args.rehearse else "") + ".",
         f"Status: {status}. Job `{job_id}`; its full trace is `trace.jsonl`, OpenCV's pictures are in `perception/`.",
+        f"Plan: {run['plan']}.",
         "",
         "The person's lines are scripted; everything the agent did, every OpenCV decision and every gate "
         "refusal is what actually happened. Photos: "
-        + ", ".join(f"`{v}`" for v in photos.values()) + ".",
+        + ", ".join(f"`{scrub(v)}`" for v in photos.values()) + ".",
         "",
     ]
     (out / "transcript.md").write_text("\n".join(head + lines_md) + "\n")

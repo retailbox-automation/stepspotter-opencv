@@ -38,6 +38,28 @@ def test_the_rehearsal_records_opencv_changing_the_agents_next_move(tmp_path, mo
     assert list((out / "perception").glob("*.jpg")) and list((out / "cards").glob("step-*.jpg"))
 
 
+
+def test_the_v2_rehearsal_with_the_fixed_plan_shows_an_allowed_advance(tmp_path, monkeypatch):
+    """Run 2's shape: the fixed plan replaces the Planner, a passed photo lets advance_step
+    through, the next step is shown, then the permissive turn is cancelled on that step."""
+    monkeypatch.chdir(ROOT)
+    rec = _recorder()
+    out = tmp_path / "out"
+    plan = ROOT / "data" / "demo" / "agentic-opencv" / "plan.json"
+    args = ["--rehearse", "--script", "v2", "--plan", str(plan), "--out", str(out), "--data", str(tmp_path / "data")]
+    assert rec.main(args) == 0
+    run = json.loads((out / "run.json").read_text())
+    assert run["plan"].startswith("fixed plan from data/demo/agentic-opencv/plan.json") and run["script"] == "v2"
+    text = (out / "transcript.md").read_text()
+    assert "Gate (code, not the model) allowed this call" in text
+    assert "Step 2 of 2: Seat the wire pairs into the office jack" in text  # the fixed plan, not the rehearsal's
+    assert "### Turn 5 — permissive prompt" in text and "Gate (code, not the model) cancelled this tool call" in text
+    rows = [json.loads(ln) for ln in (out / "trace.jsonl").read_text().splitlines()]
+    assert any(r["event"] == "gate_block" for r in rows)
+    top = "/" + tmp_path.parts[1] + "/"  # "/private/" or "/tmp/": catches a path even when a result is cut short
+    for f in ("transcript.md", "trace.jsonl", "run.json"):
+        assert top not in (out / f).read_text(), f
+
 def test_the_meter_never_sends_the_call_over_the_cap():
     rec = _recorder()
     sent: list[int] = []
