@@ -29,13 +29,19 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PORT=8080 \
     STEPSPOTTER_DATA=/data \
-    STEPSPOTTER_MANUALS=/app/data/manuals
+    STEPSPOTTER_MANUALS=/app/data/manuals \
+    STEPSPOTTER_MODELS=/app/models
 
 WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY src ./src
 COPY data/manuals ./data/manuals
+# The YuNet face detector (opencv_zoo, MIT) is not in git: fetched here, size and SHA256
+# checked against the pins in src/stepspotter/perception/fetch_yunet.py, MIT notice
+# written beside it. A mismatch fails the build. Without it faces would go unchecked
+# (every report would say faces_checked=false), so the build does not go on without it.
 RUN pip install --no-cache-dir . \
+ && python -m stepspotter.perception.fetch_yunet --dest /app/models \
  && mkdir -p /data/jobs \
  && useradd --create-home --uid 10001 spotter \
  && chown -R spotter:spotter /data /app

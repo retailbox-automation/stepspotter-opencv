@@ -1,10 +1,10 @@
 """Faces in an evidence photo are blurred before the photo is kept or sent to a model.
 
 The detector is YuNet from opencv_zoo (MIT), run through ``cv2.FaceDetectorYN``. The
-ONNX file is NOT shipped in this repository and is never downloaded by the code or the
-tests. ``tools/fetch_models.sh`` fetches it (a person or the deploy step runs that,
-with the checksum check in the script); until the file is present, every report says
-``faces_checked=False`` — the layer never claims a check it did not run.
+ONNX file is NOT committed to this repository and the tests never download it. The
+container build fetches and verifies it (``fetch_yunet``, run by the Dockerfile); a
+checkout gets it with ``tools/fetch_models.sh``. Wherever the file is absent, every
+report says ``faces_checked=False`` — the layer never claims a check it did not run.
 
 Where the file is looked for: ``$STEPSPOTTER_MODELS`` if set, otherwise ``models/`` at
 the repository root (the container copies the same directory).
@@ -41,9 +41,19 @@ def model_path() -> Path | None:
     return p if p.is_file() else None
 
 
+def _quiet():
+    """OpenCV 5's DNN prints a 'targets not supported' warning on every detector call —
+    noise in the service log that reads like a fault. Errors still come through."""
+    try:
+        cv2.utils.logging.setLogLevel(cv2.utils.logging.LOG_LEVEL_ERROR)
+    except AttributeError:  # pragma: no cover - older builds
+        pass
+
+
 def _detector(path: Path):
     global _DETECTOR, _DETECTOR_PATH
     if _DETECTOR is None or _DETECTOR_PATH != path:
+        _quiet()
         _DETECTOR = cv2.FaceDetectorYN.create(str(path), "", (320, 320), T.YUNET_SCORE, 0.3, 5000)
         _DETECTOR_PATH = path
     return _DETECTOR
