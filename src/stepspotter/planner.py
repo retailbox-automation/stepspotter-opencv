@@ -54,6 +54,9 @@ Rules for steps, all of them binding:
  - source: when the manufacturer's manual is quoted below, name the page the step
    came from, like "manual p.11". Leave it null for a step you read off the photo.
    Never invent a page number: cite only pages that appear in the excerpt you were given.
+ - expects_change: true when doing the step changes something the camera can see (a
+   part fitted, a wire seated, a cover off, a cable plugged in); false when the step
+   only finds, confirms, inspects or tests. Never leave it out.
  - The LAST step is always a check: a tester, an indicator light, a read-back, a
    pull-test. A job is not finished until something confirms it worked.
 

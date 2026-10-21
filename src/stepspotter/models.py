@@ -11,6 +11,9 @@ import datetime as _dt
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
+from pydantic.json_schema import SkipJsonSchema
+
+from stepspotter.perception.models import PerceptionReport
 
 SafetyClass = Literal["diy_ok", "vendor_required"]
 
@@ -84,6 +87,15 @@ class Step(BaseModel):
         description="where this step comes from, e.g. 'manual p.11 FIG.7'; "
         "null when it comes from the photo alone",
     )
+    expects_change: bool | None = Field(
+        default=None,
+        description=(
+            "true when doing this step physically changes something the camera can see "
+            "(a part fitted, a wire seated, a cover taken off, a cable plugged in); false "
+            "when the step only finds, confirms, inspects or tests without changing "
+            "anything visible. The photo checker uses it to tell 'done' from 'not touched yet'."
+        ),
+    )
 
     @field_validator("action")
     @classmethod
@@ -148,6 +160,27 @@ class StepVerdict(BaseModel):
         default_factory=list,
         description="at most two boxes: what you looked at to decide. Leave empty if unsure.",
     )
+    #: Who decided: "llm" (the model looked at the photo) or "opencv" (the deterministic
+    #: layer refused it before any model was asked). Hidden from the JSON schema the model
+    #: fills in, so the model can never claim to be the other one; the code sets it.
+    source: SkipJsonSchema[str] = "llm"
+
+
+class EvidenceRecord(BaseModel):
+    """One photo sent as evidence, kept for the rest of the job.
+
+    The perception layer needs the job's photo history: every earlier photo is a
+    candidate replay, and the last accepted one is the baseline a later step's change
+    is measured against. ``H_to_ref`` is that photo's homography onto the step
+    reference, in working pixels, when it lined up.
+    """
+
+    step: int = Field(description="zero-based step index it was sent for")
+    photo: str
+    attempt: int = 1
+    passed: bool | None = None
+    source: str = "llm"
+    H_to_ref: list[list[float]] | None = None
 
 
 class JobState(BaseModel):
@@ -167,10 +200,22 @@ class JobState(BaseModel):
         description="the boxes drawn for each step, keyed by zero-based step index, in "
         "badge order — so the legend under the photo can be written as real text",
     )
+    perception: dict[int, PerceptionReport] = Field(
+        default_factory=dict,
+        description="the OpenCV report on the latest photo for each step, zero-based keys",
+    )
+    perception_streak: dict[int, int] = Field(
+        default_factory=dict,
+        description="consecutive photos OpenCV has blocked on each step (the stuck rule)",
+    )
+    evidence: list[EvidenceRecord] = Field(default_factory=list)
+    llm_calls_saved: int = Field(
+        default=0, description="photos refused by OpenCV before any model call, this job"
+    )
     created_at: str = Field(default_factory=_now)
     updated_at: str = Field(default_factory=_now)
 
-    @field_validator("verdicts", "card_paths", "box_sets", mode="before")
+    @field_validator("verdicts", "card_paths", "box_sets", "perception", "perception_streak", mode="before")
     @classmethod
     def _int_keys(cls, v: object) -> object:
         """JSON turns int keys into strings; turn them back on load."""
