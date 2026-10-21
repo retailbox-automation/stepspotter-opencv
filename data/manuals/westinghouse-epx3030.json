@@ -1,0 +1,20 @@
+{
+  "product": "Westinghouse ePX3030",
+  "status": "found",
+  "manual_url": "https://cdn.westinghouseoutdoorpower.com/owners_manuals/ePX3030_manual_web.pdf",
+  "manual_path": null,
+  "manual_pages": [
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "excerpt": "",
+  "videos": [],
+  "note": "excerpt removed: this repository ships no text copied from the manual; open manual_url (the manufacturer's PDF) at the pages listed",
+  "source": "index",
+  "trail": [
+    "baked from https://cdn.westinghouseoutdoorpower.com/owners_manuals/ePX3030_manual_web.pdf by tools/bake_manual_cache.py"
+  ]
+}

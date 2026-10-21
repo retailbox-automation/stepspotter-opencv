@@ -1,0 +1,18 @@
+{
+  "product": "Ryobi RY40LB01K",
+  "status": "found",
+  "manual_url": "https://images.thdstatic.com/catalog/pdfImages/78/7864861c-6dd0-431f-9ebb-cb3c8a05959d.pdf",
+  "manual_path": null,
+  "manual_pages": [
+    7,
+    8,
+    9
+  ],
+  "excerpt": "",
+  "videos": [],
+  "note": "excerpt removed: this repository ships no text copied from the manual; open manual_url (the manufacturer's PDF) at the pages listed",
+  "source": "index",
+  "trail": [
+    "baked from https://images.thdstatic.com/catalog/pdfImages/78/7864861c-6dd0-431f-9ebb-cb3c8a05959d.pdf by tools/bake_manual_cache.py"
+  ]
+}

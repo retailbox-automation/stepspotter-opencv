@@ -1,0 +1,16 @@
+{
+  "product": "Ryobi RY31012",
+  "status": "found",
+  "manual_url": "https://images.thdstatic.com/catalog/pdfImages/9f/9fcec3ed-a85b-415a-b2cc-89cc1a79994c.pdf",
+  "manual_path": null,
+  "manual_pages": [
+    1
+  ],
+  "excerpt": "",
+  "videos": [],
+  "note": "excerpt removed: this repository ships no text copied from the manual; open manual_url (the manufacturer's PDF) at the pages listed",
+  "source": "index",
+  "trail": [
+    "baked from https://images.thdstatic.com/catalog/pdfImages/9f/9fcec3ed-a85b-415a-b2cc-89cc1a79994c.pdf by tools/bake_manual_cache.py"
+  ]
+}
