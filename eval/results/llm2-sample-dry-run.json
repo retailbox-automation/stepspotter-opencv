@@ -1,0 +1,1954 @@
+{
+ "config": "llm2",
+ "letter": "A'",
+ "split": "all",
+ "max_llm_calls": 0,
+ "llm_calls_made": 0,
+ "dry_run": true,
+ "would_call": [
+  {
+   "id": "04-real_same_place-05",
+   "evidence": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "step": "Snap the jack into the plate",
+   "mode": "two_image"
+  },
+  {
+   "id": "04-real_wrong_place-06",
+   "evidence": "fixtures/onq-keystone-smoke/redteam/R2-evidence-absent.jpg",
+   "step": "Snap the jack into the plate",
+   "mode": "two_image"
+  },
+  {
+   "id": "06-real_wrong_place-05",
+   "evidence": "fixtures/onq-keystone-smoke/steps/02-seat-pairs.jpg",
+   "step": "Seat the cable in the module",
+   "mode": "two_image"
+  },
+  {
+   "id": "c03-good_light",
+   "evidence": "eval/cases/c03-good_light.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c03-replay_reference",
+   "evidence": "eval/cases/c03-replay_reference.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c05-good_reshot",
+   "evidence": "eval/cases/c05-good_reshot.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c05-overexposed",
+   "evidence": "eval/cases/c05-overexposed.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c05-no_change",
+   "evidence": "eval/cases/c05-no_change.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c07-good_closeup",
+   "evidence": "eval/cases/c07-good_closeup.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c07-dark",
+   "evidence": "eval/cases/c07-dark.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c08-good_rotate",
+   "evidence": "eval/cases/c08-good_rotate.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c08-good_closeup",
+   "evidence": "eval/cases/c08-good_closeup.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c08-zone_cut",
+   "evidence": "eval/cases/c08-zone_cut.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c08-wrong_place_mirror",
+   "evidence": "eval/cases/c08-wrong_place_mirror.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c09-good_act_edit",
+   "evidence": "eval/cases/c09-good_act_edit.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c09-overexposed",
+   "evidence": "eval/cases/c09-overexposed.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c09-glare",
+   "evidence": "eval/cases/c09-glare.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c09-touched_avoid",
+   "evidence": "eval/cases/c09-touched_avoid.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c10-touched_avoid",
+   "evidence": "eval/cases/c10-touched_avoid.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c12-good_rotate",
+   "evidence": "eval/cases/c12-good_rotate.jpg",
+   "step": "Check the network wall jack",
+   "mode": "two_image"
+  },
+  {
+   "id": "c12-good_reshot",
+   "evidence": "eval/cases/c12-good_reshot.jpg",
+   "step": "Check the network wall jack",
+   "mode": "two_image"
+  },
+  {
+   "id": "c12-good_act_edit",
+   "evidence": "eval/cases/c12-good_act_edit.jpg",
+   "step": "Check the network wall jack",
+   "mode": "two_image"
+  },
+  {
+   "id": "c15-good_view_light",
+   "evidence": "eval/cases/c15-good_view_light.jpg",
+   "step": "Check the jack's wiring",
+   "mode": "two_image"
+  },
+  {
+   "id": "c21-blur_gaussian",
+   "evidence": "eval/cases/c21-blur_gaussian.jpg",
+   "step": "Open the junction box",
+   "mode": "two_image"
+  },
+  {
+   "id": "c22-replay_exact",
+   "evidence": "eval/cases/public/commons/c22-HK-public-toilet-bathing-hand-sink-drain.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c23-good_light",
+   "evidence": "eval/cases/c23-good_light.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c23-no_change",
+   "evidence": "eval/cases/c23-no_change.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c24-blur_gaussian",
+   "evidence": "eval/cases/c24-blur_gaussian.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c24-blur_motion",
+   "evidence": "eval/cases/c24-blur_motion.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c24-glare",
+   "evidence": "eval/cases/c24-glare.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c24-replay_reference",
+   "evidence": "eval/cases/c24-replay_reference.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c27-good_view_light",
+   "evidence": "eval/cases/c27-good_view_light.jpg",
+   "step": "Run the tap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c27-replay_exact",
+   "evidence": "eval/cases/public/commons/c27-247-Home-Rescue-sink-tap-plumbing-water.jpg",
+   "step": "Run the tap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c30-dark",
+   "evidence": "eval/cases/c30-dark.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c30-replay_earlier",
+   "evidence": "eval/cases/c30-replay_earlier.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c31-blur_motion",
+   "evidence": "eval/cases/c31-blur_motion.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c38-wrong_place_mirror",
+   "evidence": "eval/cases/c38-wrong_place_mirror.jpg",
+   "step": "Check the downspout outlet",
+   "mode": "two_image"
+  },
+  {
+   "id": "c39-zone_cut",
+   "evidence": "eval/cases/c39-zone_cut.jpg",
+   "step": "Check the downspout outlet",
+   "mode": "two_image"
+  },
+  {
+   "id": "c39-replay_earlier",
+   "evidence": "eval/cases/c39-replay_earlier.jpg",
+   "step": "Check the downspout outlet",
+   "mode": "two_image"
+  },
+  {
+   "id": "c22-real_same_place-c24",
+   "evidence": "eval/cases/public/commons/c24-HK-public-toilet-bathing-hand-sink-drain.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c24-real_same_place-c22",
+   "evidence": "eval/cases/public/commons/c22-HK-public-toilet-bathing-hand-sink-drain.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c27-real_same_place-c28",
+   "evidence": "eval/cases/public/commons/c28-247-Home-Rescue-tap-sink-plumbing-water.jpg",
+   "step": "Run the tap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c09-real_same_place-c10",
+   "evidence": "eval/cases/public/commons/c10-Panduit-Pan-Net-Cable-Management-System.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c22-real_replay_annotated-c23",
+   "evidence": "eval/cases/public/commons/c23-HK-public-toilet-bathing-hand-sink-drain.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "v0990-real_blur-v0900",
+   "evidence": "eval/cases/public/own-sink-video/f0900.jpg",
+   "step": "Check the disposal's drain elbow",
+   "mode": "two_image"
+  },
+  {
+   "id": "v1106-real_blur-v0870",
+   "evidence": "eval/cases/public/own-sink-video/f0870.jpg",
+   "step": "Check the disposal's drain elbow",
+   "mode": "two_image"
+  },
+  {
+   "id": "v0659-real_wrong_place_same_room-v1050",
+   "evidence": "eval/cases/public/own-sink-video/f1050.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "v0812-real_wrong_place_same_room-v0990",
+   "evidence": "eval/cases/public/own-sink-video/f0990.jpg",
+   "step": "Check the supply valve",
+   "mode": "two_image"
+  },
+  {
+   "id": "c03-real_lookalike-c05",
+   "evidence": "eval/cases/public/commons/c05-Patchpanel.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c05-real_lookalike-c03",
+   "evidence": "eval/cases/public/commons/c03-Baie-de-brassage.jpg",
+   "step": "Find the patch panel",
+   "mode": "two_image"
+  },
+  {
+   "id": "c12-real_lookalike-c15",
+   "evidence": "eval/cases/public/commons/c15-Commercial-RJ45-wall-socket-internals.jpg",
+   "step": "Check the network wall jack",
+   "mode": "two_image"
+  },
+  {
+   "id": "c15-real_lookalike-c12",
+   "evidence": "eval/cases/public/commons/c12-Keystone-wall-plate.jpg",
+   "step": "Check the jack's wiring",
+   "mode": "two_image"
+  },
+  {
+   "id": "c22-real_lookalike-c31",
+   "evidence": "eval/cases/public/commons/c31-Brass-P-trap.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  },
+  {
+   "id": "c31-real_lookalike-c24",
+   "evidence": "eval/cases/public/commons/c24-HK-public-toilet-bathing-hand-sink-drain.jpg",
+   "step": "Check the sink trap",
+   "mode": "two_image"
+  }
+ ],
+ "built_with": {
+  "opencv": "5.0.0",
+  "numpy": "2.5.4",
+  "jpeg_quality": 92
+ },
+ "manifest_sha256": "ba6e8ddf57e2ce428d3b0d406fae8a1cfb168bc0af070c90e5f7db16707c02ff",
+ "code": {
+  "eval_worktree_head": "43c1520d22a84abd675a3e396bf606be6d4d92cb",
+  "main_head": "43c1520d22a84abd675a3e396bf606be6d4d92cb",
+  "l1_checkout_head": "43c1520d22a84abd675a3e396bf606be6d4d92cb",
+  "stepspotter_imported_from": "this checkout's src/"
+ },
+ "model_id": "Strands/Bedrock default (global.anthropic.claude-sonnet-4-6)",
+ "faces_checked": [],
+ "ran_at": "2026-10-21T12:25:07+00:00",
+ "rows": [
+  {
+   "id": "04-real_same_place-05",
+   "class": "real_same_place",
+   "kind": "good",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "ok",
+   "source": "onq",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "04-real_wrong_place-06",
+   "class": "real_wrong_place",
+   "kind": "bad",
+   "group": "04",
+   "scene": "office-jack",
+   "split": "test",
+   "expected": "wrong_place",
+   "source": "onq",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "06-real_wrong_place-05",
+   "class": "real_wrong_place",
+   "kind": "bad",
+   "group": "06",
+   "scene": "dining-node",
+   "split": "test",
+   "expected": "wrong_place",
+   "source": "onq",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c03-good_light",
+   "class": "good_light",
+   "kind": "good",
+   "group": "c03",
+   "scene": "c03",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c03-replay_reference",
+   "class": "replay_reference",
+   "kind": "bad",
+   "group": "c03",
+   "scene": "c03",
+   "split": "test",
+   "expected": "replay",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c05-good_reshot",
+   "class": "good_reshot",
+   "kind": "good",
+   "group": "c05",
+   "scene": "c05",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c05-overexposed",
+   "class": "overexposed",
+   "kind": "bad",
+   "group": "c05",
+   "scene": "c05",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c05-no_change",
+   "class": "no_change",
+   "kind": "bad",
+   "group": "c05",
+   "scene": "c05",
+   "split": "test",
+   "expected": "no_change",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c07-good_closeup",
+   "class": "good_closeup",
+   "kind": "good",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c07-dark",
+   "class": "dark",
+   "kind": "bad",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c08-good_rotate",
+   "class": "good_rotate",
+   "kind": "good",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c08-good_closeup",
+   "class": "good_closeup",
+   "kind": "good",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c08-zone_cut",
+   "class": "zone_cut",
+   "kind": "bad",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c08-wrong_place_mirror",
+   "class": "wrong_place_mirror",
+   "kind": "bad",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "wrong_place",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c09-good_act_edit",
+   "class": "good_act_edit",
+   "kind": "good",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c09-overexposed",
+   "class": "overexposed",
+   "kind": "bad",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c09-glare",
+   "class": "glare",
+   "kind": "bad",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c09-touched_avoid",
+   "class": "touched_avoid",
+   "kind": "bad",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "touched_avoid",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c10-touched_avoid",
+   "class": "touched_avoid",
+   "kind": "bad",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "touched_avoid",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c12-good_rotate",
+   "class": "good_rotate",
+   "kind": "good",
+   "group": "c12",
+   "scene": "c12",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c12-good_reshot",
+   "class": "good_reshot",
+   "kind": "good",
+   "group": "c12",
+   "scene": "c12",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c12-good_act_edit",
+   "class": "good_act_edit",
+   "kind": "good",
+   "group": "c12",
+   "scene": "c12",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c15-good_view_light",
+   "class": "good_view_light",
+   "kind": "good",
+   "group": "c15",
+   "scene": "c15",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c21-blur_gaussian",
+   "class": "blur_gaussian",
+   "kind": "bad",
+   "group": "c21",
+   "scene": "c21",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c22-replay_exact",
+   "class": "replay_exact",
+   "kind": "bad",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "replay",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c23-good_light",
+   "class": "good_light",
+   "kind": "good",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c23-no_change",
+   "class": "no_change",
+   "kind": "bad",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "no_change",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c24-blur_gaussian",
+   "class": "blur_gaussian",
+   "kind": "bad",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c24-blur_motion",
+   "class": "blur_motion",
+   "kind": "bad",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c24-glare",
+   "class": "glare",
+   "kind": "bad",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c24-replay_reference",
+   "class": "replay_reference",
+   "kind": "bad",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "replay",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c27-good_view_light",
+   "class": "good_view_light",
+   "kind": "good",
+   "group": "247-tap",
+   "scene": "247-tap",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c27-replay_exact",
+   "class": "replay_exact",
+   "kind": "bad",
+   "group": "247-tap",
+   "scene": "247-tap",
+   "split": "test",
+   "expected": "replay",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c30-dark",
+   "class": "dark",
+   "kind": "bad",
+   "group": "c30",
+   "scene": "c30",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c30-replay_earlier",
+   "class": "replay_earlier",
+   "kind": "bad",
+   "group": "c30",
+   "scene": "c30",
+   "split": "test",
+   "expected": "replay",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c31-blur_motion",
+   "class": "blur_motion",
+   "kind": "bad",
+   "group": "c31",
+   "scene": "c31",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c38-wrong_place_mirror",
+   "class": "wrong_place_mirror",
+   "kind": "bad",
+   "group": "c38",
+   "scene": "c38",
+   "split": "test",
+   "expected": "wrong_place",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c39-zone_cut",
+   "class": "zone_cut",
+   "kind": "bad",
+   "group": "c39",
+   "scene": "c39",
+   "split": "test",
+   "expected": "retake",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c39-replay_earlier",
+   "class": "replay_earlier",
+   "kind": "bad",
+   "group": "c39",
+   "scene": "c39",
+   "split": "test",
+   "expected": "replay",
+   "source": "commons",
+   "provenance": "synthetic",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c22-real_same_place-c24",
+   "class": "real_same_place",
+   "kind": "good",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c24-real_same_place-c22",
+   "class": "real_same_place",
+   "kind": "good",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c27-real_same_place-c28",
+   "class": "real_same_place",
+   "kind": "good",
+   "group": "247-tap",
+   "scene": "247-tap",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c09-real_same_place-c10",
+   "class": "real_same_place",
+   "kind": "good",
+   "group": "panduit",
+   "scene": "panduit",
+   "split": "test",
+   "expected": "ok",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c22-real_replay_annotated-c23",
+   "class": "real_replay_annotated",
+   "kind": "bad",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "replay",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "v0990-real_blur-v0900",
+   "class": "real_blur",
+   "kind": "bad",
+   "group": "own-sink-video",
+   "scene": "own-sink-video",
+   "split": "calibration",
+   "expected": "retake",
+   "source": "own-video",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "v1106-real_blur-v0870",
+   "class": "real_blur",
+   "kind": "bad",
+   "group": "own-sink-video",
+   "scene": "own-sink-video",
+   "split": "calibration",
+   "expected": "retake",
+   "source": "own-video",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "v0659-real_wrong_place_same_room-v1050",
+   "class": "real_wrong_place_same_room",
+   "kind": "bad",
+   "group": "own-sink-video",
+   "scene": "own-sink-video",
+   "split": "calibration",
+   "expected": "wrong_place",
+   "source": "own-video",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "v0812-real_wrong_place_same_room-v0990",
+   "class": "real_wrong_place_same_room",
+   "kind": "bad",
+   "group": "own-sink-video",
+   "scene": "own-sink-video",
+   "split": "calibration",
+   "expected": "wrong_place",
+   "source": "own-video",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c03-real_lookalike-c05",
+   "class": "real_lookalike",
+   "kind": "bad",
+   "group": "c03",
+   "scene": "c03",
+   "split": "test",
+   "expected": "wrong_place",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c05-real_lookalike-c03",
+   "class": "real_lookalike",
+   "kind": "bad",
+   "group": "c05",
+   "scene": "c05",
+   "split": "test",
+   "expected": "wrong_place",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c12-real_lookalike-c15",
+   "class": "real_lookalike",
+   "kind": "bad",
+   "group": "c12",
+   "scene": "c12",
+   "split": "test",
+   "expected": "wrong_place",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c15-real_lookalike-c12",
+   "class": "real_lookalike",
+   "kind": "bad",
+   "group": "c15",
+   "scene": "c15",
+   "split": "test",
+   "expected": "wrong_place",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c22-real_lookalike-c31",
+   "class": "real_lookalike",
+   "kind": "bad",
+   "group": "hk-sink",
+   "scene": "hk-sink",
+   "split": "test",
+   "expected": "wrong_place",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  },
+  {
+   "id": "c31-real_lookalike-c24",
+   "class": "real_lookalike",
+   "kind": "bad",
+   "group": "c31",
+   "scene": "c31",
+   "split": "test",
+   "expected": "wrong_place",
+   "source": "commons",
+   "provenance": "real",
+   "llm": {
+    "status": "dry_run",
+    "mode": "two_image"
+   },
+   "blocked": null,
+   "outcome": "not_run"
+  }
+ ],
+ "summary": {
+  "all": {
+   "n": 54,
+   "ran": 0,
+   "caught": 0,
+   "missed": 0,
+   "accepted": 0,
+   "false_blocks": 0,
+   "routed_two_image": 0,
+   "unscored": 0,
+   "llm_calls": 0,
+   "llm_errors": 0
+  },
+  "by_split": {
+   "calibration": {
+    "n": 4,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "test": {
+    "n": 50,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   }
+  },
+  "by_kind": {
+   "good": {
+    "n": 17,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "bad": {
+    "n": 37,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   }
+  },
+  "by_source": {
+   "onq": {
+    "n": 3,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "commons": {
+    "n": 47,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "own-video": {
+    "n": 4,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   }
+  },
+  "by_class": {
+   "real_same_place": {
+    "kind": "good",
+    "n": 5,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "real_wrong_place": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_light": {
+    "kind": "good",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "replay_reference": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_reshot": {
+    "kind": "good",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "overexposed": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "no_change": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_closeup": {
+    "kind": "good",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "dark": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_rotate": {
+    "kind": "good",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "zone_cut": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "wrong_place_mirror": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_act_edit": {
+    "kind": "good",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "glare": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "touched_avoid": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_view_light": {
+    "kind": "good",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "blur_gaussian": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "replay_exact": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "blur_motion": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "replay_earlier": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "real_replay_annotated": {
+    "kind": "bad",
+    "n": 1,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "real_blur": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "real_wrong_place_same_room": {
+    "kind": "bad",
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "real_lookalike": {
+    "kind": "bad",
+    "n": 6,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   }
+  },
+  "by_class_test": {
+   "real_same_place": {
+    "n": 5,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "real_wrong_place": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_light": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "replay_reference": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_reshot": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "overexposed": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "no_change": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_closeup": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "dark": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_rotate": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "zone_cut": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "wrong_place_mirror": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_act_edit": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "glare": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "touched_avoid": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "good_view_light": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "blur_gaussian": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "replay_exact": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "blur_motion": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "replay_earlier": {
+    "n": 2,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "real_replay_annotated": {
+    "n": 1,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   },
+   "real_lookalike": {
+    "n": 6,
+    "ran": 0,
+    "caught": 0,
+    "missed": 0,
+    "accepted": 0,
+    "false_blocks": 0,
+    "routed_two_image": 0,
+    "unscored": 0,
+    "llm_calls": 0,
+    "llm_errors": 0
+   }
+  }
+ },
+ "sample": true
+}

@@ -1,0 +1,3 @@
+# eval/cases/* is ignored at the repo root (generated cases); the published SOURCE photos
+# under cases/public/ (Wikimedia Commons files + frames of our own video) are source.
+!cases/public/

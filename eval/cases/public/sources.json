@@ -1,0 +1,2710 @@
+{
+ "_about": "Source photos of the eval beyond the six OnQ photos: Wikimedia Commons files (licence read from the Commons API extmetadata, not from the page title, 2026-10-21) and frames of Mikhail Oskola's own under-sink video (consent 2026-10-21T11:38:30Z). Zones were placed BY HAND on a 10% grid by the eval lane on 2026-10-21 by looking at each picture; steps are generic per family so a look-alike of the same family plausibly satisfies them.",
+ "_split": "Split by GROUP (one scene or one object photographed several times): calibration if sha256('stepspotter-eval-split:'+group)[0] < 128, else test. The OnQ scenes keep the split in fixtures/perception/scenes.json.",
+ "_label_by": "eval lane L2 (CT2010-OCV1), by eye, 2026-10-21",
+ "steps": {
+  "panel": {
+   "title": "Find the patch panel",
+   "action": "Open the network cabinet and find the patch panel where the room cables land.",
+   "evidence_required": "the open network cabinet or panel with the patch panel ports and their cables clearly visible"
+  },
+  "jack": {
+   "title": "Check the network wall jack",
+   "action": "Look at the wall plate and check the network jack is seated in it.",
+   "evidence_required": "the wall plate with the network (RJ45) jack seated in it, seen from the front"
+  },
+  "jack_open": {
+   "title": "Check the jack's wiring",
+   "action": "Open the jack and check the wire pairs are punched into its colour-coded slots.",
+   "evidence_required": "the open network jack with the wire pairs punched into its colour-coded slots"
+  },
+  "socket": {
+   "title": "Check the wall socket",
+   "action": "Check the telephone socket is fixed flat to the wall.",
+   "evidence_required": "the telephone wall socket, seen from the front, fixed to the wall"
+  },
+  "box": {
+   "title": "Open the junction box",
+   "action": "Take the cover off the junction box and look at the wires inside.",
+   "evidence_required": "the open junction box with the wires inside it visible"
+  },
+  "trap": {
+   "title": "Check the sink trap",
+   "action": "Wipe the trap under the sink dry and look at its joints for a new drop.",
+   "evidence_required": "the drain trap under the sink with its slip-nut joints in focus"
+  },
+  "tap": {
+   "title": "Run the tap",
+   "action": "Turn the tap on to test the drain.",
+   "evidence_required": "water running from the tap into the basin"
+  },
+  "valve": {
+   "title": "Check the supply valve",
+   "action": "Check the shut-off valve on the supply line under the sink.",
+   "evidence_required": "the shut-off valve on the supply line with its handle visible"
+  },
+  "sink": {
+   "title": "Show the sink",
+   "action": "Step back and photograph the whole sink with its faucet.",
+   "evidence_required": "the whole sink with its wall-mounted faucet"
+  },
+  "downspout": {
+   "title": "Check the downspout outlet",
+   "action": "Look at the bottom of the downspout where the water comes out.",
+   "evidence_required": "the downspout and its outlet at the bottom, clearly visible"
+  },
+  "elbow": {
+   "title": "Check the disposal's drain elbow",
+   "action": "Wipe the disposal's black drain elbow dry and look for a new drop.",
+   "evidence_required": "the black drain elbow on the disposal, in focus"
+  },
+  "tailpiece": {
+   "title": "Check the sink tailpiece",
+   "action": "Look at the white tailpiece under the sink drain and its joints.",
+   "evidence_required": "the white tailpiece under the sink drain with its joints visible"
+  }
+ },
+ "sources": {
+  "c01": {
+   "file": "eval/cases/public/commons/c01-Ethernet-12U-box.jpg",
+   "sha256": "b40c0f28d15be87b96bce56a16a78228e2837fb2f83464c3de573aade37f03ec",
+   "width": 1280,
+   "height": 1324,
+   "source_type": "commons",
+   "group": "c01",
+   "family": "panel",
+   "step": "panel",
+   "zones": [
+    {
+     "label": "upper patch panel and switch",
+     "kind": "act",
+     "box": [
+      0.17,
+      0.16,
+      0.83,
+      0.42
+     ]
+    },
+    {
+     "label": "door hinges",
+     "kind": "avoid",
+     "box": [
+      0.88,
+      0.12,
+      0.99,
+      0.88
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Ethernet 12U box.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Ethernet_12U_box.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Ethernet_12U_box.jpg/1280px-Ethernet_12U_box.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     1467,
+     1518
+    ],
+    "original_sha1": "de2f8159bdf3a899df264814a8bc4503ac9aeff2",
+    "author": "No machine-readable author provided. Ustas~commonswiki assumed (based on copyright claims).",
+    "credit": "No machine-readable source provided. Own work assumed (based on copyright claims).",
+    "licence": "CC BY-SA 3.0",
+    "licence_code": "cc-by-sa-3.0",
+    "licence_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "attribution_required": "true",
+    "description": "Description: 12U box & 50 ports & 3Com switch & Alied Telesyn switch & Compex hub\n\nDate: 18/04/2005\nAuthor: Alexander Chupryna\nLicence: GFDL"
+   }
+  },
+  "c02": {
+   "file": "eval/cases/public/commons/c02-Detalle-armario-telecomunicaciones.jpg",
+   "sha256": "e4e44fb7aca6ded9cf1031848eafd5507cc0e398eb12d0111440200cdba03681",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "c02",
+   "family": "panel",
+   "step": "panel",
+   "zones": [
+    {
+     "label": "patch panel with red cords",
+     "kind": "act",
+     "box": [
+      0.2,
+      0.38,
+      0.85,
+      0.5
+     ]
+    },
+    {
+     "label": "blue switch",
+     "kind": "avoid",
+     "box": [
+      0.2,
+      0.52,
+      0.85,
+      0.66
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Detalle-armario-telecomunicaciones.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Detalle-armario-telecomunicaciones.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Detalle-armario-telecomunicaciones.jpg/1280px-Detalle-armario-telecomunicaciones.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     1536,
+     2048
+    ],
+    "original_sha1": "5e2ac0abbf7be0561838fddf32a85b86f4049f39",
+    "author": "Quique251",
+    "credit": "Subida por el propio autor",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "Network rack, showing a detail of the cabling."
+   }
+  },
+  "c03": {
+   "file": "eval/cases/public/commons/c03-Baie-de-brassage.jpg",
+   "sha256": "d91507001be5818704585bca6e7bbd8c7d73731360dd204db400d12d31a557d4",
+   "width": 1200,
+   "height": 1600,
+   "source_type": "commons",
+   "group": "c03",
+   "family": "panel",
+   "step": "panel",
+   "zones": [
+    {
+     "label": "top of the rack",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.07,
+      0.7,
+      0.3
+     ]
+    },
+    {
+     "label": "cabinet door",
+     "kind": "avoid",
+     "box": [
+      0.74,
+      0.05,
+      0.88,
+      0.95
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Baie de brassage.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Baie_de_brassage.JPG",
+    "file_url": "https://upload.wikimedia.org/wikipedia/commons/2/26/Baie_de_brassage.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "original_size": [
+     1200,
+     1600
+    ],
+    "original_sha1": "545f94521afaa42fc7c6991e6d1680fb71eb7e79",
+    "author": "Arnaud 25",
+    "credit": "Own work",
+    "licence": "CC BY-SA 3.0",
+    "licence_code": "cc-by-sa-3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "attribution_required": "true",
+    "description": "Baie de brassage"
+   }
+  },
+  "c04": {
+   "file": "eval/cases/public/commons/c04-Cable-closet-bh.jpg",
+   "sha256": "652c355d168bd59213b9ff616df2c37056518caa93e23e30c08c9d68806494b9",
+   "width": 1280,
+   "height": 950,
+   "source_type": "commons",
+   "group": "c04",
+   "family": "panel",
+   "step": "panel",
+   "zones": [
+    {
+     "label": "orange cable",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.4,
+      0.42,
+      0.57
+     ]
+    },
+    {
+     "label": "switch at the top right",
+     "kind": "avoid",
+     "box": [
+      0.66,
+      0.02,
+      0.94,
+      0.12
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Cable closet bh.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Cable_closet_bh.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/Cable_closet_bh.jpg/1280px-Cable_closet_bh.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2080,
+     1544
+    ],
+    "original_sha1": "67b6d0cb28904cdaff28f1c1b5ef3fb0416fcb63",
+    "author": "",
+    "credit": "",
+    "licence": "Public domain",
+    "licence_code": "pd",
+    "licence_url": "",
+    "attribution_required": "false",
+    "description": ""
+   }
+  },
+  "c05": {
+   "file": "eval/cases/public/commons/c05-Patchpanel.jpg",
+   "sha256": "3fe1ddd0f1f06f751822a3c2f69894011f874f5615bf5bdc94dfc4d8e6a8d271",
+   "width": 1200,
+   "height": 1600,
+   "source_type": "commons",
+   "group": "c05",
+   "family": "panel",
+   "step": "panel",
+   "zones": [
+    {
+     "label": "patch panel rows",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.45,
+      0.75,
+      0.6
+     ]
+    },
+    {
+     "label": "cabinet frame",
+     "kind": "avoid",
+     "box": [
+      0.0,
+      0.05,
+      0.12,
+      0.95
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Patchpanel.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Patchpanel.JPG",
+    "file_url": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Patchpanel.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "original_size": [
+     1200,
+     1600
+    ],
+    "original_sha1": "33399ec8e89bbe1593476dd3f8c73560e67d05cc",
+    "author": "Florian Lindner",
+    "credit": "Own work",
+    "licence": "CC BY 2.5",
+    "licence_code": "cc-by-2.5",
+    "licence_url": "https://creativecommons.org/licenses/by/2.5",
+    "attribution_required": "true",
+    "description": "Patchpanel, selbst fotografiert"
+   }
+  },
+  "c07": {
+   "file": "eval/cases/public/commons/c07-Panduit-Pan-Net-Cable-Management-System.jpg",
+   "sha256": "52d8c095e45dfcd31dc961d6af56eb0c2128b266129649ca1c6eb0a7497d00d4",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "panduit",
+   "family": "panel",
+   "step": "panel",
+   "zones": [
+    {
+     "label": "port row",
+     "kind": "act",
+     "box": [
+      0.1,
+      0.6,
+      0.82,
+      0.72
+     ]
+    },
+    {
+     "label": "maker's logo",
+     "kind": "avoid",
+     "box": [
+      0.35,
+      0.43,
+      0.62,
+      0.56
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Panduit Pan-Net Cable Management System detail 1.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Panduit_Pan-Net_Cable_Management_System_detail_1.JPG",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Panduit_Pan-Net_Cable_Management_System_detail_1.JPG/1280px-Panduit_Pan-Net_Cable_Management_System_detail_1.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2048,
+     1536
+    ],
+    "original_sha1": "7c9d26812d0bcfac13d86d0a7c19352ce89413af",
+    "author": "BrokenSphere",
+    "credit": "Own work",
+    "licence": "CC BY-SA 3.0",
+    "licence_code": "cc-by-sa-3.0",
+    "licence_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "attribution_required": "true",
+    "description": "Detail of a rack of a Panduit Pan-Net Cable Management System found in an office building in Palo Alto, California.  See Image:Panduit Pan-Net Cable Management System front.JPG."
+   }
+  },
+  "c08": {
+   "file": "eval/cases/public/commons/c08-Panduit-Pan-Net-Cable-Management-System.jpg",
+   "sha256": "55d42e4299c077daf4085827c4ec416c35528426d9924cca43cf41379820629b",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "panduit",
+   "family": "panel",
+   "step": "panel",
+   "zones": [
+    {
+     "label": "lower port rows",
+     "kind": "act",
+     "box": [
+      0.1,
+      0.7,
+      0.9,
+      0.8
+     ]
+    },
+    {
+     "label": "maker's logo",
+     "kind": "avoid",
+     "box": [
+      0.46,
+      0.11,
+      0.57,
+      0.16
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Panduit Pan-Net Cable Management System detail 2.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Panduit_Pan-Net_Cable_Management_System_detail_2.JPG",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Panduit_Pan-Net_Cable_Management_System_detail_2.JPG/1280px-Panduit_Pan-Net_Cable_Management_System_detail_2.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     3264,
+     2448
+    ],
+    "original_sha1": "3da88775ecb1845152d869d0f95aab455374e4c3",
+    "author": "BrokenSphere",
+    "credit": "Own work",
+    "licence": "CC BY-SA 3.0",
+    "licence_code": "cc-by-sa-3.0",
+    "licence_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "attribution_required": "true",
+    "description": "Detail of a rack of a Panduit Pan-Net Cable Management System found in an office building in Palo Alto, California.  See Image:Panduit Pan-Net Cable Management System front.JPG."
+   }
+  },
+  "c09": {
+   "file": "eval/cases/public/commons/c09-Panduit-Pan-Net-Cable-Management-System.jpg",
+   "sha256": "201ce91ceaa737eec652545d08f3ff20cec63201590875e58a0c0144301fca6c",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "panduit",
+   "family": "panel",
+   "step": "panel",
+   "zones": [
+    {
+     "label": "upper patch panels",
+     "kind": "act",
+     "box": [
+      0.55,
+      0.15,
+      0.88,
+      0.38
+     ]
+    },
+    {
+     "label": "wall outlets",
+     "kind": "avoid",
+     "box": [
+      0.6,
+      0.66,
+      0.75,
+      0.75
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Panduit Pan-Net Cable Management System front.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Panduit_Pan-Net_Cable_Management_System_front.JPG",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/aa/Panduit_Pan-Net_Cable_Management_System_front.JPG/1280px-Panduit_Pan-Net_Cable_Management_System_front.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2448,
+     3264
+    ],
+    "original_sha1": "df484d31b31b1c7a8371018cead56d4253567216",
+    "author": "BrokenSphere",
+    "credit": "Own work",
+    "licence": "CC BY-SA 3.0",
+    "licence_code": "cc-by-sa-3.0",
+    "licence_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "attribution_required": "true",
+    "description": "A Panduit Pan-Net Cable Management System found in an office building in Palo Alto, California."
+   }
+  },
+  "c10": {
+   "file": "eval/cases/public/commons/c10-Panduit-Pan-Net-Cable-Management-System.jpg",
+   "sha256": "b11a663063ffddb0af321f2c049e251017a966dce233ab4d41744dc5fb8b304b",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "panduit",
+   "family": "panel",
+   "step": "panel",
+   "zones": [
+    {
+     "label": "rack edge with ports",
+     "kind": "act",
+     "box": [
+      0.62,
+      0.08,
+      0.82,
+      0.92
+     ]
+    },
+    {
+     "label": "wall outlet",
+     "kind": "avoid",
+     "box": [
+      0.25,
+      0.68,
+      0.4,
+      0.8
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Panduit Pan-Net Cable Management System side.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Panduit_Pan-Net_Cable_Management_System_side.JPG",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Panduit_Pan-Net_Cable_Management_System_side.JPG/1280px-Panduit_Pan-Net_Cable_Management_System_side.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2448,
+     3264
+    ],
+    "original_sha1": "a96d8c7a19311e376ab1ed1c5309da187640639e",
+    "author": "BrokenSphere",
+    "credit": "Own work",
+    "licence": "CC BY-SA 3.0",
+    "licence_code": "cc-by-sa-3.0",
+    "licence_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "attribution_required": "true",
+    "description": "A Panduit Pan-Net Cable Management System found in an office building in Palo Alto, California.  See Image:Panduit Pan-Net Cable Management System front.JPG."
+   }
+  },
+  "c11": {
+   "file": "eval/cases/public/commons/c11-Wall-Mount-6-Port-Cat-6A-Ethernet-Patchp.jpg",
+   "sha256": "0041d1289b0b899d02244e6ba61f9fee9ccf85d096e1b07e4e662e0cd68d0ce3",
+   "width": 1280,
+   "height": 860,
+   "source_type": "commons",
+   "group": "c11",
+   "family": "panel",
+   "step": "panel",
+   "zones": [
+    {
+     "label": "jack block and punch-downs",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.12,
+      0.72,
+      0.92
+     ]
+    },
+    {
+     "label": "pipe on the right",
+     "kind": "avoid",
+     "box": [
+      0.86,
+      0.2,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Wall-Mount 6-Port Cat 6A Ethernet Patchpanel.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Wall-Mount_6-Port_Cat_6A_Ethernet_Patchpanel.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/94/Wall-Mount_6-Port_Cat_6A_Ethernet_Patchpanel.jpg/1280px-Wall-Mount_6-Port_Cat_6A_Ethernet_Patchpanel.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     5445,
+     3659
+    ],
+    "original_sha1": "99a65a608f2d6441f922803c3744f4717be33f97",
+    "author": "Jacek Rużyczka",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "Opened wall-mount 6-port cat 6A ethernet patchpanel"
+   }
+  },
+  "c12": {
+   "file": "eval/cases/public/commons/c12-Keystone-wall-plate.jpg",
+   "sha256": "73f9fa7960833c83ea13e538003826d5c5de2db510bc276fbfef0d3cfbe0acdb",
+   "width": 1280,
+   "height": 1848,
+   "source_type": "commons",
+   "group": "c12",
+   "family": "jack",
+   "step": "jack",
+   "zones": [
+    {
+     "label": "RJ45 jack",
+     "kind": "act",
+     "box": [
+      0.42,
+      0.45,
+      0.58,
+      0.58
+     ]
+    },
+    {
+     "label": "ruler",
+     "kind": "avoid",
+     "box": [
+      0.0,
+      0.78,
+      1.0,
+      0.99
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Keystone wall plate.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Keystone_wall_plate.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Keystone_wall_plate.jpg/1280px-Keystone_wall_plate.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2416,
+     3488
+    ],
+    "original_sha1": "a5db600b4d3e5a5c2ad0f7d3c7c32718f3c4305f",
+    "author": "Dmeranda",
+    "credit": "Own work",
+    "licence": "Public domain",
+    "licence_code": "pd",
+    "licence_url": "",
+    "attribution_required": "false",
+    "description": "A 3-port keystone wall plate (single gang) which has three different kinds of keystone modules installed."
+   }
+  },
+  "c13": {
+   "file": "eval/cases/public/commons/c13-Australian-Dual-Socket-Outlet-and-LAN-Wa.jpg",
+   "sha256": "0d96e9a040e852ef64df346f0f9ea5f3b6a8cdd9a940778c551407d37e602f3c",
+   "width": 1280,
+   "height": 1856,
+   "source_type": "commons",
+   "group": "c13",
+   "family": "jack",
+   "step": "jack",
+   "zones": [
+    {
+     "label": "LAN jacks",
+     "kind": "act",
+     "box": [
+      0.28,
+      0.08,
+      0.75,
+      0.4
+     ]
+    },
+    {
+     "label": "power outlet",
+     "kind": "avoid",
+     "box": [
+      0.15,
+      0.55,
+      0.88,
+      0.97
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Australian Dual Socket Outlet and LAN Wall Plate.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Australian_Dual_Socket_Outlet_and_LAN_Wall_Plate.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/06/Australian_Dual_Socket_Outlet_and_LAN_Wall_Plate.jpg/1280px-Australian_Dual_Socket_Outlet_and_LAN_Wall_Plate.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     1546,
+     2242
+    ],
+    "original_sha1": "7cf00784c2b3cece7bad398f1b940ee634300ce3",
+    "author": "Fredquint",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "In Australia and New Zealand wall plates for switches and extra low voltage items (such as network LAN jacks, TV co-axial connectors, RCA sockets, binding posts etc) are available which match the sock"
+   }
+  },
+  "c14": {
+   "file": "eval/cases/public/commons/c14-CAT-5E-Wall-Outlet.jpg",
+   "sha256": "7b8e48cf8319501aba5ba20ebc641baa0c0a3ae6dc84e0c1b86313f2bad40a30",
+   "width": 638,
+   "height": 584,
+   "source_type": "commons",
+   "group": "c14",
+   "family": "jack",
+   "step": "jack_open",
+   "zones": [
+    {
+     "label": "left punch-down block",
+     "kind": "act",
+     "box": [
+      0.08,
+      0.42,
+      0.48,
+      0.78
+     ]
+    },
+    {
+     "label": "cable tie and screws",
+     "kind": "avoid",
+     "box": [
+      0.05,
+      0.8,
+      0.95,
+      0.97
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:CAT-5E-Wall Outlet.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:CAT-5E-Wall_Outlet.jpg",
+    "file_url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/CAT-5E-Wall_Outlet.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "original_size": [
+     638,
+     584
+    ],
+    "original_sha1": "f7cf035430a00b486b5ae3861fdd143a08ac6e55",
+    "author": "GLec",
+    "credit": "en.wikipedia",
+    "licence": "CC BY-SA 3.0",
+    "licence_code": "cc-by-sa-3.0",
+    "licence_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "attribution_required": "true",
+    "description": "Prise murale pour câble Cat 5 ou Cat 5e"
+   }
+  },
+  "c15": {
+   "file": "eval/cases/public/commons/c15-Commercial-RJ45-wall-socket-internals.jpg",
+   "sha256": "3b905fbf991ad3e7fdcea534d398b86a05a646b23b2a1f4c731cdd853fed429f",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "c15",
+   "family": "jack",
+   "step": "jack_open",
+   "zones": [
+    {
+     "label": "punch-down block",
+     "kind": "act",
+     "box": [
+      0.22,
+      0.38,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "top board connector",
+     "kind": "avoid",
+     "box": [
+      0.28,
+      0.04,
+      0.78,
+      0.2
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Commercial RJ45 wall socket internals.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Commercial_RJ45_wall_socket_internals.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Commercial_RJ45_wall_socket_internals.jpg/1280px-Commercial_RJ45_wall_socket_internals.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     1440,
+     1920
+    ],
+    "original_sha1": "6a85d19ed8551ce4724a0771fd4f5fc65fc5e5b7",
+    "author": "2pem",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "A commercially available RJ45 wall socket with T568A and T568B termination schemes indicated by the colours. Note that the pin out is adjusted such that pairs of the same colour are adjacent."
+   }
+  },
+  "c16": {
+   "file": "eval/cases/public/commons/c16-Swedish-telephone-socket-1-by-Scouten.jpg",
+   "sha256": "00350bb833c0ab5612b4bb5ed3881899a94f47e72cf3cd5681a5d18dcb70e5e4",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "swedish-socket",
+   "family": "socket",
+   "step": "socket",
+   "zones": [
+    {
+     "label": "socket face",
+     "kind": "act",
+     "box": [
+      0.38,
+      0.25,
+      0.65,
+      0.62
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.1,
+      0.99,
+      0.6
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Swedish telephone socket 1 by Scouten.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Swedish_telephone_socket_1_by_Scouten.JPG",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/Swedish_telephone_socket_1_by_Scouten.JPG/1280px-Swedish_telephone_socket_1_by_Scouten.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2537,
+     1902
+    ],
+    "original_sha1": "af7a75ca3ae014d9b80cd078e30ec38a779d8bc1",
+    "author": "Scouten, www.bjornlarsson.se",
+    "credit": "Own work",
+    "licence": "CC BY 3.0",
+    "licence_code": "cc-by-3.0",
+    "licence_url": "https://creativecommons.org/licenses/by/3.0",
+    "attribution_required": "true",
+    "description": "Swedish telephone socket"
+   }
+  },
+  "c17": {
+   "file": "eval/cases/public/commons/c17-Swedish-telephone-socket-2-by-Scouten.jpg",
+   "sha256": "bf79d3511c996649bcba53cfa84243b9c2ce5be65178053f1dc213753d8b59ab",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "swedish-socket",
+   "family": "socket",
+   "step": "socket",
+   "zones": [
+    {
+     "label": "socket face",
+     "kind": "act",
+     "box": [
+      0.38,
+      0.25,
+      0.62,
+      0.62
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.76,
+      0.1,
+      0.99,
+      0.6
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Swedish telephone socket 2 by Scouten.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Swedish_telephone_socket_2_by_Scouten.JPG",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Swedish_telephone_socket_2_by_Scouten.JPG/1280px-Swedish_telephone_socket_2_by_Scouten.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     3072,
+     2304
+    ],
+    "original_sha1": "61b63cc0cdaf29fed28e6fd9ac0f614ee686f9b2",
+    "author": "Scouten, www.bjornlarsson.se",
+    "credit": "Own work",
+    "licence": "CC BY 3.0",
+    "licence_code": "cc-by-3.0",
+    "licence_url": "https://creativecommons.org/licenses/by/3.0",
+    "attribution_required": "true",
+    "description": "Swedish telephone socket"
+   }
+  },
+  "c18": {
+   "file": "eval/cases/public/commons/c18-Swedish-telephone-socket-3-by-Scouten.jpg",
+   "sha256": "a3a6292e95f763d666f696c9402993b7dd4d78a3bc5b1706c9bd2dfa3dd7ca23",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "swedish-socket",
+   "family": "socket",
+   "step": "socket",
+   "zones": [
+    {
+     "label": "socket face",
+     "kind": "act",
+     "box": [
+      0.37,
+      0.33,
+      0.65,
+      0.7
+     ]
+    },
+    {
+     "label": "wall beside the plate",
+     "kind": "avoid",
+     "box": [
+      0.0,
+      0.1,
+      0.15,
+      0.8
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Swedish telephone socket 3 by Scouten.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Swedish_telephone_socket_3_by_Scouten.JPG",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Swedish_telephone_socket_3_by_Scouten.JPG/1280px-Swedish_telephone_socket_3_by_Scouten.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     3072,
+     2304
+    ],
+    "original_sha1": "ad8749e180fe781013b66fb15dee65631ccf5a5f",
+    "author": "Scouten, www.bjornlarsson.se",
+    "credit": "Own work",
+    "licence": "CC BY 3.0",
+    "licence_code": "cc-by-3.0",
+    "licence_url": "https://creativecommons.org/licenses/by/3.0",
+    "attribution_required": "true",
+    "description": "Swedish telephone socket"
+   }
+  },
+  "c19": {
+   "file": "eval/cases/public/commons/c19-Phone-junction-box.jpg",
+   "sha256": "328cc11888dff92ec3179fc7fc7dc0996c2fff00d477596b43c6cc79ae247f4a",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "c19",
+   "family": "box",
+   "step": "box",
+   "zones": [
+    {
+     "label": "small junction box",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.6,
+      0.66,
+      0.85
+     ]
+    },
+    {
+     "label": "round cover",
+     "kind": "avoid",
+     "box": [
+      0.33,
+      0.12,
+      0.55,
+      0.38
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Phone junction box.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Phone_junction_box.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Phone_junction_box.jpg/1280px-Phone_junction_box.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2048,
+     1536
+    ],
+    "original_sha1": "ddd3dfee523fc307212128ec7568aa1b9fd19c97",
+    "author": "User:Commons_sibi",
+    "credit": "Own work",
+    "licence": "CC BY-SA 3.0",
+    "licence_code": "cc-by-sa-3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "attribution_required": "true",
+    "description": "phone junction box .Indian model"
+   }
+  },
+  "c20": {
+   "file": "eval/cases/public/commons/c20-Junction-box-with-white-wires.jpg",
+   "sha256": "0046affedaba0134de5f495f3526ec13b351ab3b4b388cd8600de4e6c9ad65f2",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "c20",
+   "family": "box",
+   "step": "box",
+   "zones": [
+    {
+     "label": "box with wires",
+     "kind": "act",
+     "box": [
+      0.25,
+      0.62,
+      0.62,
+      0.99
+     ]
+    },
+    {
+     "label": "taped wire end",
+     "kind": "avoid",
+     "box": [
+      0.08,
+      0.1,
+      0.33,
+      0.4
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Junction box with white wires.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Junction_box_with_white_wires.JPG",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Junction_box_with_white_wires.JPG/1280px-Junction_box_with_white_wires.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2272,
+     1704
+    ],
+    "original_sha1": "6e11985e32f242d43a3d1fd1f0fec85d47dfec17",
+    "author": "Jexon",
+    "credit": "[1]",
+    "licence": "CC BY-SA 3.0",
+    "licence_code": "cc-by-sa-3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "attribution_required": "true",
+    "description": "Junction box with wires. \nAs you can see, all wires are white, so author has problems with defining poles of wires."
+   }
+  },
+  "c21": {
+   "file": "eval/cases/public/commons/c21-Dual-light-switches-with-exposed-wiring.jpg",
+   "sha256": "d1b11d65e77cf1085df2017ebc30fb36bf4e39ad06615434b4fbd6cc4f7fa176",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "c21",
+   "family": "box",
+   "step": "box",
+   "zones": [
+    {
+     "label": "blue box and wire nuts",
+     "kind": "act",
+     "box": [
+      0.33,
+      0.1,
+      0.72,
+      0.55
+     ]
+    },
+    {
+     "label": "left switch",
+     "kind": "avoid",
+     "box": [
+      0.2,
+      0.4,
+      0.4,
+      0.92
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Dual light switches with exposed wiring.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Dual_light_switches_with_exposed_wiring.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Dual_light_switches_with_exposed_wiring.jpg/1280px-Dual_light_switches_with_exposed_wiring.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2560,
+     1920
+    ],
+    "original_sha1": "7f77e8004fcce4cc7d2d3d8894e0ecb67b0cb0c7",
+    "author": "Paul Cutler from Chaska, USA",
+    "credit": "Flickr",
+    "licence": "CC BY 2.0",
+    "licence_code": "cc-by-2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "attribution_required": "true",
+    "description": "Dual light switches with exposed wiringmatts_wiring_1"
+   }
+  },
+  "c22": {
+   "file": "eval/cases/public/commons/c22-HK-public-toilet-bathing-hand-sink-drain.jpg",
+   "sha256": "08860eaaea4e896ddd6804e998c678a913baab1dc4b23edada5f7cbc2f7ae709",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "hk-sink",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "bottle trap",
+     "kind": "act",
+     "box": [
+      0.1,
+      0.4,
+      0.42,
+      0.86
+     ]
+    },
+    {
+     "label": "supply valve",
+     "kind": "avoid",
+     "box": [
+      0.72,
+      0.38,
+      0.92,
+      0.62
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:HK public toilet bathing hand sink drain pipes December 2019 SS2 01.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:HK_public_toilet_bathing_hand_sink_drain_pipes_December_2019_SS2_01.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/HK_public_toilet_bathing_hand_sink_drain_pipes_December_2019_SS2_01.jpg/1280px-HK_public_toilet_bathing_hand_sink_drain_pipes_December_2019_SS2_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     3096,
+     4128
+    ],
+    "original_sha1": "df141cefd197384fc65465df4c92edd47f98cff1",
+    "author": "HODmsl SVUR",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "HK public toilet bathing hand sink drain pipes December 2019"
+   }
+  },
+  "c23": {
+   "file": "eval/cases/public/commons/c23-HK-public-toilet-bathing-hand-sink-drain.jpg",
+   "sha256": "5541dbdad6323094aedb38216cac93b73c13174c3da2fe537a321653a47c353d",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "hk-sink",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "bottle trap",
+     "kind": "act",
+     "box": [
+      0.1,
+      0.4,
+      0.45,
+      0.88
+     ]
+    },
+    {
+     "label": "supply valve",
+     "kind": "avoid",
+     "box": [
+      0.72,
+      0.38,
+      0.92,
+      0.6
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:HK public toilet bathing hand sink drain pipes December 2019 SS2 02.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:HK_public_toilet_bathing_hand_sink_drain_pipes_December_2019_SS2_02.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/HK_public_toilet_bathing_hand_sink_drain_pipes_December_2019_SS2_02.jpg/1280px-HK_public_toilet_bathing_hand_sink_drain_pipes_December_2019_SS2_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     3072,
+     4096
+    ],
+    "original_sha1": "d61d5ca74d21dfd63cdcdd899e948b46fb014e8c",
+    "author": "HODmsl SVUR",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "HK public toilet bathing hand sink drain pipes December 2019"
+   }
+  },
+  "c24": {
+   "file": "eval/cases/public/commons/c24-HK-public-toilet-bathing-hand-sink-drain.jpg",
+   "sha256": "8501fad8925c50d5ac9b335801738299821e1a13433ee05df09006522bc03b2e",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "hk-sink",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "bottle trap",
+     "kind": "act",
+     "box": [
+      0.28,
+      0.55,
+      0.48,
+      0.88
+     ]
+    },
+    {
+     "label": "supply valve",
+     "kind": "avoid",
+     "box": [
+      0.68,
+      0.6,
+      0.8,
+      0.72
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:HK public toilet bathing hand sink drain pipes December 2019 SS2 03.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:HK_public_toilet_bathing_hand_sink_drain_pipes_December_2019_SS2_03.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/HK_public_toilet_bathing_hand_sink_drain_pipes_December_2019_SS2_03.jpg/1280px-HK_public_toilet_bathing_hand_sink_drain_pipes_December_2019_SS2_03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     3096,
+     4128
+    ],
+    "original_sha1": "99b7ae5d9f5e5d11bd604d6676f4b1c44f0be7cc",
+    "author": "HODmsl SVUR",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "HK public toilet bathing hand sink drain pipes December 2019"
+   }
+  },
+  "c25": {
+   "file": "eval/cases/public/commons/c25-247-Home-Rescue-back-of-sink-plumbing.jpg",
+   "sha256": "0551cdfb2a63f8cd6085b8531afee306306727bb253bceee160b9909e21be7cc",
+   "width": 1280,
+   "height": 720,
+   "source_type": "commons",
+   "group": "247-under-sink",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "trap joint",
+     "kind": "act",
+     "box": [
+      0.65,
+      0.38,
+      0.99,
+      0.95
+     ]
+    },
+    {
+     "label": "earth clamp label",
+     "kind": "avoid",
+     "box": [
+      0.28,
+      0.28,
+      0.45,
+      0.62
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:247 Home Rescue back of sink plumbing.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:247_Home_Rescue_back_of_sink_plumbing.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/247_Home_Rescue_back_of_sink_plumbing.jpg/1280px-247_Home_Rescue_back_of_sink_plumbing.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     3104,
+     1746
+    ],
+    "original_sha1": "e855db895b06e2d24f56eaea09ebf70e3fbeae40",
+    "author": "247homerescue",
+    "credit": "Own work",
+    "licence": "CC0",
+    "licence_code": "cc0",
+    "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "attribution_required": "false",
+    "description": "Sink, Plumbing, Drainage, Plumbers, Pipes, Pipework"
+   }
+  },
+  "c27": {
+   "file": "eval/cases/public/commons/c27-247-Home-Rescue-sink-tap-plumbing-water.jpg",
+   "sha256": "6514a539f201b19bc336c08f9dbb7e7af98711cb5786f17c09d69928ec3f50d4",
+   "width": 1280,
+   "height": 720,
+   "source_type": "commons",
+   "group": "247-tap",
+   "family": "tap",
+   "step": "tap",
+   "zones": [
+    {
+     "label": "tap and spout",
+     "kind": "act",
+     "box": [
+      0.0,
+      0.15,
+      0.5,
+      0.55
+     ]
+    },
+    {
+     "label": "door",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.0,
+      0.99,
+      0.4
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:247 Home Rescue sink tap plumbing water running.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:247_Home_Rescue_sink_tap_plumbing_water_running.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/247_Home_Rescue_sink_tap_plumbing_water_running.jpg/1280px-247_Home_Rescue_sink_tap_plumbing_water_running.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     3104,
+     1746
+    ],
+    "original_sha1": "7dbbbeb23c5233093ce98e16fe890371a41fdbe6",
+    "author": "247homerescue",
+    "credit": "Own work",
+    "licence": "CC0",
+    "licence_code": "cc0",
+    "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "attribution_required": "false",
+    "description": "Sink, tap on"
+   }
+  },
+  "c28": {
+   "file": "eval/cases/public/commons/c28-247-Home-Rescue-tap-sink-plumbing-water.jpg",
+   "sha256": "4b480cdc0f5376d702cf4409dfdd3a5564837f1a4a27b7f0d29eb28827e0e483",
+   "width": 1280,
+   "height": 720,
+   "source_type": "commons",
+   "group": "247-tap",
+   "family": "tap",
+   "step": "tap",
+   "zones": [
+    {
+     "label": "tap and spout",
+     "kind": "act",
+     "box": [
+      0.0,
+      0.15,
+      0.5,
+      0.55
+     ]
+    },
+    {
+     "label": "door",
+     "kind": "avoid",
+     "box": [
+      0.8,
+      0.0,
+      0.99,
+      0.4
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:247 Home Rescue tap sink plumbing water.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:247_Home_Rescue_tap_sink_plumbing_water.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/247_Home_Rescue_tap_sink_plumbing_water.jpg/1280px-247_Home_Rescue_tap_sink_plumbing_water.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     3104,
+     1746
+    ],
+    "original_sha1": "d63ad5db3e88ee4963f7a138e60076a8814d618d",
+    "author": "247homerescue",
+    "credit": "Own work",
+    "licence": "CC0",
+    "licence_code": "cc0",
+    "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "attribution_required": "false",
+    "description": "Sink, tap on"
+   }
+  },
+  "c29": {
+   "file": "eval/cases/public/commons/c29-Under-Sink-PVC-Piping.jpg",
+   "sha256": "bbf63cd7242d488085b4fa0f0583525476ea72edf5461c60bba1660c46bd6ad6",
+   "width": 1280,
+   "height": 861,
+   "source_type": "commons",
+   "group": "c29",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "trap and joints",
+     "kind": "act",
+     "box": [
+      0.36,
+      0.12,
+      0.56,
+      0.75
+     ]
+    },
+    {
+     "label": "supply hose",
+     "kind": "avoid",
+     "box": [
+      0.78,
+      0.05,
+      0.95,
+      0.4
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Under Sink - PVC Piping.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Under_Sink_-_PVC_Piping.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6e/Under_Sink_-_PVC_Piping.jpg/1280px-Under_Sink_-_PVC_Piping.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2798,
+     1882
+    ],
+    "original_sha1": "523e083150b056c0ef72dd865eadf9e7912b4fff",
+    "author": "Tony Webster",
+    "credit": "Under Sink - PVC Piping",
+    "licence": "CC BY 2.0",
+    "licence_code": "cc-by-2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "attribution_required": "true",
+    "description": "Under Kitchen Sink - PVC Piping"
+   }
+  },
+  "c30": {
+   "file": "eval/cases/public/commons/c30-Leaking-PVC-Pipe-Under-Sink-P-Trap-52842.jpg",
+   "sha256": "708acf04270e518216ce42a2312c3110e11b5584e2ca6d17b111d6152a56b196",
+   "width": 1280,
+   "height": 827,
+   "source_type": "commons",
+   "group": "c30",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "P-trap",
+     "kind": "act",
+     "box": [
+      0.1,
+      0.05,
+      0.5,
+      0.82
+     ]
+    },
+    {
+     "label": "wall",
+     "kind": "avoid",
+     "box": [
+      0.65,
+      0.2,
+      0.95,
+      0.8
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Leaking PVC Pipe Under Sink - P Trap (52842956605).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Leaking_PVC_Pipe_Under_Sink_-_P_Trap_(52842956605).jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Leaking_PVC_Pipe_Under_Sink_-_P_Trap_%2852842956605%29.jpg/1280px-Leaking_PVC_Pipe_Under_Sink_-_P_Trap_%2852842956605%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     6824,
+     4409
+    ],
+    "original_sha1": "26c85c51ba43cf33e014f29ed61bc36950d40e1a",
+    "author": "Tony Webster",
+    "credit": "Leaking PVC Pipe Under Sink - P Trap",
+    "licence": "CC BY 2.0",
+    "licence_code": "cc-by-2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "attribution_required": "true",
+    "description": "A leaking PVC pipe under a bathroom sink, at the P-trap in the plumbing."
+   }
+  },
+  "c31": {
+   "file": "eval/cases/public/commons/c31-Brass-P-trap.jpg",
+   "sha256": "b506db8e2ed44501d158f1166445c8e1d47c8f735597ad2bf27c763183f4142b",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "c31",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "P-trap",
+     "kind": "act",
+     "box": [
+      0.15,
+      0.2,
+      0.95,
+      0.72
+     ]
+    },
+    {
+     "label": "floor edge",
+     "kind": "avoid",
+     "box": [
+      0.0,
+      0.72,
+      0.4,
+      0.99
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Brass P trap.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Brass_P_trap.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Brass_P_trap.jpg/1280px-Brass_P_trap.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     3024,
+     4032
+    ],
+    "original_sha1": "8a7c4b7e81f25a9aeab7400cdc792774fdfd55ab",
+    "author": "Raquel Baranow",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "Brass p-trap in a a house built in 1947"
+   }
+  },
+  "c32": {
+   "file": "eval/cases/public/commons/c32-Kitchen-renovation-new-plumbing-valve-be.jpg",
+   "sha256": "269692e5a96652aa2f472c01f3e84b62121cfe2906d454a5f58a984765e31f80",
+   "width": 1280,
+   "height": 1001,
+   "source_type": "commons",
+   "group": "c32",
+   "family": "trap",
+   "step": "valve",
+   "zones": [
+    {
+     "label": "valve with thread tape",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.38,
+      0.82,
+      0.88
+     ]
+    },
+    {
+     "label": "brick wall",
+     "kind": "avoid",
+     "box": [
+      0.0,
+      0.55,
+      0.35,
+      0.99
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Kitchen renovation new plumbing valve beneath kitchen sink with teflon tape.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Kitchen_renovation_new_plumbing_valve_beneath_kitchen_sink_with_teflon_tape.JPG",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Kitchen_renovation_new_plumbing_valve_beneath_kitchen_sink_with_teflon_tape.JPG/1280px-Kitchen_renovation_new_plumbing_valve_beneath_kitchen_sink_with_teflon_tape.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     1665,
+     1302
+    ],
+    "original_sha1": "21a57e1dca764d033d81a866218b13d7074b02c7",
+    "author": "Tomwsulcer",
+    "credit": "Own work",
+    "licence": "CC0",
+    "licence_code": "cc0",
+    "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "attribution_required": "false",
+    "description": "This is a valve to replace a leaky beneath-the-sink valve which was leaking. I kept the white teflon tape on the hot water inlet (bottom, slightly left) but had to remove the teflon tape from the two "
+   }
+  },
+  "c33": {
+   "file": "eval/cases/public/commons/c33-Kohler-Farmhouse-Sink-1940-2-of-4.jpg",
+   "sha256": "27fbe4bc01e5034626fe7c4175f62c4f4e5d17052f4afba3a931587a102d0a0b",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "kohler",
+   "family": "sink",
+   "step": "sink",
+   "zones": [
+    {
+     "label": "sink and faucet",
+     "kind": "act",
+     "box": [
+      0.15,
+      0.2,
+      0.9,
+      0.42
+     ]
+    },
+    {
+     "label": "cabinet doors",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.42,
+      0.88,
+      0.8
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Kohler Farmhouse Sink 1940 2 of 4.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kohler_Farmhouse_Sink_1940_2_of_4.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/Kohler_Farmhouse_Sink_1940_2_of_4.jpg/1280px-Kohler_Farmhouse_Sink_1940_2_of_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2448,
+     3264
+    ],
+    "original_sha1": "42ffd63e5311b3e9dd69152d22b732b0ab8ac944",
+    "author": "RH Price",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "Example of a Kohler farmhouse sink with original porcelain finish and base. Image 2019. New knobs and T&S Brass faucet have been added and the sink base was repainted. The sink had a straight faucet w"
+   }
+  },
+  "c34": {
+   "file": "eval/cases/public/commons/c34-Kohler-Farmhouse-Sink-1940-3-of-4.jpg",
+   "sha256": "bf84df5e143bda92252d5a68cec071600d27e718aa53aefb24d5fa022956f618",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "kohler",
+   "family": "sink",
+   "step": "sink",
+   "zones": [
+    {
+     "label": "sink and faucet",
+     "kind": "act",
+     "box": [
+      0.2,
+      0.15,
+      0.88,
+      0.4
+     ]
+    },
+    {
+     "label": "cabinet doors",
+     "kind": "avoid",
+     "box": [
+      0.25,
+      0.42,
+      0.85,
+      0.75
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Kohler Farmhouse Sink 1940 3 of 4.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kohler_Farmhouse_Sink_1940_3_of_4.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Kohler_Farmhouse_Sink_1940_3_of_4.jpg/1280px-Kohler_Farmhouse_Sink_1940_3_of_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2448,
+     3264
+    ],
+    "original_sha1": "cd5744d7363b7870d217e8a6abb900d5fc596c87",
+    "author": "RH Price",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "Example of a Kohler farmhouse sink with original porcelain finish and base. Image 2019. New knobs and T&S Brass faucet have been added and the sink base was repainted. The sink had a straight faucet w"
+   }
+  },
+  "c35": {
+   "file": "eval/cases/public/commons/c35-Kohler-Farmhouse-Sink-1940-4-of-4.jpg",
+   "sha256": "ba8db6df24ff4fcc57e3b41472c63393bf1bb96b22768b1d39f23c711cb07896",
+   "width": 1280,
+   "height": 1707,
+   "source_type": "commons",
+   "group": "kohler",
+   "family": "sink",
+   "step": "sink",
+   "zones": [
+    {
+     "label": "sink and faucet",
+     "kind": "act",
+     "box": [
+      0.18,
+      0.18,
+      0.9,
+      0.43
+     ]
+    },
+    {
+     "label": "cabinet doors",
+     "kind": "avoid",
+     "box": [
+      0.2,
+      0.43,
+      0.88,
+      0.72
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Kohler Farmhouse Sink 1940 4 of 4.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kohler_Farmhouse_Sink_1940_4_of_4.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Kohler_Farmhouse_Sink_1940_4_of_4.jpg/1280px-Kohler_Farmhouse_Sink_1940_4_of_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2448,
+     3264
+    ],
+    "original_sha1": "fc93de25c33660533e666e4fa3e6128fcb498f3d",
+    "author": "RH Price",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "Example of a Kohler farmhouse sink with original porcelain finish and base. Image 2019. New knobs and T&S Brass faucet have been added and the sink base was repainted. The sink had a straight faucet w"
+   }
+  },
+  "c36": {
+   "file": "eval/cases/public/commons/c36-Downspout-Paul-Schweiker-House-and-Studi.jpg",
+   "sha256": "865d333f026867901688f1b23d43676ae895b74b6b2544aafa187fbb9d71513b",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "schweiker-downspout",
+   "family": "downspout",
+   "step": "downspout",
+   "zones": [
+    {
+     "label": "downspout outlet box",
+     "kind": "act",
+     "box": [
+      0.2,
+      0.43,
+      0.47,
+      0.67
+     ]
+    },
+    {
+     "label": "tree trunks",
+     "kind": "avoid",
+     "box": [
+      0.7,
+      0.55,
+      0.9,
+      0.99
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Downspout, Paul Schweiker House and Studio, Meacham Road, Schaumburg, IL.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Downspout,_Paul_Schweiker_House_and_Studio,_Meacham_Road,_Schaumburg,_IL.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/Downspout%2C_Paul_Schweiker_House_and_Studio%2C_Meacham_Road%2C_Schaumburg%2C_IL.jpg/1280px-Downspout%2C_Paul_Schweiker_House_and_Studio%2C_Meacham_Road%2C_Schaumburg%2C_IL.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     4032,
+     3024
+    ],
+    "original_sha1": "65e2bb8fcaf3859687158dcaf1cdb10175e59ff8",
+    "author": "w_lemay",
+    "credit": "https://www.flickr.com/photos/59081381@N03/54210475939/",
+    "licence": "CC BY-SA 2.0",
+    "licence_code": "cc-by-sa-2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "attribution_required": "true",
+    "description": "Built in 1937-1938, this Modern International-style house was designed by Paul Schweiker to serve as his personal residence and studio.  The house is low-slung and inspired by the surrounding Prairie "
+   }
+  },
+  "c37": {
+   "file": "eval/cases/public/commons/c37-Downspout-Paul-Schweiker-House-and-Studi.jpg",
+   "sha256": "26d2a561b57dab555153a803882ad853ec4ad705e4310bb9f7464456bb42dd90",
+   "width": 1280,
+   "height": 1706,
+   "source_type": "commons",
+   "group": "schweiker-downspout",
+   "family": "downspout",
+   "step": "downspout",
+   "zones": [
+    {
+     "label": "downspout outlet box",
+     "kind": "act",
+     "box": [
+      0.38,
+      0.38,
+      0.62,
+      0.55
+     ]
+    },
+    {
+     "label": "tree trunks",
+     "kind": "avoid",
+     "box": [
+      0.55,
+      0.55,
+      0.75,
+      0.95
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Downspout, Paul Schweiker House and Studio, Meacham Road, Schaumburg, IL - 54210476979.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Downspout,_Paul_Schweiker_House_and_Studio,_Meacham_Road,_Schaumburg,_IL_-_54210476979.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Downspout%2C_Paul_Schweiker_House_and_Studio%2C_Meacham_Road%2C_Schaumburg%2C_IL_-_54210476979.jpg/1280px-Downspout%2C_Paul_Schweiker_House_and_Studio%2C_Meacham_Road%2C_Schaumburg%2C_IL_-_54210476979.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     2846,
+     3794
+    ],
+    "original_sha1": "0b8c2196f45ff6120180539e58cb33440ec14b4d",
+    "author": "w_lemay",
+    "credit": "https://www.flickr.com/photos/59081381@N03/54210476979/",
+    "licence": "CC BY-SA 2.0",
+    "licence_code": "cc-by-sa-2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "attribution_required": "true",
+    "description": "Built in 1937-1938, this Modern International-style house was designed by Paul Schweiker to serve as his personal residence and studio.  The house is low-slung and inspired by the surrounding Prairie "
+   }
+  },
+  "c38": {
+   "file": "eval/cases/public/commons/c38-Downspout-43647598595.jpg",
+   "sha256": "1b01473193e50c2991b037a60f37d3fa7b2baf47f23c4daaa94abb5f4eff3e93",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "c38",
+   "family": "downspout",
+   "step": "downspout",
+   "zones": [
+    {
+     "label": "downspout outlet",
+     "kind": "act",
+     "box": [
+      0.45,
+      0.1,
+      0.72,
+      0.62
+     ]
+    },
+    {
+     "label": "brick wall",
+     "kind": "avoid",
+     "box": [
+      0.75,
+      0.25,
+      0.99,
+      0.6
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Downspout (43647598595).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Downspout_(43647598595).jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Downspout_%2843647598595%29.jpg/1280px-Downspout_%2843647598595%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     4032,
+     3024
+    ],
+    "original_sha1": "143c023674c7db29a4e81bff65e6aa50ddb597ef",
+    "author": "oatsy40 from London",
+    "credit": "Downspout",
+    "licence": "CC BY 2.0",
+    "licence_code": "cc-by-2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "attribution_required": "true",
+    "description": "water coming out of a drainpipe\n\nA sunset that will make your heart melt."
+   }
+  },
+  "c39": {
+   "file": "eval/cases/public/commons/c39-Downspout-and-drain-geograph-org-uk-6741.jpg",
+   "sha256": "9649a510e532218853a2c11514c4e20b573dc78e209418b9d3b0f6fb1935c236",
+   "width": 1280,
+   "height": 960,
+   "source_type": "commons",
+   "group": "c39",
+   "family": "downspout",
+   "step": "downspout",
+   "zones": [
+    {
+     "label": "downpipe and shoe",
+     "kind": "act",
+     "box": [
+      0.42,
+      0.0,
+      0.65,
+      0.82
+     ]
+    },
+    {
+     "label": "gate",
+     "kind": "avoid",
+     "box": [
+      0.0,
+      0.3,
+      0.38,
+      0.92
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Downspout and drain - geograph.org.uk - 6741959.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Downspout_and_drain_-_geograph.org.uk_-_6741959.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Downspout_and_drain_-_geograph.org.uk_-_6741959.jpg/1280px-Downspout_and_drain_-_geograph.org.uk_-_6741959.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     1600,
+     1200
+    ],
+    "original_sha1": "a039b9d53925acf37371a996fcc6082df9f5c5fa",
+    "author": "Adrian Taylor",
+    "credit": "Geograph Britain and Ireland",
+    "licence": "CC BY-SA 2.0",
+    "licence_code": "cc-by-sa-2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "attribution_required": "true",
+    "description": "Downspout and drain"
+   }
+  },
+  "c40": {
+   "file": "eval/cases/public/commons/c40-Protector-de-bajante-de-fundici-n-01.jpg",
+   "sha256": "0441cf88dd0e15ba8bed6e22fa0e208845516141119f0912b9da06b6ec388428",
+   "width": 1280,
+   "height": 2783,
+   "source_type": "commons",
+   "group": "c40",
+   "family": "downspout",
+   "step": "downspout",
+   "zones": [
+    {
+     "label": "downspout guard",
+     "kind": "act",
+     "box": [
+      0.4,
+      0.08,
+      0.6,
+      0.88
+     ]
+    },
+    {
+     "label": "brick wall",
+     "kind": "avoid",
+     "box": [
+      0.62,
+      0.05,
+      0.99,
+      0.55
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Protector de bajante de fundición 01.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Protector_de_bajante_de_fundici%C3%B3n_01.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/14/Protector_de_bajante_de_fundici%C3%B3n_01.jpg/1280px-Protector_de_bajante_de_fundici%C3%B3n_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     1840,
+     4000
+    ],
+    "original_sha1": "2414200448334d4d05cb8275ae15c41ff8778e32",
+    "author": "MiguelAlanCS",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "Protector utilizado como embellecedor de bajantes, hecho en hierro fundido."
+   }
+  },
+  "c41": {
+   "file": "eval/cases/public/commons/c41-Protector-de-bajante-de-fundici-n-02.jpg",
+   "sha256": "c16d8ea8a2dcee36d837d691057684d33b36eec9481408ebf7605e9a131d11ed",
+   "width": 1280,
+   "height": 2783,
+   "source_type": "commons",
+   "group": "c41",
+   "family": "downspout",
+   "step": "downspout",
+   "zones": [
+    {
+     "label": "downspout guard",
+     "kind": "act",
+     "box": [
+      0.4,
+      0.2,
+      0.62,
+      0.88
+     ]
+    },
+    {
+     "label": "glass door",
+     "kind": "avoid",
+     "box": [
+      0.7,
+      0.0,
+      0.99,
+      0.62
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:Protector de bajante de fundición 02.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Protector_de_bajante_de_fundici%C3%B3n_02.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Protector_de_bajante_de_fundici%C3%B3n_02.jpg/1280px-Protector_de_bajante_de_fundici%C3%B3n_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     1840,
+     4000
+    ],
+    "original_sha1": "2d3b58cff7de6bef11532bc16bad7f097cbba58b",
+    "author": "MiguelAlanCS",
+    "credit": "Own work",
+    "licence": "CC BY-SA 4.0",
+    "licence_code": "cc-by-sa-4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "attribution_required": "true",
+    "description": "Protector utilizado como embellecedor de bajantes, hecho en hierro fundido."
+   }
+  },
+  "c43": {
+   "file": "eval/cases/public/commons/c43-White-rain-gutter-on-a-home-against-blue.jpg",
+   "sha256": "ddab7d48a2e34eeae7620c6650be3d154cf92ebeb87af55a2b271c8b530bca53",
+   "width": 1280,
+   "height": 1917,
+   "source_type": "commons",
+   "group": "c43",
+   "family": "downspout",
+   "step": "downspout",
+   "zones": [
+    {
+     "label": "downspout elbow",
+     "kind": "act",
+     "box": [
+      0.55,
+      0.4,
+      0.99,
+      0.75
+     ]
+    },
+    {
+     "label": "gutter corner",
+     "kind": "avoid",
+     "box": [
+      0.22,
+      0.4,
+      0.5,
+      0.6
+     ]
+    }
+   ],
+   "commons": {
+    "title": "File:White rain gutter on a home against blue sky.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:White_rain_gutter_on_a_home_against_blue_sky.jpg",
+    "file_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/White_rain_gutter_on_a_home_against_blue_sky.jpg/1280px-White_rain_gutter_on_a_home_against_blue_sky.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original_size": [
+     4016,
+     6016
+    ],
+    "original_sha1": "f4f95440bd3b2444bbff7477dff76c0c653cac4b",
+    "author": "Shixart1985",
+    "credit": "Own work",
+    "licence": "CC BY 2.0",
+    "licence_code": "cc-by-2.0",
+    "licence_url": "https://creativecommons.org/licenses/by/2.0",
+    "attribution_required": "true",
+    "description": "White rain gutter on a home against blue sky"
+   }
+  },
+  "v0030": {
+   "file": "eval/cases/public/own-sink-video/f0030.jpg",
+   "sha256": "c4eca3d52cc94b0ae6e5368b5506749aaffc12f70ae935981180c56bf9b7964c",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "valve",
+   "zones": [
+    {
+     "label": "shut-off valve",
+     "kind": "act",
+     "box": [
+      0.4,
+      0.18,
+      0.85,
+      0.32
+     ]
+    },
+    {
+     "label": "disposal",
+     "kind": "avoid",
+     "box": [
+      0.7,
+      0.3,
+      0.99,
+      0.75
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 30,
+    "time_s": 1.0,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "good",
+    "label_note": "sharp; strong flashlight hot spot on the back wall, valve readable",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0042": {
+   "file": "eval/cases/public/own-sink-video/f0042.jpg",
+   "sha256": "73d47894140452cf818ab6fa3caa0d0c5b43364858c9d4e366e08d2dea275ad6",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "valve",
+   "zones": [
+    {
+     "label": "shut-off valve",
+     "kind": "act",
+     "box": [
+      0.4,
+      0.18,
+      0.85,
+      0.32
+     ]
+    },
+    {
+     "label": "disposal",
+     "kind": "avoid",
+     "box": [
+      0.7,
+      0.2,
+      0.99,
+      0.7
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 42,
+    "time_s": 1.4,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "good",
+    "label_note": "sharp wide view of the valve side",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0180": {
+   "file": "eval/cases/public/own-sink-video/f0180.jpg",
+   "sha256": "e365ed61941dc65356708858f12805c10ec8414a94887dd2670183ad7e1bd90e",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "trap slip-nut joint",
+     "kind": "act",
+     "box": [
+      0.15,
+      0.5,
+      0.7,
+      0.75
+     ]
+    },
+    {
+     "label": "braided supply hose",
+     "kind": "avoid",
+     "box": [
+      0.3,
+      0.1,
+      0.75,
+      0.45
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 180,
+    "time_s": 6.0,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "good",
+    "label_note": "sharp close-up of the trap",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0195": {
+   "file": "eval/cases/public/own-sink-video/f0195.jpg",
+   "sha256": "e0b6d78cd80ff214d71333b899ef89ec49a9d29b4fb443278e19fbc99e21615f",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "trap slip-nut joint",
+     "kind": "act",
+     "box": [
+      0.15,
+      0.5,
+      0.7,
+      0.75
+     ]
+    },
+    {
+     "label": "braided supply hose",
+     "kind": "avoid",
+     "box": [
+      0.3,
+      0.1,
+      0.75,
+      0.45
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 195,
+    "time_s": 6.5,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "blurred",
+    "label_note": "motion/focus blur; joint edges smeared, no detail on the nut",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0240": {
+   "file": "eval/cases/public/own-sink-video/f0240.jpg",
+   "sha256": "1a0a4df10643f7f076a0355c0122e3f55555af9807a3a2f45d041f10522ea1a2",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "valve",
+   "zones": [
+    {
+     "label": "shut-off valve",
+     "kind": "act",
+     "box": [
+      0.4,
+      0.0,
+      0.75,
+      0.35
+     ]
+    },
+    {
+     "label": "trap",
+     "kind": "avoid",
+     "box": [
+      0.45,
+      0.55,
+      0.95,
+      0.99
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 240,
+    "time_s": 8.0,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "blurred",
+    "label_note": "blurred, flashlight glare on the valve handle",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0448": {
+   "file": "eval/cases/public/own-sink-video/f0448.jpg",
+   "sha256": "f3b467e1c5fabcbcdd725fd983621d687748adf916b46141a2825ed56e3679e0",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "tailpiece",
+   "zones": [
+    {
+     "label": "tailpiece",
+     "kind": "act",
+     "box": [
+      0.48,
+      0.4,
+      0.75,
+      0.85
+     ]
+    },
+    {
+     "label": "shut-off valve",
+     "kind": "avoid",
+     "box": [
+      0.08,
+      0.7,
+      0.35,
+      0.95
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 448,
+    "time_s": 14.93,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "good",
+    "label_note": "sharp, another angle",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0510": {
+   "file": "eval/cases/public/own-sink-video/f0510.jpg",
+   "sha256": "2d4d1b6afcb08c78f6f2818b5e6fcce531a8b555bd52e3f3539544ac13a907b3",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "trap joint",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.45,
+      0.95,
+      0.8
+     ]
+    },
+    {
+     "label": "bowl",
+     "kind": "avoid",
+     "box": [
+      0.25,
+      0.8,
+      0.95,
+      0.99
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 510,
+    "time_s": 17.0,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "borderline",
+    "label_note": "soft; the joint is readable, fine detail is not — not scored as good or bad",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0557": {
+   "file": "eval/cases/public/own-sink-video/f0557.jpg",
+   "sha256": "2169561be263ddb669564df720c02080bae01ffb636322534e76d5950293d294",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "trap slip-nut joint",
+     "kind": "act",
+     "box": [
+      0.35,
+      0.3,
+      0.8,
+      0.62
+     ]
+    },
+    {
+     "label": "bowl",
+     "kind": "avoid",
+     "box": [
+      0.15,
+      0.62,
+      0.95,
+      0.99
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 557,
+    "time_s": 18.57,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "good",
+    "label_note": "sharp",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0570": {
+   "file": "eval/cases/public/own-sink-video/f0570.jpg",
+   "sha256": "40135d8000923fba3d760394e5b193ecb2a4641bf16924ae0f009802c6be632a",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "trap slip-nut joint",
+     "kind": "act",
+     "box": [
+      0.35,
+      0.2,
+      0.85,
+      0.55
+     ]
+    },
+    {
+     "label": "bowl",
+     "kind": "avoid",
+     "box": [
+      0.15,
+      0.55,
+      0.95,
+      0.99
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 570,
+    "time_s": 19.0,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "borderline",
+    "label_note": "soft; joint line visible, texture smeared — not scored as good or bad",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0659": {
+   "file": "eval/cases/public/own-sink-video/f0659.jpg",
+   "sha256": "bbf07640c54a242a3637cbc947eb68479b1e34c853ec7f897d6bf7f24cc40eac",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "trap joint",
+     "kind": "act",
+     "box": [
+      0.25,
+      0.7,
+      0.7,
+      0.95
+     ]
+    },
+    {
+     "label": "shut-off valve",
+     "kind": "avoid",
+     "box": [
+      0.0,
+      0.3,
+      0.2,
+      0.55
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 659,
+    "time_s": 21.97,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "good",
+    "label_note": "sharp; trap stack, valve at the left edge",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0812": {
+   "file": "eval/cases/public/own-sink-video/f0812.jpg",
+   "sha256": "58902ff70e822a299ee0e61eb911cb652a2443ee6fbf9bd652d1a34227af177d",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "valve",
+   "zones": [
+    {
+     "label": "shut-off valve",
+     "kind": "act",
+     "box": [
+      0.18,
+      0.48,
+      0.82,
+      0.8
+     ]
+    },
+    {
+     "label": "upper hoses",
+     "kind": "avoid",
+     "box": [
+      0.35,
+      0.0,
+      0.99,
+      0.3
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 812,
+    "time_s": 27.07,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "good",
+    "label_note": "sharp wide view of the valve",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0870": {
+   "file": "eval/cases/public/own-sink-video/f0870.jpg",
+   "sha256": "3c9a21396b5cbd7cae815b484128c5c4475aba829e37616a09c516e2e23c0356",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "trap",
+   "zones": [
+    {
+     "label": "(nothing recognisable)",
+     "kind": "act",
+     "box": [
+      0.2,
+      0.3,
+      0.8,
+      0.8
+     ]
+    },
+    {
+     "label": "(edge)",
+     "kind": "avoid",
+     "box": [
+      0.0,
+      0.0,
+      0.15,
+      0.3
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 870,
+    "time_s": 29.0,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "blurred",
+    "label_note": "whip pan: a smeared wall and a yellow streak, nothing recognisable",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0900": {
+   "file": "eval/cases/public/own-sink-video/f0900.jpg",
+   "sha256": "7cb2e0230a607ab351e1ae0231e39c1c636eedfef3390aec0b69ca011c27cdbe",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "elbow",
+   "zones": [
+    {
+     "label": "drain pipes",
+     "kind": "act",
+     "box": [
+      0.2,
+      0.45,
+      0.6,
+      0.75
+     ]
+    },
+    {
+     "label": "bottles",
+     "kind": "avoid",
+     "box": [
+      0.4,
+      0.4,
+      0.99,
+      0.99
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 900,
+    "time_s": 30.0,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "blurred",
+    "label_note": "motion blur and flashlight hot spot",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v0990": {
+   "file": "eval/cases/public/own-sink-video/f0990.jpg",
+   "sha256": "214f0b8312ee58e38a9f5aec1cbb1f36579c251acf49411eb22efabc404380d6",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "elbow",
+   "zones": [
+    {
+     "label": "black drain elbow",
+     "kind": "act",
+     "box": [
+      0.1,
+      0.5,
+      0.4,
+      0.7
+     ]
+    },
+    {
+     "label": "spray bottles",
+     "kind": "avoid",
+     "box": [
+      0.5,
+      0.65,
+      0.99,
+      0.99
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 990,
+    "time_s": 33.0,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "good",
+    "label_note": "sharp, disposal side",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v1050": {
+   "file": "eval/cases/public/own-sink-video/f1050.jpg",
+   "sha256": "a5596e140461c4ec2301c878afb86d60b447b17635c168993da5d8ce19283414",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "elbow",
+   "zones": [
+    {
+     "label": "black drain elbow",
+     "kind": "act",
+     "box": [
+      0.0,
+      0.55,
+      0.35,
+      0.75
+     ]
+    },
+    {
+     "label": "bottles",
+     "kind": "avoid",
+     "box": [
+      0.55,
+      0.65,
+      0.99,
+      0.99
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 1050,
+    "time_s": 35.0,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "good",
+    "label_note": "sharp, disposal side, closer",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  },
+  "v1106": {
+   "file": "eval/cases/public/own-sink-video/f1106.jpg",
+   "sha256": "aaa00fb367d2db1542d3453fda113630d62a0df3d101cee325a17efaea0d31d7",
+   "width": 900,
+   "height": 1600,
+   "source_type": "own-video",
+   "group": "own-sink-video",
+   "family": "trap",
+   "step": "elbow",
+   "zones": [
+    {
+     "label": "black drain elbow",
+     "kind": "act",
+     "box": [
+      0.3,
+      0.55,
+      0.62,
+      0.8
+     ]
+    },
+    {
+     "label": "disposal clamp",
+     "kind": "avoid",
+     "box": [
+      0.15,
+      0.38,
+      0.55,
+      0.5
+     ]
+    }
+   ],
+   "video": {
+    "source": "real-own-video",
+    "file": "IMG_2046.MOV (not in the repo: carries GPS)",
+    "frame": 1106,
+    "time_s": 36.87,
+    "consent": "mikhail-2026-10-21T11:38:30Z",
+    "label": "good",
+    "label_note": "sharp close view of the disposal outlet",
+    "label_by": "eval lane L2, by eye, 2026-10-21"
+   }
+  }
+ },
+ "clips": {
+  "clip-31s-36s": {
+   "file": "eval/cases/public/own-sink-video/clip-31s-36s.mp4",
+   "sha256": "8c04004c004e429734d0959c319b4f5c7fd2888daddf08d7c8d3bb40b8ba908c",
+   "frames": "930-1078 every 2nd, 15 fps, 540x960, re-encoded by cv2.VideoWriter (no audio, no source metadata)",
+   "consent": "mikhail-2026-10-21T11:38:30Z",
+   "reference": "v1106"
+  }
+ }
+}
