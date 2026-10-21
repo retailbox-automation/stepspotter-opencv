@@ -21,14 +21,17 @@ Tools:
 
 from __future__ import annotations
 
+import copy
 import inspect
 import os
 import re
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Callable
 
 from strands import Agent, tool
 from strands.hooks import BeforeToolCallEvent, HookRegistry
+from strands.session import FileSessionManager
 
 from stepspotter import marker, memory, planner, research, store, verifier
 from stepspotter.bedrock_client import bedrock_model, retry_strategy
@@ -811,8 +814,6 @@ def build_agent(
     else:  # Bedrock, with retries and timeouts (bedrock_client); None = the SDK's default model
         kwargs["model"] = bedrock_model(model_id)
     if session_id:
-        from strands.session import FileSessionManager
-
         kwargs["session_manager"] = FileSessionManager(
             session_id=session_id,
             storage_dir=str(storage_dir or (store.data_root() / "sessions")),
@@ -845,14 +846,76 @@ def job_id_in_session(agent: Agent) -> str | None:
     return found[-1] if found else None
 
 
+class TurnSnapshot:
+    """The conversation as it stood before a turn, so a failed turn can leave no trace in it.
+
+    Strands appends each message as it happens — the person's line, every tool call, every
+    tool result — to ``agent.messages`` AND, through ``FileSessionManager``, to disk. A turn
+    that dies half-way (Bedrock down after a tool already ran) would leave the person's line
+    and a dangling tool call behind; the next request restores them, the SDK patches the
+    dangling call, and the agent answers as if it had seen the failed turn. ``restore`` puts
+    back the messages, the conversation manager's state, and on disk deletes the messages
+    the turn wrote and rewrites the stored agent record.
+
+    What a turn's COMPLETED tools did is real and stays: a photo OpenCV looked at, a verdict,
+    a step advanced through the gate are in the job's state and trace, which are the record
+    of what happened. Only the conversation forgets the turn; the tools read the job's state
+    (``show_step``, ``advance_step``), so the next turn finds out where the job really is.
+    Any other session store than ``FileSessionManager`` is rolled back in memory only.
+    """
+
+    def __init__(self, agent: Agent) -> None:
+        self.agent = agent
+        self.messages = copy.deepcopy(agent.messages)
+        self.cm_state = copy.deepcopy(agent.conversation_manager.get_state())
+        sm = getattr(agent, "_session_manager", None)
+        self.files: FileSessionManager | None = sm if isinstance(sm, FileSessionManager) else None
+        if self.files is not None:
+            self.latest = copy.deepcopy(self.files._latest_agent_message.get(agent.agent_id))
+            self.stored = self.files.read_agent(self.files.session_id, agent.agent_id)
+
+    def restore(self) -> None:
+        agent = self.agent
+        agent.messages[:] = copy.deepcopy(self.messages)
+        agent.conversation_manager.restore_from_session(copy.deepcopy(self.cm_state))
+        fs = self.files
+        if fs is None:
+            return
+        sid, aid = fs.session_id, agent.agent_id
+        keep = self.latest.message_id if self.latest is not None else -1
+        for m in fs.list_messages(sid, aid):
+            if m.message_id > keep:
+                os.remove(fs._get_message_path(sid, aid, m.message_id))
+        fs._latest_agent_message[aid] = copy.deepcopy(self.latest)
+        if self.stored is not None:
+            fs.update_agent(sid, self.stored)
+        fs._last_synced_internal_state.pop(aid, None)  # the next sync writes the record again
+
+
+@contextmanager
+def atomic_turn(agent: Agent):
+    """All or nothing in the conversation: if the turn raises, the history is put back."""
+    snap = TurnSnapshot(agent)
+    try:
+        yield
+    except BaseException:
+        snap.restore()
+        raise
+
+
 def say(agent: Agent, line: str) -> str:
     """One turn. Returns what the person would see, including an interrupt notice.
 
     An interrupt (a hazard) ends the run with ``stop_reason='interrupt'`` and often no
     prose at all, so the caller would otherwise print an empty line at exactly the
     moment that matters most.
+
+    The turn is atomic in the conversation (``atomic_turn``): if it raises — the model
+    unreachable half-way — the history, in memory and in the session on disk, is what it
+    was before, and the exception goes on to the caller.
     """
-    result = agent(line)
+    with atomic_turn(agent):
+        result = agent(line)
     text = str(result).strip()
     stop = getattr(result, "stop_reason", None)
     if stop == "interrupt":

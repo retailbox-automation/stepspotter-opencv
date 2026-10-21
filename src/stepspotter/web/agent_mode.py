@@ -17,7 +17,9 @@ model that loops cannot run up calls inside a single request.
 
 State: the conversation lives in a Strands ``FileSessionManager`` per session id, under
 the data root, exactly like the CLI; the turns as shown are appended to
-``<data>/agent/<session>.turns.json`` so a reload shows them again.
+``<data>/agent/<session>.turns.json`` so a reload shows them again. A turn that raises
+(the model unreachable half-way) is rolled out of that conversation by ``guide.say`` and
+never reaches the turns file; what its completed tools did stays in the job.
 """
 
 from __future__ import annotations

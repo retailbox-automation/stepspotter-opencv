@@ -65,6 +65,7 @@ def guide_answer(state: JobState, question: str, model_id: str | None = None) ->
     from strands.session import FileSessionManager
 
     from stepspotter.bedrock_client import bedrock_model, retry_strategy
+    from stepspotter.guide import atomic_turn
 
     kwargs: dict = {
         "tools": [],  # a question may not move anything. See the module docstring.
@@ -77,7 +78,8 @@ def guide_answer(state: JobState, question: str, model_id: str | None = None) ->
     kwargs["model"] = bedrock_model(model_id)  # retries and timeouts: bedrock_client
     kwargs["retry_strategy"] = retry_strategy()
     agent = Agent(**kwargs)
-    return str(agent(f"{_context(state)}\n\nTheir question: {question}")).strip()
+    with atomic_turn(agent):  # a question the model never answered is not kept in the session
+        return str(agent(f"{_context(state)}\n\nTheir question: {question}")).strip()
 
 
 def answer(
