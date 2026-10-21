@@ -1,0 +1,690 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  StepSpotter x OpenCV 5 - one stack: ECR repo, cloud image build (CodeBuild from an S3
+  source zip), App Runner service pinned to ONE instance, least-privilege IAM, CloudWatch
+  metric filters on the perception trace, alarms, dashboard, and an AWS Budget.
+  Deployed by infra/deploy.sh in two phases (DeployService=false builds the image first,
+  then DeployService=true creates/updates the service with that image digest).
+
+# ---------------------------------------------------------------------------------------
+# Why some things look the way they do
+# - App Runner runs x86_64 images only (the live StepSpotter service runs a linux/amd64
+#   image; Strands' App Runner deploy helper says "Builds a Docker image for x86_64
+#   architecture (App Runner requirement)"). ImageArch=arm64 builds a Graviton image in
+#   CodeBuild, but the Rules section refuses to point App Runner at it.
+# - The app keeps jobs on local disk (STEPSPOTTER_DATA), so min = max = 1 instance.
+# - The Budget is created before the service (DependsOn), so the alert exists before
+#   the first billable hour.
+# ---------------------------------------------------------------------------------------
+
+Parameters:
+  ServiceName:
+    Type: String
+    Default: stepspotter-opencv
+    AllowedPattern: "^[a-z][a-z0-9-]{3,38}$"
+    Description: Name of the App Runner service, ECR repo, dashboard, budget and alarms prefix.
+  DeployService:
+    Type: String
+    Default: "false"
+    AllowedValues: ["true", "false"]
+    Description: false = only build infrastructure (ECR, S3, CodeBuild, IAM, Budget). true = also the service, metrics, alarms, dashboard.
+  ImageDigest:
+    Type: String
+    Default: ""
+    AllowedPattern: "^$|^sha256:[a-f0-9]{64}$"
+    Description: Digest of the image in the stack's ECR repo that the service runs (set by deploy.sh).
+  ImageArch:
+    Type: String
+    Default: amd64
+    AllowedValues: [amd64, arm64]
+    Description: CPU architecture CodeBuild builds for. App Runner needs amd64.
+  Cpu:
+    Type: String
+    Default: "1 vCPU"
+    AllowedValues: ["0.25 vCPU", "0.5 vCPU", "1 vCPU", "2 vCPU"]
+  Memory:
+    Type: String
+    Default: "2 GB"
+    AllowedValues: ["0.5 GB", "1 GB", "2 GB", "3 GB", "4 GB"]
+  MaxConcurrency:
+    Type: Number
+    Default: 25
+    MinValue: 1
+    MaxValue: 200
+    Description: Concurrent requests one instance takes before App Runner queues (perception is CPU-bound on one vCPU).
+  AlertTopicArn:
+    Type: String
+    Default: ""
+    Description: Existing SNS topic for alarms. Empty = the stack creates one and subscribes AlertEmail (the recipient must confirm).
+  AlertEmail:
+    Type: String
+    Default: ""
+    Description: Only used when AlertTopicArn is empty.
+  BudgetEmail:
+    Type: String
+    AllowedPattern: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+    Description: Receives the 80 % actual-spend Budget notification (no confirmation needed).
+  BudgetLimitUsd:
+    Type: Number
+    Default: 15
+    MinValue: 1
+  CostTagKey:
+    Type: String
+    Default: project
+    Description: Tag key put on every taggable resource; the Budget filters on it once it is an active cost allocation tag.
+  ModelProfileId:
+    Type: String
+    Default: global.anthropic.claude-sonnet-4-6
+    Description: System-defined Bedrock inference profile the app calls.
+  FoundationModelId:
+    Type: String
+    Default: anthropic.claude-sonnet-4-6
+  DemoModelId:
+    Type: String
+    Default: ""
+    AllowedPattern: "^$|^[a-z0-9.:-]+$"
+    Description: >-
+      Cost fallback for the photo/plan path. Empty = Claude Sonnet 4.6 (ModelProfileId or its
+      application profile). Set e.g. us.amazon.nova-2-lite-v1:0 to point STEPSPOTTER_MODEL at a
+      cheaper inference profile; the instance role is widened to exactly that profile + model.
+  DemoFoundationModelId:
+    Type: String
+    Default: amazon.nova-2-lite-v1:0
+    Description: Foundation model behind DemoModelId (IAM resource). Ignored while DemoModelId is empty.
+  UseAppInferenceProfile:
+    Type: String
+    Default: "true"
+    AllowedValues: ["true", "false"]
+    Description: true = create a tagged application inference profile over ModelProfileId and point STEPSPOTTER_MODEL at it, so Bedrock spend is attributable to this stack.
+  Paused:
+    Type: String
+    Default: "0"
+    AllowedValues: ["0", "1"]
+    Description: Kill switch. 1 = the two spending endpoints answer 503; page, finished jobs and /healthz stay up.
+  JobsPerIpHour:
+    Type: Number
+    Default: 6
+    MinValue: 1
+  PhotosPerIpHour:
+    Type: Number
+    Default: 30
+    MinValue: 1
+  MaxJobsPerDay:
+    Type: Number
+    Default: 6
+    MinValue: 1
+    Description: Global daily cap on job starts (each = up to 3 Bedrock calls). 6 jobs + 30 photos = at most 78 model calls a day.
+  MaxPhotosPerDay:
+    Type: Number
+    Default: 30
+    MinValue: 1
+    Description: Global daily cap on photo checks (each = up to 2 Bedrock calls; refused by OpenCV = 0).
+  PerceptionP95AlarmMs:
+    Type: Number
+    Default: 2000
+    Description: Alarm when perception p95 latency exceeds this many ms (provisional until the eval run publishes p95).
+  RequestFloodPer5Min:
+    Type: Number
+    Default: 400
+  ErrorsPer5Min:
+    Type: Number
+    Default: 3
+  LogRetentionDays:
+    Type: Number
+    Default: 14
+    AllowedValues: [1, 3, 5, 7, 14, 30]
+
+Conditions:
+  WithService: !Equals [!Ref DeployService, "true"]
+  OwnTopic: !Equals [!Ref AlertTopicArn, ""]
+  OwnTopicWithEmail: !And [!Condition OwnTopic, !Not [!Equals [!Ref AlertEmail, ""]]]
+  ArmBuild: !Equals [!Ref ImageArch, arm64]
+  AppProfile: !Equals [!Ref UseAppInferenceProfile, "true"]
+  DemoModel: !Not [!Equals [!Ref DemoModelId, ""]]
+
+Rules:
+  ServiceNeedsAnImage:
+    RuleCondition: !Equals [!Ref DeployService, "true"]
+    Assertions:
+      - Assert: !Not [!Equals [!Ref ImageDigest, ""]]
+        AssertDescription: DeployService=true needs ImageDigest (deploy.sh builds the image first).
+      - Assert: !Equals [!Ref ImageArch, amd64]
+        AssertDescription: App Runner runs x86_64 images only; an arm64 image would fail to start.
+  NotTheFrozenService:
+    Assertions:
+      - Assert: !Not [!Contains [[stepspotter, stepspotter-guide, fleetmemory, fleetmemory-demo], !Ref ServiceName]]
+        AssertDescription: That name belongs to a frozen deployment.
+
+Resources:
+  # ------------------------------------------------------------------ alert target
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Condition: OwnTopic
+    Properties:
+      TopicName: !Sub "${ServiceName}-alerts"
+      KmsMasterKeyId: alias/aws/sns
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  AlertSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: OwnTopicWithEmail
+    Properties:
+      TopicArn: !Ref AlertTopic
+      Protocol: email
+      Endpoint: !Ref AlertEmail
+
+  # ------------------------------------------------------------------ spend guard first
+  Budget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: !Ref ServiceName
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit: {Amount: !Ref BudgetLimitUsd, Unit: USD}
+        # Gross usage: credits are excluded, otherwise a credited account always reads $0.
+        CostTypes:
+          IncludeCredit: false
+          IncludeRefund: false
+          IncludeTax: true
+          IncludeSupport: false
+          IncludeSubscription: true
+          IncludeUpfront: true
+          IncludeRecurring: true
+          IncludeOtherSubscription: true
+          IncludeDiscount: true
+          UseBlended: false
+          UseAmortized: false
+        CostFilters:
+          TagKeyValue:
+            - !Sub "user:${CostTagKey}$${ServiceName}"
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref BudgetEmail
+
+  # ------------------------------------------------------------------ image registry
+  Repository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref ServiceName
+      ImageTagMutability: IMMUTABLE
+      EmptyOnDelete: true
+      ImageScanningConfiguration: {ScanOnPush: true}
+      EncryptionConfiguration: {EncryptionType: AES256}
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {"rules":[{"rulePriority":1,"description":"keep the last 5 images",
+            "selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},
+            "action":{"type":"expire"}}]}
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  # ------------------------------------------------------------------ build in the cloud
+  SourceBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${ServiceName}-src-${AWS::AccountId}-${AWS::Region}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules: [{ObjectOwnership: BucketOwnerEnforced}]
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+      LifecycleConfiguration:
+        Rules:
+          - Id: source-zips-live-7-days
+            Status: Enabled
+            ExpirationInDays: 7
+            AbortIncompleteMultipartUpload: {DaysAfterInitiation: 1}
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  SourceBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SourceBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: TlsOnly
+            Effect: Deny
+            Principal: "*"
+            Action: "s3:*"
+            Resource: [!GetAtt SourceBucket.Arn, !Sub "${SourceBucket.Arn}/*"]
+            Condition: {Bool: {"aws:SecureTransport": "false"}}
+
+  BuildLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/codebuild/${ServiceName}-build"
+      RetentionInDays: !Ref LogRetentionDays
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  BuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ServiceName}-codebuild"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: codebuild.amazonaws.com}
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals: {"aws:SourceAccount": !Ref AWS::AccountId}
+      Policies:
+        - PolicyName: build-and-push-one-repo
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: Logs
+                Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !Sub "${BuildLogGroup.Arn}"
+              - Sid: ReadSourceZip
+                Effect: Allow
+                Action: [s3:GetObject, s3:GetObjectVersion]
+                Resource: !Sub "${SourceBucket.Arn}/source/*"
+              - Sid: LocateSourceBucket
+                Effect: Allow
+                Action: [s3:GetBucketLocation, s3:GetBucketAcl]
+                Resource: !GetAtt SourceBucket.Arn
+              - Sid: EcrLogin
+                Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: "*"
+              - Sid: PushToThisRepoOnly
+                Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:BatchGetImage
+                  - ecr:CompleteLayerUpload
+                  - ecr:DescribeImages
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                Resource: !GetAtt Repository.Arn
+              - Sid: PullBaseImageFromEcrPublic
+                Effect: Allow
+                Action: [ecr-public:GetAuthorizationToken, sts:GetServiceBearerToken]
+                Resource: "*"
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  BuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub "${ServiceName}-build"
+      Description: Builds the StepSpotter image from a git-archive zip in S3 and pushes it to ECR.
+      ServiceRole: !GetAtt BuildRole.Arn
+      ConcurrentBuildLimit: 1
+      TimeoutInMinutes: 30
+      QueuedTimeoutInMinutes: 30
+      Source:
+        Type: S3
+        Location: !Sub "${SourceBucket}/source/placeholder.zip"
+        BuildSpec: infra/buildspec.yml
+      Artifacts: {Type: NO_ARTIFACTS}
+      Environment:
+        Type: !If [ArmBuild, ARM_CONTAINER, LINUX_CONTAINER]
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: !If
+          - ArmBuild
+          - aws/codebuild/amazonlinux-aarch64-standard:3.0
+          - aws/codebuild/amazonlinux-x86_64-standard:5.0
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - {Name: REPO_URI, Value: !GetAtt Repository.RepositoryUri}
+          - {Name: IMAGE_ARCH, Value: !Ref ImageArch}
+          - {Name: IMAGE_TAG, Value: set-by-deploy-sh}
+          - {Name: BASE_IMAGE, Value: "public.ecr.aws/docker/library/python:3.12-slim"}
+      LogsConfig:
+        CloudWatchLogs: {Status: ENABLED, GroupName: !Ref BuildLogGroup}
+        S3Logs: {Status: DISABLED}
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  # ------------------------------------------------------------------ Bedrock attribution
+  AppInferenceProfile:
+    Type: AWS::Bedrock::ApplicationInferenceProfile
+    Condition: AppProfile
+    Properties:
+      InferenceProfileName: !Sub "${ServiceName}-sonnet"
+      Description: StepSpotter OpenCV app profile for cost tracking
+      ModelSource:
+        CopyFrom: !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelProfileId}"
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  # ------------------------------------------------------------------ runtime IAM
+  AccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ServiceName}-apprunner-ecr"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: build.apprunner.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: pull-this-repo-only
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:BatchGetImage
+                  - ecr:DescribeImages
+                  - ecr:GetDownloadUrlForLayer
+                Resource: !GetAtt Repository.Arn
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ServiceName}-apprunner-instance"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: tasks.apprunner.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: one-model-and-own-metrics
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # Converse / ConverseStream are authorised by these two actions.
+              - Sid: InvokeOneModel
+                Effect: Allow
+                Action: [bedrock:InvokeModel, bedrock:InvokeModelWithResponseStream]
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${ModelProfileId}"
+                  # A global profile routes to any commercial Region; the model ARN has no Region for it.
+                  - !Sub "arn:${AWS::Partition}:bedrock:*::foundation-model/${FoundationModelId}"
+                  - !Sub "arn:${AWS::Partition}:bedrock:::foundation-model/${FoundationModelId}"
+                  - !If
+                    - AppProfile
+                    - !GetAtt AppInferenceProfile.InferenceProfileArn
+                    - !Ref AWS::NoValue
+              - !If
+                - DemoModel
+                - Sid: InvokeDemoFallbackModel
+                  Effect: Allow
+                  Action: [bedrock:InvokeModel, bedrock:InvokeModelWithResponseStream]
+                  Resource:
+                    - !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${DemoModelId}"
+                    - !Sub "arn:${AWS::Partition}:bedrock:*::foundation-model/${DemoFoundationModelId}"
+                    - !Sub "arn:${AWS::Partition}:bedrock:::foundation-model/${DemoFoundationModelId}"
+                - !Ref AWS::NoValue
+              - Sid: OwnMetricNamespaceOnly
+                Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: "*"
+                Condition:
+                  StringEquals: {"cloudwatch:namespace": StepSpotterOpenCV}
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  # ------------------------------------------------------------------ the service
+  ScalingSingle:
+    Type: AWS::AppRunner::AutoScalingConfiguration
+    Condition: WithService
+    Properties:
+      AutoScalingConfigurationName: !Sub "${ServiceName}-one"
+      MinSize: 1
+      MaxSize: 1
+      MaxConcurrency: !Ref MaxConcurrency
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  Service:
+    Type: AWS::AppRunner::Service
+    Condition: WithService
+    DependsOn: Budget
+    Properties:
+      ServiceName: !Ref ServiceName
+      SourceConfiguration:
+        AutoDeploymentsEnabled: false
+        AuthenticationConfiguration: {AccessRoleArn: !GetAtt AccessRole.Arn}
+        ImageRepository:
+          ImageRepositoryType: ECR
+          ImageIdentifier: !Sub "${Repository.RepositoryUri}@${ImageDigest}"
+          ImageConfiguration:
+            Port: "8080"
+            RuntimeEnvironmentVariables:
+              - {Name: AWS_DEFAULT_REGION, Value: !Ref AWS::Region}
+              - {Name: AWS_REGION, Value: !Ref AWS::Region}
+              - {Name: PORT, Value: "8080"}
+              - {Name: STEPSPOTTER_DATA, Value: /tmp/stepspotter}
+              - {Name: STEPSPOTTER_TRACE_STDOUT, Value: "1"}
+              - {Name: STEPSPOTTER_PAUSED, Value: !Ref Paused}
+              - {Name: STEPSPOTTER_JOBS_PER_IP_HOUR, Value: !Ref JobsPerIpHour}
+              - {Name: STEPSPOTTER_PHOTOS_PER_IP_HOUR, Value: !Ref PhotosPerIpHour}
+              - {Name: STEPSPOTTER_MAX_JOBS_PER_DAY, Value: !Ref MaxJobsPerDay}
+              - {Name: STEPSPOTTER_MAX_PHOTOS_PER_DAY, Value: !Ref MaxPhotosPerDay}
+              - Name: STEPSPOTTER_MODEL
+                Value: !If
+                  - DemoModel
+                  - !Ref DemoModelId
+                  - !If [AppProfile, !GetAtt AppInferenceProfile.InferenceProfileArn, !Ref ModelProfileId]
+      InstanceConfiguration:
+        Cpu: !Ref Cpu
+        Memory: !Ref Memory
+        InstanceRoleArn: !GetAtt InstanceRole.Arn
+      HealthCheckConfiguration:
+        Protocol: HTTP
+        Path: /healthz
+        Interval: 10
+        Timeout: 5
+        HealthyThreshold: 1
+        UnhealthyThreshold: 5
+      AutoScalingConfigurationArn: !GetAtt ScalingSingle.AutoScalingConfigurationArn
+      NetworkConfiguration:
+        IngressConfiguration: {IsPubliclyAccessible: true}
+        EgressConfiguration: {EgressType: DEFAULT}
+      Tags: [{Key: !Ref CostTagKey, Value: !Ref ServiceName}]
+
+  # ------------------------------------------------------------------ metrics from the trace
+  # The app prints one JSON object per trace event to stdout (STEPSPOTTER_TRACE_STDOUT=1);
+  # App Runner ships stdout to the application log group it creates for the service.
+  # Six decisions x 1 metric + calls saved + calls made + latency = 9 custom metrics.
+  DecisionsFilter:
+    Type: AWS::Logs::MetricFilter
+    Condition: WithService
+    Properties:
+      FilterName: perception-decisions
+      LogGroupName: !Sub "/aws/apprunner/${ServiceName}/${Service.ServiceId}/application"
+      FilterPattern: '{ $.event = "perception" }'
+      MetricTransformations:
+        - MetricNamespace: StepSpotterOpenCV
+          MetricName: PerceptionDecisions
+          MetricValue: "1"
+          Unit: Count
+          Dimensions: [{Key: Decision, Value: $.decision}]
+
+  LlmSavedFilter:
+    Type: AWS::Logs::MetricFilter
+    Condition: WithService
+    Properties:
+      FilterName: perception-llm-calls-saved
+      LogGroupName: !Sub "/aws/apprunner/${ServiceName}/${Service.ServiceId}/application"
+      FilterPattern: '{ $.event = "perception" && $.llm_called IS FALSE }'
+      MetricTransformations:
+        - {MetricNamespace: StepSpotterOpenCV, MetricName: LlmCallsSaved, MetricValue: "1", DefaultValue: 0, Unit: Count}
+
+  LlmMadeFilter:
+    Type: AWS::Logs::MetricFilter
+    Condition: WithService
+    Properties:
+      FilterName: perception-llm-calls-made
+      LogGroupName: !Sub "/aws/apprunner/${ServiceName}/${Service.ServiceId}/application"
+      FilterPattern: '{ $.event = "perception" && $.llm_called IS TRUE }'
+      MetricTransformations:
+        - {MetricNamespace: StepSpotterOpenCV, MetricName: LlmCallsMade, MetricValue: "1", DefaultValue: 0, Unit: Count}
+
+  LatencyFilter:
+    Type: AWS::Logs::MetricFilter
+    Condition: WithService
+    Properties:
+      FilterName: perception-latency
+      LogGroupName: !Sub "/aws/apprunner/${ServiceName}/${Service.ServiceId}/application"
+      FilterPattern: '{ $.event = "perception" && $.ms_total >= 0 }'
+      MetricTransformations:
+        - {MetricNamespace: StepSpotterOpenCV, MetricName: PerceptionLatencyMs, MetricValue: $.ms_total, Unit: Milliseconds}
+
+  # ------------------------------------------------------------------ alarms
+  Alarm5xx:
+    Type: AWS::CloudWatch::Alarm
+    Condition: WithService
+    Properties:
+      AlarmName: !Sub "${ServiceName}-5xx"
+      AlarmDescription: Server errors from the StepSpotter OpenCV service.
+      Namespace: AWS/AppRunner
+      MetricName: 5xxStatusResponses
+      Dimensions:
+        - {Name: ServiceName, Value: !Ref ServiceName}
+        - {Name: ServiceID, Value: !GetAtt Service.ServiceId}
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: !Ref ErrorsPer5Min
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!If [OwnTopic, !Ref AlertTopic, !Ref AlertTopicArn]]
+      OKActions: [!If [OwnTopic, !Ref AlertTopic, !Ref AlertTopicArn]]
+
+  AlarmFlood:
+    Type: AWS::CloudWatch::Alarm
+    Condition: WithService
+    Properties:
+      AlarmName: !Sub "${ServiceName}-request-flood"
+      AlarmDescription: Far more requests than judging traffic; check the limits trace, consider STEPSPOTTER_PAUSED=1.
+      Namespace: AWS/AppRunner
+      MetricName: Requests
+      Dimensions:
+        - {Name: ServiceName, Value: !Ref ServiceName}
+        - {Name: ServiceID, Value: !GetAtt Service.ServiceId}
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: !Ref RequestFloodPer5Min
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!If [OwnTopic, !Ref AlertTopic, !Ref AlertTopicArn]]
+      OKActions: [!If [OwnTopic, !Ref AlertTopic, !Ref AlertTopicArn]]
+
+  AlarmPerceptionP95:
+    Type: AWS::CloudWatch::Alarm
+    Condition: WithService
+    Properties:
+      AlarmName: !Sub "${ServiceName}-perception-p95"
+      AlarmDescription: OpenCV perception p95 latency above the threshold in 2 of 3 five-minute periods.
+      Namespace: StepSpotterOpenCV
+      MetricName: PerceptionLatencyMs
+      ExtendedStatistic: p95
+      Period: 300
+      EvaluationPeriods: 3
+      DatapointsToAlarm: 2
+      Threshold: !Ref PerceptionP95AlarmMs
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!If [OwnTopic, !Ref AlertTopic, !Ref AlertTopicArn]]
+      OKActions: [!If [OwnTopic, !Ref AlertTopic, !Ref AlertTopicArn]]
+
+  # ------------------------------------------------------------------ dashboard
+  Dashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Condition: WithService
+    Properties:
+      DashboardName: !Ref ServiceName
+      DashboardBody: !Sub
+        - |
+          {
+            "widgets": [
+              {"type":"text","x":0,"y":0,"width":24,"height":2,
+               "properties":{"markdown":"## StepSpotter x OpenCV 5 - ${ServiceName}\nOne App Runner instance (${Cpu} / ${Memory}). Perception decisions come from the JSON trace on stdout (metric filters). Kill switch and caps: docs/OPERATIONS.md."}},
+              {"type":"metric","x":0,"y":2,"width":12,"height":6,
+               "properties":{"title":"Perception decisions (per 5 min)","region":"${AWS::Region}","view":"timeSeries","stacked":true,"period":300,"stat":"Sum",
+                 "metrics":[[{"expression":"SEARCH('{StepSpotterOpenCV,Decision} MetricName=\"PerceptionDecisions\"', 'Sum', 300)","id":"d","label":""}]]}},
+              {"type":"metric","x":12,"y":2,"width":12,"height":6,
+               "properties":{"title":"Bedrock calls saved by OpenCV vs made","region":"${AWS::Region}","view":"timeSeries","stacked":false,"period":300,"stat":"Sum",
+                 "metrics":[["StepSpotterOpenCV","LlmCallsSaved",{"label":"saved (OpenCV refused, no LLM call)"}],
+                            ["StepSpotterOpenCV","LlmCallsMade",{"label":"made (OpenCV passed, LLM verified)"}]]}},
+              {"type":"metric","x":0,"y":8,"width":12,"height":6,
+               "properties":{"title":"Perception latency (ms)","region":"${AWS::Region}","view":"timeSeries","period":300,
+                 "metrics":[["StepSpotterOpenCV","PerceptionLatencyMs",{"stat":"p50","label":"p50"}],
+                            ["StepSpotterOpenCV","PerceptionLatencyMs",{"stat":"p95","label":"p95"}]],
+                 "annotations":{"horizontal":[{"label":"alarm","value":${PerceptionP95AlarmMs}}]}}},
+              {"type":"metric","x":12,"y":8,"width":12,"height":6,
+               "properties":{"title":"HTTP responses","region":"${AWS::Region}","view":"timeSeries","stacked":true,"period":300,"stat":"Sum",
+                 "metrics":[["AWS/AppRunner","2xxStatusResponses","ServiceName","${ServiceName}","ServiceID","${ServiceId}"],
+                            ["AWS/AppRunner","4xxStatusResponses","ServiceName","${ServiceName}","ServiceID","${ServiceId}"],
+                            ["AWS/AppRunner","5xxStatusResponses","ServiceName","${ServiceName}","ServiceID","${ServiceId}"]]}},
+              {"type":"metric","x":0,"y":14,"width":12,"height":6,
+               "properties":{"title":"Request latency (ms)","region":"${AWS::Region}","view":"timeSeries","period":300,
+                 "metrics":[["AWS/AppRunner","RequestLatency","ServiceName","${ServiceName}","ServiceID","${ServiceId}",{"stat":"p50"}],
+                            ["AWS/AppRunner","RequestLatency","ServiceName","${ServiceName}","ServiceID","${ServiceId}",{"stat":"p95"}]]}},
+              {"type":"metric","x":12,"y":14,"width":12,"height":6,
+               "properties":{"title":"Instance CPU / memory (%) and active instances","region":"${AWS::Region}","view":"timeSeries","period":300,"stat":"Average",
+                 "metrics":[["AWS/AppRunner","CPUUtilization","ServiceName","${ServiceName}","ServiceID","${ServiceId}"],
+                            ["AWS/AppRunner","MemoryUtilization","ServiceName","${ServiceName}","ServiceID","${ServiceId}"],
+                            ["AWS/AppRunner","ActiveInstances","ServiceName","${ServiceName}","ServiceID","${ServiceId}",{"yAxis":"right","stat":"Maximum"}]]}},
+              {"type":"alarm","x":0,"y":20,"width":24,"height":3,
+               "properties":{"title":"Alarms","alarms":["${Alarm5xxArn}","${AlarmFloodArn}","${AlarmP95Arn}"]}},
+              {"type":"log","x":0,"y":23,"width":24,"height":8,
+               "properties":{"title":"Last 50 perception events","region":"${AWS::Region}","view":"table",
+                 "query":"SOURCE '/aws/apprunner/${ServiceName}/${ServiceId}/application' | fields @timestamp, step_id, decision, llm_called, ms_total | filter event = \"perception\" | sort @timestamp desc | limit 50"}}
+            ]
+          }
+        - ServiceId: !GetAtt Service.ServiceId
+          Alarm5xxArn: !GetAtt Alarm5xx.Arn
+          AlarmFloodArn: !GetAtt AlarmFlood.Arn
+          AlarmP95Arn: !GetAtt AlarmPerceptionP95.Arn
+
+Outputs:
+  ServiceUrl:
+    Condition: WithService
+    Value: !Sub "https://${Service.ServiceUrl}"
+  ServiceArn:
+    Condition: WithService
+    Value: !Ref Service
+  ServiceId:
+    Condition: WithService
+    Value: !GetAtt Service.ServiceId
+  ApplicationLogGroup:
+    Condition: WithService
+    Value: !Sub "/aws/apprunner/${ServiceName}/${Service.ServiceId}/application"
+  DashboardName:
+    Condition: WithService
+    Value: !Ref Dashboard
+  RepositoryUri:
+    Value: !GetAtt Repository.RepositoryUri
+  RepositoryName:
+    Value: !Ref Repository
+  SourceBucketName:
+    Value: !Ref SourceBucket
+  BuildProjectName:
+    Value: !Ref BuildProject
+  BuildLogGroupName:
+    Value: !Ref BuildLogGroup
+  BudgetName:
+    Value: !Ref Budget
+  AlertTopic:
+    Value: !If [OwnTopic, !Ref AlertTopic, !Ref AlertTopicArn]
+  ModelInUse:
+    Value: !If
+      - DemoModel
+      - !Ref DemoModelId
+      - !If [AppProfile, !GetAtt AppInferenceProfile.InferenceProfileArn, !Ref ModelProfileId]
+  InstanceRoleArn:
+    Value: !GetAtt InstanceRole.Arn
