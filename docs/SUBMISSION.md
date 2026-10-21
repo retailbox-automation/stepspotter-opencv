@@ -3,7 +3,7 @@
 Form: opencv26.devpost.com. Fields and their ids come from the Devpost MCP
 `get_submission_requirements` (`docs/opencv26/RULES-LIVE-2026-10-21.md` in the
 hackathon project). Placeholders in double braces are filled before Submit:
-`{{VIDEO:url}}`, `{{FINAL:head commit}}`, `{{ZIP:…}}`, `{{SCREENSHOT:…}}`; every
+`{{VIDEO:url}}`, `{{FINAL:head commit}}`, `{{ZIP:…}}`; every
 evaluation number is from `docs/EVAL.md` / `eval/results/*.json` at `750d152`. Submit is pressed by Mikhail only.
 
 ## Project name
@@ -253,14 +253,19 @@ integration.)
 
 {{ZIP:name and SHA-256 — the release archive with the code, docs/report/StepSpotter-OpenCV26-report.pdf, docs/diagrams/ and eval/results/}}
 
-## Gallery captions
+## Gallery (upload in this order; files in `docs/screens/gallery/`, captions ≤ 140 characters)
 
-1. **architecture.png** — What runs on AWS: App Runner with OpenCV 5 in front of the Bedrock verifier and the Strands gate; CloudWatch, Budget, CodeBuild and ECR.
-2. **agent-workflow.png** — Perception, decision, action: OpenCV's route decides between no model call, a one-photo or a two-photo model check; the gate cancels or asks a person.
-3. **data/demo/agentic-opencv/perception/step-01-probe-01-quality.jpg** — The real agent: a blurred photo refused by OpenCV in 44 ms, the agent asks for a steady shot instead of submitting.
-4. **{{SCREENSHOT:judge-retake}}** — A blurred photo refused in milliseconds with one instruction, no model call.
-5. **{{SCREENSHOT:judge-human}}** — A change in the do-not-touch zone stops the run for a person's approval.
-6. **{{SCREENSHOT:trace}}** — The trace: OpenCV's row, its time, and whether a model was asked.
-7. **{{SCREENSHOT:heatmap}}** — What OpenCV saw: matched points and the change heatmap with the zones.
-8. **eval/results/figures/c-vs-a-c03-real_lookalike-c05.jpg** — Where OpenCV changed the decision: the model alone passed a look-alike of another place; the gate's two-photo check refused it.
-9. **{{SCREENSHOT:eval-table}}** — Evaluation: model only vs OpenCV then model, with the failures.
+Images 1, 2, 4 and 5 are screenshots of the live app taken on 21 October 2026 (build 3f75518, headless
+Chromium at phone size 390×844 and desktop 1440×900); 3 is the headline table of `docs/EVAL.md`; 6 and 8
+are `docs/diagrams/`; 7 is the shipped keyframe code (`perception/frames.py`) run on
+`eval/cases/public/own-sink-video/clip-31s-36s.mp4`. The single screenshots are in `docs/screens/`.
+Each image is ≥ 1800 px wide and under 1 MB.
+
+1. **01-retake-224ms-no-model.png** — Live: a blurred proof photo refused by OpenCV 5 in 224 ms with one instruction. No model call; the next step stays locked. (122)
+2. **02-trace-opencv-pictures.png** — The trace on the live app: OpenCV's row with match lines, change heatmap and quality bars, its time, and whether a model was asked. (131)
+3. **03-eval-table.png** — 50 held-out cases: model alone vs OpenCV 5 then the model. 30 of 33 bad photos refused, 31 model calls instead of 54, misses listed. (132)
+4. **04-human-approval.png** — 35% of the do-not-touch zone changed: OpenCV stops the run, no model call, and nothing moves until a person approves. (117)
+5. **05-agent-mode-inspect-photo.png** — Agent mode: the Strands agent calls inspect_photo itself; OpenCV says retake in 219 ms, so the agent asks for a new shot. (121)
+6. **06-architecture.png** — What runs on AWS: App Runner with OpenCV 5 before the Bedrock verifier and the Strands gate; CloudWatch, Budget, CodeBuild, ECR. (128)
+7. **07-sink-video-keyframes.jpg** — A video instead of a photo: OpenCV samples our own under-sink leak clip and keeps the sharpest frames. The video never reaches a model. (135)
+8. **08-agent-workflow.png** — Perception, decision, action: OpenCV's route picks no model call, a one- or two-photo model check; the gate cancels or asks a person. (133)

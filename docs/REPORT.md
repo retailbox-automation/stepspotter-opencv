@@ -182,7 +182,9 @@ Every OpenCV decision is one trace row with `decision`, `route`, `llm_called` an
 `ms_total` (`guide.py:320`). On the page, "Everything it did" shows it as "OpenCV photo
 check (code, not the model)" with the match lines, the change heatmap and the time.
 
-{{SCREENSHOT:trace — docs/screens/trace-opencv.png, a judge scenario's trace row on the live URL}}
+![The trace sheet on the live URL for the judge scenario "change in a do-not-touch zone": OpenCV's row (1868 ms, no model call) with the match lines, the change heatmap and the quality bars; right, the match picture at full size, 1044 SIFT inliers](screens/gallery/02-trace-opencv-pictures.png)
+
+*Live URL, build 3f75518, 21 October 2026, judge scenario "Change in a do-not-touch zone". More screens in `docs/screens/`.*
 
 ## 5. AWS deployment
 

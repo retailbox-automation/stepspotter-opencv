@@ -79,6 +79,7 @@ def body_html(md_text: str) -> str:
     rest = "\n".join(lines[i:])
     out = markdown.markdown(rest, extensions=["tables", "fenced_code", "sane_lists"])
     out = out.replace('src="diagrams/', 'src="../diagrams/')
+    out = out.replace('src="screens/', 'src="../screens/')
     out = re.sub(r"\{\{([^}]+)\}\}", lambda m: f'<span class="ph">{{{{{m.group(1)}}}}}</span>', out)
     return out
 

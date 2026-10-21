@@ -66,7 +66,15 @@ judge buttons count as photo checks) and 60 agent turns — to keep it inside it
 "has run its … for today", everything below runs offline. Exact steps and expected results:
 [`docs/SUBMISSION.md`](docs/SUBMISSION.md) § Testing instructions.
 
-{{SCREENSHOT:trace — docs/screens/trace-opencv.png}}
+<p>
+<img src="docs/screens/phone-judge-retake.png" width="250" alt="A blurred photo refused by OpenCV in 312 ms with one instruction, no model call; the gate refuses to move on">
+<img src="docs/screens/phone-judge-human-approval.png" width="250" alt="35% of the do-not-touch zone changed: the run stops for a person to approve">
+<img src="docs/screens/phone-trace-opencv.png" width="250" alt="The trace: OpenCV's row with match lines, change heatmap, quality bars, 1868 ms, no model call">
+</p>
+
+Live app, 21 October 2026 (build 3f75518), "For judges" buttons: a blurred photo refused in 312 ms with no
+model call; a change in the do-not-touch zone stopped for a person; the trace row with OpenCV's pictures.
+More screens, including agent mode and the desktop layout: [`docs/screens/`](docs/screens/).
 
 ## Architecture
 
