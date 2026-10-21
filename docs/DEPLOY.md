@@ -71,7 +71,17 @@ hh:mm:ssZ  smoke  GET /api/demo  -> 200 in 0.xs  OK
   durations      infra Ns  build Ns  service Ns  total Ns
 ```
 
-Measured durations: **not measured yet.** The pipeline has been validated (`cloudformation validate-template`, `cfn-lint`, `shellcheck`), but it hasn't been run end to end. Fill this in from the first real run.
+Measured on the first run (2026-10-21, us-east-1, commit `cf72d49`):
+
+| Stage | Time |
+|---|---|
+| Phase 1 stack create (Budget, ECR, S3, CodeBuild, IAM, inference profile) | 68 s |
+| CodeBuild: provisioning 8 s, source 2 s, pre_build 13 s, build + arch check + import smoke + push 46 s | 72 s build, 78 s as seen by `deploy.sh` |
+| Phase 2 stack update until the service was `RUNNING` | 193 s |
+| `deploy.sh` end to end (phase 1 already done) | 283 s |
+| Smoke: `GET /` 200 in 0.21 s, `/healthz` 200 in 0.14 s, `/api/demo` 200 in 0.21 s | |
+
+The import smoke inside the image printed `arch x86_64 cv2 5.0.0 numpy 2.5.4`. The CodeBuild bill is rounded up to 2 minutes, $0.01.
 
 ### Settings (environment variables for `deploy.sh`)
 
