@@ -332,7 +332,7 @@ def inspect_full(
             worst = max(ch.avoid, key=lambda r: r.changed_frac)
             return done(_report(
                 "touched_avoid", "change_in_avoid",
-                f"{worst.changed_frac:.0%} of the {worst.label} changed since {ch.baseline}"
+                f"{worst.changed_frac:.0%} of the {worst.label} changed since {_said(ch.baseline)}"
                 f" (background {ch.outside_frac:.0%}), and this step said not to touch it.",
                 f"Stop. Something changed at the {worst.label}, which this step said to leave alone. "
                 "A person needs to check it before you carry on.",
@@ -342,7 +342,7 @@ def inspect_full(
             best = max(ch.act, key=lambda r: r.changed_frac)
             return done(_report(
                 "no_change", "no_change_in_zone",
-                f"Only {best.changed_frac:.0%} of the {best.label} changed since {ch.baseline}"
+                f"Only {best.changed_frac:.0%} of the {best.label} changed since {_said(ch.baseline)}"
                 f" (needs {max(T.ACT_CHANGED_MIN, T.NOISE_MULT * (ch.outside_frac or 0) + T.NOISE_ADD):.0%}).",
                 f"I cannot see any change at the {best.label} yet. Do the step first, then take the photo "
                 "from about the same spot.",
@@ -422,6 +422,11 @@ def findings_for_model(report: PerceptionReport) -> str:
             "has refused several in a row, so you decide. Be strict."
         )
     return "\n".join(lines)
+
+
+def _said(baseline: str) -> str:
+    """The change baseline as a person says it."""
+    return "your first photo" if baseline == "reference" else baseline
 
 
 def _quality_reason(code: str, q: QualityReport) -> str:

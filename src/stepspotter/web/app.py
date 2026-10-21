@@ -23,6 +23,14 @@ Endpoints (all JSON except the two image routes and ``/``):
     POST /api/jobs/{id}/ask         a typed question -> the Guide, with no tools at all
     GET  /api/jobs/{id}/trace       every tool call and refusal, in order
                                     (?view=human for the readable one, ?view=raw for rows)
+    GET  /api/jobs/{id}/perception/R one picture of what OpenCV saw (match / heatmap /
+                                    quality), R as named in the feed and the trace
+    POST /api/jobs/{id}/review      a person checked a do-not-touch change: approve or not
+    POST /api/inspect               OpenCV only, no model: reference + evidence (+ zones)
+                                    -> the PerceptionReport and its three pictures
+    GET  /api/inspect/{rid}/{kind}  one of those pictures
+    GET  /api/judge                 the OpenCV-only scenarios a judge can run
+    POST /api/judge/{name}          run one: a real job, the real gate, no model call
 
 Nothing here holds state of its own: the job lives in ``data/jobs/<id>.json`` and
 everything that happened is appended to ``data/jobs/<id>.trace.jsonl`` by the store.
@@ -30,6 +38,9 @@ everything that happened is appended to ``data/jobs/<id>.trace.jsonl`` by the st
 
 from __future__ import annotations
 
+import json
+import re
+import uuid
 from pathlib import Path
 from typing import Any, Callable
 
@@ -41,9 +52,10 @@ from stepspotter.gate import StepGate
 from stepspotter.guide import JobService, build_tools
 from stepspotter.models import JobState
 from stepspotter.web import demo as demo_mod
+from stepspotter.web import judge as judge_mod
 from stepspotter.web.ask import answer as answer_question
 from stepspotter.web.chat_page import CHAT_HTML
-from stepspotter.web.feed import build_feed, composer_state
+from stepspotter.web.feed import build_feed, composer_state, review_pending
 from stepspotter.web.gated import advance_via_gate, escalate_via_tool
 from stepspotter.web.limits import install_limits
 from stepspotter.web.page import PAGE_HTML
@@ -130,6 +142,29 @@ def _research(job_id: str) -> dict | None:
     return None
 
 
+#: A rendered OpenCV picture, as the feed and the trace name it: no extension, no path.
+PERCEPTION_REF = re.compile(r"^step-\d{2}-(?:try|probe)-\d{2}-(?:match|heatmap|quality)$")
+INSPECT_KIND = re.compile(r"^(?:match|heatmap|quality)$")
+
+
+def _perception_dict(state: JobState) -> dict | None:
+    """What OpenCV said about the latest photo for the current step, for the page."""
+    rep = state.perception.get(state.current)
+    if rep is None:
+        return None
+    return {
+        "decision": rep.decision,
+        "reason_code": rep.reason_code,
+        "reason": rep.reason,
+        "instruction": rep.instruction,
+        "blocks": rep.blocks,
+        "needs_human": rep.needs_human,
+        "overridden": rep.overridden,
+        "ms_total": rep.ms_total,
+        "approved": state.current in state.approvals,
+    }
+
+
 def _step_dict(state: JobState) -> dict | None:
     step = state.current_step()
     if step is None:
@@ -170,8 +205,11 @@ def _summary(state: JobState) -> dict:
             "passed": verdict.passed,
             "stop": verdict.stop,
             "reason": verdict.reason,
+            "source": verdict.source,
             "evidence_url": f"/api/jobs/{state.job_id}/evidence/{state.current + 1}",
         },
+        "perception": _perception_dict(state),
+        "llm_calls_saved": state.llm_calls_saved,
         "card_url": None
         if step is None
         else f"/api/jobs/{state.job_id}/card?step={state.current + 1}",
@@ -374,8 +412,10 @@ def create_app(
                 # The cancel path traces itself through the gate's on_block. The hazard
                 # path raises an interrupt instead and traced nothing, so a reloaded
                 # feed lost the one refusal that matters most. Record it here.
-                store.trace(job_id, "gate_stop", reason=message)
-                blocked = {"blocked": True, "hazard": True, "reason": message}
+                review = isinstance(content, dict) and content.get("source") == "opencv"
+                kind = "human_review" if review else "stop_condition"
+                store.trace(job_id, "gate_stop", reason=message, kind=kind)
+                blocked = {"blocked": True, "hazard": True, "human_review": review, "reason": message}
             else:
                 blocked = {"blocked": True, "hazard": False, "reason": str(content)}
             blocked["job"] = _summary(_job(job_id))
@@ -435,6 +475,103 @@ def create_app(
             raise HTTPException(status_code=502, detail=f"Could not draw the card: {exc}")
         return FileResponse(str(path), media_type="image/jpeg")
 
+    @app.get("/api/jobs/{job_id}/perception/{ref}")
+    def perception_image(job_id: str, ref: str) -> Any:
+        """One picture of what OpenCV saw. ``ref`` is the name the feed and trace use."""
+        _job(job_id)
+        if not PERCEPTION_REF.match(ref):
+            raise HTTPException(status_code=404, detail="No such picture.")
+        p = store.cards_dir(job_id) / "perception" / f"{ref}.jpg"
+        if not p.is_file():
+            raise HTTPException(status_code=404, detail="That picture is not on disk.")
+        return FileResponse(str(p), media_type="image/jpeg")
+
+    @app.post("/api/jobs/{job_id}/review")
+    def review(job_id: str, approved: bool = Form(...), answer: str = Form("")) -> dict:
+        """A person's answer to a human_review stop: the same call the gate makes on resume."""
+        state = _job(job_id)
+        rep = state.perception.get(state.current)
+        if rep is None or rep.decision != "touched_avoid":
+            raise HTTPException(status_code=409, detail="Nothing on this step is waiting for a person.")
+        ok = svc.review(state, {"approved": approved, "answer": answer.strip() or ("approved" if approved else "not approved")})
+        return {"approved": ok, "job": _summary(_job(job_id))}
+
+    # ---------------------------------------------------------------- judges
+    @app.get("/api/judge")
+    def judge_info() -> dict:
+        return judge_mod.info()
+
+    @app.post("/api/judge/{name}")
+    def judge_run(name: str) -> dict:
+        """One OpenCV branch on a packaged photo: a real job, the real gate, no model."""
+        if name not in judge_mod.SCENARIOS:
+            raise HTTPException(status_code=404, detail=f"There is no scenario called {name!r}.")
+        if not judge_mod.available():
+            raise HTTPException(status_code=503, detail="The demo photos are not installed.")
+        out = judge_mod.run(
+            name,
+            on_block=lambda reason, ti: store.trace(
+                ti.get("job_id") or "unknown", "gate_block", reason=reason, tool_input=ti
+            ),
+        )
+        out["job"] = _summary(_job(out["job_id"]))
+        return out
+
+    @app.post("/api/inspect")
+    async def inspect_upload(
+        evidence: UploadFile = File(...),
+        reference: UploadFile | None = File(None),
+        zones: str = Form(""),
+        expects_change: str = Form(""),
+    ) -> dict:
+        """OpenCV only, no model: the PerceptionReport for one photo against another.
+
+        ``zones`` is a JSON list of {label, kind: act|avoid|stop, box: [x0, y0, x1, y1]}
+        in the reference's normalised coordinates. The uploads are deleted as soon as the
+        report and its pictures exist; only the pictures are kept, under a random id.
+        """
+        from stepspotter.perception import inspect as P
+        from stepspotter.perception import render as R
+
+        # Everything that can be refused is refused before a byte is written.
+        try:
+            zl = [(z["label"], z["kind"], tuple(float(v) for v in z["box"])) for z in json.loads(zones or "[]")]
+        except (ValueError, KeyError, TypeError) as exc:
+            raise HTTPException(status_code=400, detail=f"zones must be a JSON list of label/kind/box: {exc}")
+        exp = {"true": True, "1": True, "false": False, "0": False}.get(expects_change.strip().lower())
+        ev_raw = await evidence.read()
+        if not ev_raw:
+            raise HTTPException(status_code=400, detail="The evidence photo did not arrive.")
+        ref_raw = await reference.read() if reference is not None else b""
+        rid = uuid.uuid4().hex[:12]
+        folder = store.jobs_dir() / "_inspect" / rid
+        folder.mkdir(parents=True, exist_ok=True)
+        ev_path = ref_path = None
+        try:
+            ev_path = save_upload(ev_raw, folder / "evidence.jpg")
+            ref_path = save_upload(ref_raw, folder / "reference.jpg") if ref_raw else None
+            rep, detail = P.inspect_full(str(ev_path), str(ref_path) if ref_path else None, zl, expects_change=exp)
+            arts = R.render_all(rep, detail, folder, "inspect")
+        except (OSError, ValueError) as exc:
+            raise HTTPException(status_code=400, detail=f"That photo could not be read: {exc}")
+        finally:
+            for p in (ev_path, ref_path, folder / "evidence.jpg", folder / "reference.jpg"):
+                if p is not None:
+                    Path(p).unlink(missing_ok=True)
+        body = json.loads(rep.model_dump_json(exclude={"artifacts"}))
+        body["images"] = {k: f"/api/inspect/{rid}/{k}" for k in arts}
+        body["llm_called"] = False
+        return body
+
+    @app.get("/api/inspect/{rid}/{kind}")
+    def inspect_image(rid: str, kind: str) -> Any:
+        if not re.fullmatch(r"[0-9a-f]{12}", rid) or not INSPECT_KIND.match(kind):
+            raise HTTPException(status_code=404, detail="No such picture.")
+        p = store.jobs_dir() / "_inspect" / rid / f"inspect-{kind}.jpg"
+        if not p.is_file():
+            raise HTTPException(status_code=404, detail="That picture is not on disk.")
+        return FileResponse(str(p), media_type="image/jpeg")
+
     @app.get("/api/jobs/{job_id}/feed")
     def feed(job_id: str) -> dict:
         """The chat transcript. Derived from the trace every time — see web/feed.py."""
@@ -453,7 +590,7 @@ def create_app(
         return {
             "job": _summary(state),
             "messages": build_feed(state, rows),
-            "composer": composer_state(state, escalated),
+            "composer": composer_state(state, escalated, review_pending(state, rows)),
         }
 
     @app.post("/api/jobs/{job_id}/ask")

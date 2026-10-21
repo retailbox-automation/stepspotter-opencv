@@ -59,6 +59,50 @@ def _step_msg(state: JobState, step: Step, step_no: int) -> dict[str, Any]:
     }
 
 
+#: What each OpenCV decision is called in the feed's heading.
+CV_HEADINGS = {
+    "ok": "Photo check passed — sent on to the model",
+    "retake": "Photo check: please retake it",
+    "wrong_place": "Photo check: this is not the place in your first photo",
+    "replay": "Photo check: this photo was already sent",
+    "no_change": "Photo check: nothing changed at the work zone yet",
+    "touched_avoid": "Photo check: something changed where you were told not to touch",
+    "skipped": "Photo check could not read the photo — the model decides",
+}
+
+
+def _ref(path: object) -> str | None:
+    """A rendered picture's name without folder or extension, as the URL route wants it."""
+    if not isinstance(path, str) or not path:
+        return None
+    name = path.replace("\\", "/").rsplit("/", 1)[-1]
+    return name[:-4] if name.endswith(".jpg") else name
+
+
+def _cv_msg(state: JobState, row: dict) -> dict[str, Any]:
+    """One OpenCV check, as a chat message: decision, why, the one instruction, pictures."""
+    images = []
+    for kind in ("match", "heatmap", "quality"):
+        ref = _ref(row.get(f"img_{kind}"))
+        if ref:
+            images.append({"kind": kind, "url": f"/api/jobs/{state.job_id}/perception/{ref}"})
+    return {
+        "from": "cv",
+        "kind": "perception",
+        "decision": row.get("decision"),
+        "heading": CV_HEADINGS.get(row.get("decision") or "", "Photo check"),
+        "reason": row.get("reason") or "",
+        "instruction": row.get("instruction"),
+        "blocks": bool(row.get("blocks")),
+        "needs_human": bool(row.get("needs_human")),
+        "overridden": bool(row.get("overridden")),
+        "llm_called": bool(row.get("llm_called")),
+        "ms_total": row.get("ms_total"),
+        "step_number": row.get("step_id"),
+        "images": images,
+    }
+
+
 def build_feed(state: JobState, rows: list[dict]) -> list[dict]:
     """Turn one job's trace into the messages a person sees, oldest first."""
     feed: list[dict] = []
@@ -69,6 +113,9 @@ def build_feed(state: JobState, rows: list[dict]) -> list[dict]:
     #: number — so each bubble gets an address of its own instead of every attempt at
     #: a step sharing one, which a browser answers from cache with the older picture.
     attempts: dict[int, int] = {}
+    #: The OpenCV row waiting for its verdict row: the photo bubble comes first, then
+    #: what OpenCV saw, then the verdict — the order a person reads the story in.
+    pending_cv: dict | None = None
 
     for row in rows:
         event = row.get("event")
@@ -138,6 +185,22 @@ def build_feed(state: JobState, rows: list[dict]) -> list[dict]:
             if first is not None:
                 add(_step_msg(state, first, 1))
 
+        elif event == "perception":
+            if row.get("mode") == "submit":
+                pending_cv = row
+
+        elif event == "judge":
+            add(
+                {
+                    "from": "agent",
+                    "kind": "note",
+                    "icon": "judge",
+                    "text": "Judge scenario: the plan is fixed, the zones were placed by hand, "
+                    f"and the photo below is {row.get('evidence') or 'generated'}. Everything "
+                    "after this is the real OpenCV check and the real gate; no model is called.",
+                }
+            )
+
         elif event == "verdict":
             step_no = int(row.get("step_id") or 0)
             attempt = attempts[step_no] = attempts.get(step_no, 0) + 1
@@ -149,6 +212,16 @@ def build_feed(state: JobState, rows: list[dict]) -> list[dict]:
                     "caption": "I did it",
                 }
             )
+            cv = pending_cv if (pending_cv and int(pending_cv.get("step_id") or 0) == step_no) else None
+            pending_cv = None
+            if cv is not None:
+                add(_cv_msg(state, cv))
+            if row.get("source") == "opencv" and cv is not None:
+                # The OpenCV message above IS the refusal; a second bubble saying the same
+                # thing in red would make one decision look like two. The way past it
+                # (move on anyway, which the gate then refuses) is drawn on that message.
+                feed[-1]["final"] = True
+                continue
             add(
                 {
                     "from": "agent",
@@ -157,6 +230,31 @@ def build_feed(state: JobState, rows: list[dict]) -> list[dict]:
                     "stop": bool(row.get("stop")),
                     "reason": row.get("reason") or "",
                     "step_number": step_no,
+                }
+            )
+
+        elif event == "keyframes":
+            add(
+                {
+                    "from": "cv",
+                    "kind": "note",
+                    "icon": "video",
+                    "text": f"I picked frame {row.get('chosen_index')} ({row.get('chosen_time_s')} s) "
+                    "out of your video: the sharpest one that shows the right place.",
+                }
+            )
+
+        elif event == "human_review":
+            approved = bool(row.get("approved"))
+            add(
+                {
+                    "from": "agent",
+                    "kind": "note",
+                    "icon": "person",
+                    "text": ("A person checked it and approved carrying on"
+                             if approved else "A person checked it and did not approve")
+                    + (f": \u201c{row.get('answer')}\u201d" if row.get("answer") else "")
+                    + ". The step still needs a photo that shows it done.",
                 }
             )
 
@@ -176,6 +274,7 @@ def build_feed(state: JobState, rows: list[dict]) -> list[dict]:
                     "from": "agent",
                     "kind": "block",
                     "hazard": True,
+                    "review": row.get("kind") == "human_review",
                     "reason": row.get("reason") or "",
                 }
             )
@@ -216,7 +315,23 @@ def build_feed(state: JobState, rows: list[dict]) -> list[dict]:
     return feed
 
 
-def composer_state(state: JobState, escalated: bool) -> dict[str, Any]:
+def review_pending(state: JobState, rows: list[dict]) -> bool:
+    """Has the gate stopped this step for a person who has not answered yet?"""
+    if state.current in state.approvals:
+        return False
+    step_no = state.current + 1
+    stopped = answered = False
+    for r in rows:
+        if r.get("event") == "gate_stop" and r.get("kind") == "human_review":
+            stopped = True
+            answered = False
+        elif r.get("event") == "human_review" and int(r.get("step_id") or 0) == step_no:
+            answered = True
+    rep = state.perception.get(state.current)
+    return stopped and not answered and rep is not None and rep.needs_human and not rep.overridden
+
+
+def composer_state(state: JobState, escalated: bool, pending_review: bool = False) -> dict[str, Any]:
     """What the one action button at the bottom should be right now.
 
     One action per screen, on purpose: on a phone, standing in front of an open panel,
@@ -229,6 +344,21 @@ def composer_state(state: JobState, escalated: bool) -> dict[str, Any]:
     if state.done:
         return {"action": "restart", "label": "Start another job", "can_ask": True}
     verdict = state.verdicts.get(state.current)
+    rep = state.perception.get(state.current)
+    if verdict is not None and verdict.source == "opencv" and rep is not None:
+        if rep.needs_human and not rep.overridden:
+            if pending_review:
+                # The gate has already stopped for a person; the one action left is theirs.
+                return {"action": "approve", "label": "I am the person: I checked it, carry on",
+                        "can_ask": True, "hint": "Nothing moves until a person approves the change."}
+            # Through the gate on purpose: it stops the run and asks a person.
+            return {"action": "advance", "label": "Ask a person to check it", "can_ask": True,
+                    "hint": "The gate stops the job here until a person checks it."}
+        if rep.needs_human:  # a person approved the change; the step still needs its photo
+            return {"action": "photo", "label": "Take a new photo", "can_ask": True,
+                    "hint": "A person approved the change. Now send a photo that shows the step done."}
+        return {"action": "photo", "label": "Take a new photo", "can_ask": True,
+                "hint": rep.instruction or ""}
     if verdict is not None and verdict.passed and not verdict.stop:
         return {"action": "advance", "label": "Next step", "can_ask": True}
     if verdict is not None and verdict.stop:

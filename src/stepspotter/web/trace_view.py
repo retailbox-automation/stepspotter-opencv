@@ -102,6 +102,14 @@ def _verdict(r: dict) -> dict:
         result, tone = "Passed", "ok"
     else:
         result, tone = "Not yet", "bad"
+    if r.get("source") == "opencv":
+        return _row(
+            "Checker",
+            f"Recorded OpenCV's refusal for step {step} — the model was not asked",
+            result,
+            why=scrub(r.get("reason")),
+            tone=tone,
+        )
     return _row(
         "Checker",
         f"Looked at the photo for step {step}",
@@ -109,6 +117,64 @@ def _verdict(r: dict) -> dict:
         why=scrub(r.get("reason")),
         tone=tone,
     )
+
+
+#: OpenCV decisions, as the readable trace says them.
+_CV_RESULT = {
+    "ok": ("Fine — passed on to the model", "ok"),
+    "retake": ("Refused — needs a retake", "bad"),
+    "wrong_place": ("Refused — not the place in the first photo", "bad"),
+    "replay": ("Refused — a photo already sent", "bad"),
+    "no_change": ("Refused — nothing changed at the work zone", "bad"),
+    "touched_avoid": ("Stopped — a do-not-touch zone changed; a person decides", "stop"),
+    "skipped": ("Could not read the photo — the model decides", ""),
+}
+
+_REF = re.compile(r"^step-\d{2}-(?:try|probe)-\d{2}-(?:match|heatmap|quality)$")
+
+
+def _image_ref(value: object) -> str | None:
+    """The rendered picture's NAME only — no folder, no extension, no job id — so the
+    readable trace stays free of paths; the page builds the URL from it."""
+    if not isinstance(value, str) or not value:
+        return None
+    name = value.replace("\\", "/").rsplit("/", 1)[-1]
+    name = name[:-4] if name.endswith(".jpg") else name
+    return name if _REF.match(name) else None
+
+
+def _perception(r: dict) -> dict:
+    decision = str(r.get("decision") or "")
+    result, tone = _CV_RESULT.get(decision, (decision or "checked", ""))
+    ms = r.get("ms_total")
+    timing = f"{ms:.0f} ms" if isinstance(ms, (int, float)) else ""
+    if r.get("mode") == "probe":
+        tail = f" · {timing}, a look before sending, no model call" if timing else ""
+    elif r.get("llm_called"):
+        tail = f" · {timing}, then the model was asked" if timing else ""
+    else:
+        tail = f" · {timing}, no model call needed" if timing else ""
+    if r.get("overridden"):
+        result = "Would have refused, but let it through to the model (stuck rule)"
+        tone = "ok"
+    why = scrub(r.get("reason"))
+    if r.get("instruction") and decision not in ("ok", "skipped"):
+        why = f"{why} → {scrub(r.get('instruction'))}"
+    out = _row(
+        "OpenCV (code, not the model)",
+        f"Checked the photo for step {r.get('step_id')}",
+        result + tail,
+        why=why,
+        tone=tone,
+    )
+    images = [
+        {"kind": kind, "ref": ref}
+        for kind in ("match", "heatmap", "quality")
+        if (ref := _image_ref(r.get(f"img_{kind}")))
+    ]
+    if images:
+        out["images"] = images
+    return out
 
 
 def _fallback(r: dict) -> dict:
@@ -171,6 +237,43 @@ def humanize_row(r: dict) -> dict:
         )
     elif event == "verdict":
         out = _verdict(r)
+    elif event == "perception":
+        out = _perception(r)
+    elif event == "keyframes":
+        out = _row(
+            "OpenCV (code, not the model)",
+            "Picked the best frame out of your video",
+            f"Frame {r.get('chosen_index')}, at {r.get('chosen_time_s')} s",
+            why="The sharpest sampled frame that lines up with your first photo.",
+            tone="ok",
+        )
+    elif event == "human_review":
+        approved = bool(r.get("approved"))
+        out = _row(
+            "A person",
+            "Checked the change in the do-not-touch zone",
+            "Approved — carry on" if approved else "Not approved",
+            why=scrub(r.get("answer")),
+            tone="ok" if approved else "stop",
+        )
+    elif event == "gate_stop":
+        review = r.get("kind") == "human_review"
+        out = _row(
+            "Gate (code, not the model)",
+            "Stopped the job for a person" + (" to approve" if review else ""),
+            "Waiting for a person",
+            why=scrub(r.get("reason")),
+            tone="stop",
+        )
+    elif event == "judge":
+        out = _row(
+            "You",
+            "Ran a judge scenario",
+            scrub(r.get("scenario")).replace("_", " "),
+            why="Fixed plan, hand-placed zones, a generated photo: "
+            + scrub(r.get("evidence"))
+            + ". The model is never called.",
+        )
     elif event == "skip_attempt":
         # The person pressed "I did it" and sent nothing. On its own this row proves
         # only that they asked; the Gate row right under it is what actually happened.

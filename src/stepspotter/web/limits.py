@@ -332,6 +332,10 @@ def bucket_for(method: str, path: str) -> str | None:
     tail = path.rstrip("/")
     if tail in ("/api/jobs", "/api/demo/jobs"):
         return JOBS
+    # OpenCV-only routes: no model call, but real CPU per request, so they share the
+    # photo caps (the judge-facing inspect endpoint and the judge scenarios).
+    if tail == "/api/inspect" or tail.startswith("/api/judge/"):
+        return PHOTOS
     if not tail.startswith("/api/jobs/"):
         return None
     if tail.endswith("/photo") or tail.endswith("/demo-photo"):

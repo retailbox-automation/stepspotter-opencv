@@ -15,6 +15,11 @@ Three rules this file follows and the screen-stack version could not:
 
 Colours are the reference card's colours: green = do this, red = do not touch,
 orange = stop and get a person. Light theme, 17px base, thumb-sized targets.
+
+A fourth actor since the OpenCV layer: the photo check. It runs before the model and
+can refuse a photo on its own, so it speaks in its own card, with the pictures of what
+it saw (lined up with the first photo, what changed by zone, sharpness and light) and
+how long it took — and whether the model was asked at all.
 """
 
 CHAT_HTML = r"""<!doctype html>
@@ -242,6 +247,28 @@ CHAT_HTML = r"""<!doctype html>
   .tr-result.ok{color:var(--act)} .tr-result.bad{color:var(--avoid)}
   .tr-result.stop{color:var(--stop)}
   .tr-why{font-size:var(--f-cap);color:var(--dim);margin-top:2px}
+  /* ---- the OpenCV check: code, not the model, with the pictures of what it saw ----
+     Its own actor and its own shape. It decides before the model is asked, so it must
+     not read as the model's opinion, and the pictures are the reason it gives. */
+  .msg[data-role="cv"] .by i{background:#334155}
+  .cvbox{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--dim);
+         border-radius:12px;padding:var(--s3) var(--s4)}
+  .cvbox.bad{border-left-color:var(--avoid)} .cvbox.stop{border-left-color:var(--stop)}
+  .cvbox.ok{border-left-color:var(--act)}
+  .cvbox h3{margin:0;font-size:var(--f-base)}
+  .cvbox.bad h3{color:var(--avoid)} .cvbox.stop h3{color:var(--stop)} .cvbox.ok h3{color:var(--act)}
+  .cvbox p{margin:var(--s1) 0 0;font-size:var(--f-sm);color:var(--dim)}
+  .cvbox .do{padding:var(--s2) 0 0;font-size:var(--f-base);font-weight:600;color:var(--ink)}
+  .cvmeta{margin-top:var(--s2);font-size:var(--f-cap);color:var(--dim);font-variant-numeric:tabular-nums}
+  .cvshots{display:flex;gap:var(--s2);margin-top:var(--s2);overflow-x:auto}
+  .cvshots a{flex:0 0 auto;display:block}
+  .cvshots img{height:84px;border-radius:8px;border:1px solid var(--line);display:block;background:var(--gatebg)}
+  .cvshots span{display:block;font-size:var(--f-cap);color:var(--dim);text-align:center}
+  .tr-shots{display:flex;gap:var(--s1);margin-top:var(--s1);overflow-x:auto}
+  .tr-shots img{height:64px;border-radius:6px;border:1px solid var(--line)}
+  .judge{margin-top:var(--s1)} .judge button.ghost{margin-top:var(--s1);font-size:var(--f-sm);
+         font-weight:600;padding:var(--s2) var(--s3);text-align:left;border-radius:10px}
+  .judge .democap{margin-bottom:var(--s1)}
   .sheet .close{margin:0 var(--s4) var(--s4);border:1px solid var(--line);
         background:var(--field);color:var(--ink);border-radius:14px;padding:var(--s4);
         font:inherit;font-weight:600}
@@ -274,6 +301,8 @@ CHAT_HTML = r"""<!doctype html>
     <input id="startPhoto" type="file" accept="image/*" capture="environment" class="hide">
     <button class="ghost trydemo hide" id="demoBtn">Try a demo job</button>
     <p class="democap hide" id="demoTask"></p>
+    <button class="ghost trydemo hide" id="judgeBtn">For judges: the OpenCV checks, no model</button>
+    <div class="judge hide" id="judgeList"></div>
   </div>
 
   <!-- running mode: exactly one action, named after what happens -->
@@ -381,12 +410,21 @@ function legend(items){
 const ACTORS = {
   you:   {label:"You",                        initial:"Y"},
   agent: {label:"StepSpotter",                initial:"1"},
-  gate:  {label:"Gate (code, not the model)", initial:"\u2716"}
+  gate:  {label:"Gate (code, not the model)", initial:"\u2716"},
+  cv:    {label:"OpenCV photo check (code, not the model)", initial:"CV"}
 };
 function roleOf(m){
   if(m.from === "you") return "you";
   if(m.kind === "block") return "gate";
+  if(m.from === "cv") return "cv";
   return "agent";
+}
+const SHOT_NAMES = {match:"lined up with your first photo", heatmap:"what changed, by zone", quality:"sharpness and light"};
+function shots(items){
+  if(!items || !items.length) return "";
+  return '<div class="cvshots">' + items.map(it =>
+    '<a href="' + esc(it.url) + '" target="_blank" rel="noopener"><img alt="' + esc(SHOT_NAMES[it.kind] || it.kind)
+    + '" src="' + esc(it.url) + '"><span>' + esc(SHOT_NAMES[it.kind] || it.kind) + '</span></a>').join("") + '</div>';
 }
 let LAST_ROLE = null;
 // The name is printed when the speaker changes, not on every bubble: four "StepSpotter"
@@ -457,12 +495,32 @@ function node(m){
     wrap.innerHTML = '<div class="verdict ' + cls + '"><h3>' + head + '</h3><p>'
       + esc(m.reason) + '</p>' + skip + '</div>';
   }
+  else if(m.kind === "perception"){
+    const tone = m.needs_human ? "stop" : (m.blocks ? "bad" : (m.overridden ? "" : "ok"));
+    const ms = (typeof m.ms_total === "number") ? Math.round(m.ms_total) + " ms" : "";
+    const meta = m.llm_called
+      ? (ms + (m.overridden ? " · refused several in a row, so the model looks this time" : " · then the model looked"))
+      : (ms + " · no model call needed");
+    // "Move on anyway" stays reachable: the refusal a judge came to see is the gate's,
+    // and hiding the way to ask for it would make the browser the gate.
+    const skip = (m.final && m.blocks && !m.needs_human)
+      ? '<button class="link" data-act="advance">It is fine — move on anyway</button>' : '';
+    wrap.innerHTML = '<div class="cvbox ' + tone + '"><h3>' + esc(m.heading) + '</h3>'
+      + '<p>' + esc(m.reason) + '</p>'
+      + ((m.instruction && m.blocks) ? '<div class="do">' + esc(m.instruction) + '</div>' : '')
+      + shots(m.images)
+      + '<div class="cvmeta">' + esc(meta) + '</div>' + skip + '</div>';
+    wrap.querySelectorAll("img").forEach(img => { img.onerror = () => { img.parentElement.remove(); }; });
+  }
   else if(m.kind === "block"){
     // Not another coloured verdict card: a smaller, neutral, centred block, because
     // this one was not written by the model at all.
+    const approve = m.review
+      ? '<br><button class="link" data-act="approve">I am the person — I checked it, carry on</button>' : '';
     wrap.innerHTML = '<div class="gatebox' + (m.hazard ? " haz" : "") + '">'
-      + '<b>' + (m.hazard ? "Stopped for a person" : "Refused — no photo has passed for this step")
-      + '</b><p>' + esc(m.reason) + '</p></div>';
+      + '<b>' + (m.review ? "Stopped for a person to approve"
+                          : (m.hazard ? "Stopped for a person" : "Refused — no photo has passed for this step"))
+      + '</b><p>' + esc(m.reason) + '</p>' + approve + '</div>';
   }
   else if(m.kind === "vendor"){
     wrap.innerHTML = '<div class="verdict v-halt"><h3>Please do not do this one yourself</h3>'
@@ -535,9 +593,9 @@ function composer(c){
   btn.textContent = c.label || "Next";
   btn.classList.toggle("danger", MODE === "escalate");
   btn.disabled = false;
-  $("hint").textContent = MODE === "photo"
-    ? "The photo decides. I cannot open the next step without one."
-    : (MODE === "advance" ? "" : "");
+  $("hint").textContent = c.hint
+    ? c.hint
+    : (MODE === "photo" ? "The photo decides. I cannot open the next step without one." : "");
 }
 
 function startMode(){
@@ -554,6 +612,7 @@ function startMode(){
   $("actBtn").classList.remove("hide");
   $("actBtn").disabled = false;
   $("demoBtn").disabled = false;
+  $("judgeList").classList.add("hide");
   $("actBtn").textContent = "Plan my steps";
   $("actBtn").classList.remove("danger");
   $("hint").textContent = "One step at a time. Nothing is marked done without a photo.";
@@ -634,6 +693,15 @@ async function doAdvance(intent){
   await refresh();     // a refusal is a trace row, so it arrives as a message like any other
 }
 
+// A person's approval of a change in a do-not-touch zone. The same call the gate makes
+// when an agent run resumes with the person's answer; the step still needs its photo.
+async function doApprove(){
+  typing(true, GATE_STAGES);
+  await api("/api/jobs/" + JOB.job_id + "/review",
+            {method:"POST", body:new URLSearchParams({approved:"true", answer:"checked on the page and approved"})});
+  await refresh();
+}
+
 async function doEscalate(){
   const fd = new FormData();
   fd.append("reason", "The person pressed Stop on their phone.");
@@ -651,6 +719,7 @@ $("actBtn").addEventListener("click", async () => {
     if(MODE === "start")         await doStart();
     else if(MODE === "advance")  await doAdvance("next");
     else if(MODE === "escalate") await doEscalate();
+    else if(MODE === "approve")  await doApprove();
   } catch(err){ typing(false); fail(err.message); $("actBtn").disabled = false; }
   finally { BUSY = false; }
 });
@@ -678,7 +747,11 @@ $("feed").addEventListener("click", async (e) => {
   const btn = e.target.closest("button.link"); if(!btn || BUSY || !JOB) return;
   const act = btn.dataset.act;
   BUSY = true; btn.disabled = true; clearFail();
-  try { if(act === "advance") await doAdvance("skip"); else if(act === "escalate") await doEscalate(); }
+  try {
+    if(act === "advance") await doAdvance("skip");
+    else if(act === "escalate") await doEscalate();
+    else if(act === "approve") await doApprove();
+  }
   catch(err){ typing(false); fail(err.message); }
   // Re-enabled on purpose. The message it sits in is never removed from the feed, so
   // leaving it dead after one press turns a refusal a judge just watched into a
@@ -703,6 +776,26 @@ $("demoWrongBtn").addEventListener("click", () => {
 });
 $("demoRightBtn").addEventListener("click", () => {
   if(!BUSY && JOB) doDemoPhoto("right", $("demoRightBtn"));
+});
+
+// ---- for judges: the OpenCV branches on packaged photos, no model at all ----
+let JUDGE = null;
+async function loadJudge(){
+  try { JUDGE = await api("/api/judge"); } catch(err){ JUDGE = null; }
+  const on = !!(JUDGE && JUDGE.available);
+  $("judgeBtn").classList.toggle("hide", !on);
+  if(!on) return;
+  $("judgeList").innerHTML = '<p class="democap">' + esc(JUDGE.note) + '</p>'
+    + JUDGE.scenarios.map(sc => '<button class="ghost" data-scenario="' + esc(sc.name) + '">'
+      + esc(sc.label) + '</button>').join("");
+}
+$("judgeBtn").addEventListener("click", () => { $("judgeList").classList.toggle("hide"); });
+$("judgeList").addEventListener("click", async (e) => {
+  const btn = e.target.closest("button[data-scenario]"); if(!btn || BUSY) return;
+  BUSY = true; btn.disabled = true; clearFail();
+  try { await planned(await api("/api/judge/" + btn.dataset.scenario, {method:"POST"})); }
+  catch(err){ fail(err.message); }
+  finally { BUSY = false; btn.disabled = false; }
 });
 
 // The offer only appears if the three photos are actually in the install: a button
@@ -740,6 +833,10 @@ async function openTrace(){
     + '<div class="tr-what">' + esc(r.what) + '</div>'
     + (r.result ? '<div class="tr-result ' + esc(r.tone || "") + '">' + esc(r.result) + '</div>' : "")
     + (r.why ? '<div class="tr-why">' + esc(r.why) + '</div>' : "")
+    + ((r.images && r.images.length) ? '<div class="tr-shots">' + r.images.map(im =>
+        '<a href="/api/jobs/' + esc(JOB.job_id) + '/perception/' + esc(im.ref) + '" target="_blank" rel="noopener">'
+        + '<img alt="' + esc(im.kind) + '" src="/api/jobs/' + esc(JOB.job_id) + '/perception/' + esc(im.ref) + '"></a>'
+      ).join("") + '</div>' : "")
     + '</li>').join("");
   $("rawLink").textContent = "Show the raw log (for engineers)";
 }
@@ -773,6 +870,7 @@ $("closeSheet").addEventListener("click", () => $("sheet").classList.remove("on"
 // conversation, because the conversation lives on the server, not in this page.
 (async function boot(){
   await loadDemo();
+  await loadJudge();
   const id = new URLSearchParams(location.search).get("job");
   if(!id) return startMode();
   try { const f = await api("/api/jobs/" + id + "/feed"); SHOWN = 0; draw(f); }
