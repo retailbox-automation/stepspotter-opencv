@@ -29,6 +29,11 @@ Endpoints (all JSON except the two image routes and ``/``):
     POST /api/inspect               OpenCV only, no model: reference + evidence (+ zones)
                                     -> the PerceptionReport and its three pictures
     GET  /api/inspect/{rid}/{kind}  one of those pictures
+    GET  /agent                     agent mode: the Guide agent decides the tool calls
+    POST /api/agent/start           task + photo -> the agent starts the job (a job slot)
+    POST /api/agent/{sid}/photo     text + photo -> one agent turn (a photo slot)
+    POST /api/agent/{sid}/say       text only    -> one agent turn (an agent-turn slot)
+    GET  /api/agent/{sid}           the session's turns, for a reload
     GET  /api/judge                 the OpenCV-only scenarios a judge can run
     POST /api/judge/{name}          run one: a real job, the real gate, no model call
 
@@ -53,6 +58,8 @@ from stepspotter.guide import JobService, build_tools
 from stepspotter.models import JobState
 from stepspotter.web import demo as demo_mod
 from stepspotter.web import judge as judge_mod
+from stepspotter.web.agent_mode import SESSION_RE, AgentMode
+from stepspotter.web.agent_page import AGENT_HTML
 from stepspotter.web.ask import answer as answer_question
 from stepspotter.web.chat_page import CHAT_HTML
 from stepspotter.web.feed import build_feed, composer_state, review_pending
@@ -60,7 +67,7 @@ from stepspotter.web.gated import advance_via_gate, escalate_via_tool
 from stepspotter.web.limits import install_limits
 from stepspotter.web.page import PAGE_HTML
 from stepspotter.web.photos import save_upload
-from stepspotter.web.trace_view import humanize
+from stepspotter.web.trace_view import humanize, scrub
 
 
 def _escalated(job_id: str) -> bool:
@@ -220,6 +227,7 @@ def _summary(state: JobState) -> dict:
 def create_app(
     service: JobService | None = None,
     answer_fn: Callable[[JobState, str], str] | None = None,
+    agent_model_fn: Callable[[], Any] | None = None,
 ) -> FastAPI:
     """Build the app. Pass a ``JobService`` with fake model functions to run offline.
 
@@ -241,6 +249,7 @@ def create_app(
     app.state.service = svc
     app.state.gate = gate
     app.state.tools = tools
+    agent_mode = AgentMode(svc, model_factory=agent_model_fn)
 
     def _job(job_id: str) -> JobState:
         state = svc.get(job_id)
@@ -496,6 +505,63 @@ def create_app(
             raise HTTPException(status_code=409, detail="Nothing on this step is waiting for a person.")
         ok = svc.review(state, {"approved": approved, "answer": answer.strip() or ("approved" if approved else "not approved")})
         return {"approved": ok, "job": _summary(_job(job_id))}
+
+    # ---------------------------------------------------------------- agent mode
+    @app.get("/agent", response_class=HTMLResponse)
+    def agent_page() -> str:
+        return AGENT_HTML
+
+    def _session_job(sid: str) -> str:
+        if not SESSION_RE.match(sid) or not agent_mode.exists(sid):
+            raise HTTPException(status_code=404, detail="No such agent session.")
+        turns = agent_mode.history(sid)
+        job_id = next((t.get("job_id") for t in reversed(turns) if t.get("job_id")), None)
+        if job_id is None:
+            raise HTTPException(status_code=409, detail="This session has no job yet; start one first.")
+        return job_id
+
+    def _agent_call(fn, *args) -> dict:
+        try:
+            out = fn(*args)
+        except HTTPException:
+            raise
+        except Exception as exc:  # noqa: BLE001 - a model failure is a user-facing message
+            raise HTTPException(status_code=502, detail=f"The agent could not answer: {scrub(str(exc))[:300]}")
+        if out.get("job_id"):
+            out["job"] = _summary(_job(out["job_id"]))
+        return out
+
+    @app.post("/api/agent/start")
+    async def agent_start(task: str = Form(...), photo: UploadFile = File(...)) -> dict:
+        raw = await photo.read()
+        if not raw or not task.strip():
+            raise HTTPException(status_code=400, detail="Say what you want to do and attach a photo of it.")
+        tmp = save_upload(raw, store.jobs_dir() / "_uploads" / f"agent-{uuid.uuid4().hex[:12]}.jpg")
+        return _agent_call(agent_mode.start, task.strip(), str(tmp))
+
+    @app.post("/api/agent/{sid}/photo")
+    async def agent_photo(sid: str, text: str = Form(""), photo: UploadFile = File(...)) -> dict:
+        job_id = _session_job(sid)
+        raw = await photo.read()
+        if not raw:
+            raise HTTPException(status_code=400, detail="That photo did not arrive. Try again.")
+        dest = save_upload(raw, store.cards_dir(job_id) / f"agent-photo-{uuid.uuid4().hex[:8]}.jpg")
+        return _agent_call(agent_mode.photo, sid, text, str(dest))
+
+    @app.post("/api/agent/{sid}/say")
+    def agent_say(sid: str, text: str = Form(...)) -> dict:
+        _session_job(sid)
+        if not text.strip():
+            raise HTTPException(status_code=400, detail="Write something first.")
+        return _agent_call(agent_mode.say_text, sid, text.strip())
+
+    @app.get("/api/agent/{sid}")
+    def agent_history(sid: str) -> dict:
+        if not SESSION_RE.match(sid) or not agent_mode.exists(sid):
+            raise HTTPException(status_code=404, detail="No such agent session.")
+        turns = agent_mode.history(sid)
+        return {"session": sid, "turns": turns,
+                "job_id": next((t.get("job_id") for t in reversed(turns) if t.get("job_id")), None)}
 
     # ---------------------------------------------------------------- judges
     @app.get("/api/judge")

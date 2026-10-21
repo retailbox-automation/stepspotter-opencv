@@ -303,6 +303,8 @@ CHAT_HTML = r"""<!doctype html>
     <p class="democap hide" id="demoTask"></p>
     <button class="ghost trydemo hide" id="judgeBtn">For judges: the OpenCV checks, no model</button>
     <div class="judge hide" id="judgeList"></div>
+    <p class="democap"><a href="/agent">Agent mode</a>: the Guide agent decides which tools to call; the same
+       OpenCV checks and gate sit under every call.</p>
   </div>
 
   <!-- running mode: exactly one action, named after what happens -->

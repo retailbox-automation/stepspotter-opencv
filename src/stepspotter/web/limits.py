@@ -57,12 +57,19 @@ DEFAULT_MAX_JOBS_PER_DAY = 150
 #: (3 calls each) the $45 budget was drawn around. Roughly 20 complete repairs a day,
 #: far above judging traffic; raise STEPSPOTTER_MAX_PHOTOS_PER_DAY if a judge hits it.
 DEFAULT_MAX_PHOTOS_PER_DAY = 300
+#: Agent-mode turns WITHOUT a photo (web/agent_mode.py). Each still runs the Guide agent
+#: on Bedrock — usually one or two model calls — so they get their own, small caps.
+DEFAULT_TURNS_PER_IP_HOUR = 20
+DEFAULT_MAX_TURNS_PER_DAY = 60
 WINDOW_SECONDS = 3600
 #: Stop tracking addresses once the table gets silly (a scanner sweep, a CDN).
 MAX_TRACKED_IPS = 20_000
 
 JOBS = "jobs"
 PHOTOS = "photos"
+TURNS = "turns"
+BUCKETS = (JOBS, PHOTOS, TURNS)
+_NOUN = {JOBS: ("job", "jobs"), PHOTOS: ("photo check", "photo checks"), TURNS: ("agent turn", "agent turns")}
 
 
 def _int_env(name: str, default: int) -> int:
@@ -149,6 +156,8 @@ class Limiter:
         max_photos_per_day: int | None = None,
         clock: Callable[[], float] = time.time,
         persist: bool = True,
+        turns_per_ip_hour: int | None = None,
+        max_turns_per_day: int | None = None,
     ) -> None:
         self.jobs_per_ip_hour = jobs_per_ip_hour or _int_env(
             "STEPSPOTTER_JOBS_PER_IP_HOUR", DEFAULT_JOBS_PER_IP_HOUR
@@ -162,15 +171,24 @@ class Limiter:
         self.max_photos_per_day = max_photos_per_day or _int_env(
             "STEPSPOTTER_MAX_PHOTOS_PER_DAY", DEFAULT_MAX_PHOTOS_PER_DAY
         )
+        self.turns_per_ip_hour = turns_per_ip_hour or _int_env(
+            "STEPSPOTTER_TURNS_PER_IP_HOUR", DEFAULT_TURNS_PER_IP_HOUR
+        )
+        self.max_turns_per_day = max_turns_per_day or _int_env(
+            "STEPSPOTTER_MAX_TURNS_PER_DAY", DEFAULT_MAX_TURNS_PER_DAY
+        )
         self.clock = clock
         self.persist = persist
         self._hits: dict[tuple[str, str], deque[float]] = {}
         self._day: str = ""
-        self._day_counts: dict[str, int] = {JOBS: 0, PHOTOS: 0}
+        self._day_counts: dict[str, int] = {b: 0 for b in BUCKETS}
         self._lock = threading.Lock()
 
     def day_cap(self, bucket: str) -> int:
-        return self.max_jobs_per_day if bucket == JOBS else self.max_photos_per_day
+        return {JOBS: self.max_jobs_per_day, PHOTOS: self.max_photos_per_day, TURNS: self.max_turns_per_day}[bucket]
+
+    def per_ip(self, bucket: str) -> int:
+        return {JOBS: self.jobs_per_ip_hour, PHOTOS: self.photos_per_ip_hour, TURNS: self.turns_per_ip_hour}[bucket]
 
     # ------------------------------------------------------------------ day counter
     def _today(self) -> str:
@@ -201,7 +219,7 @@ class Limiter:
         day = self._today()
         if day != self._day:
             self._day = day
-            self._day_counts = {b: self._load_day(b, day) for b in (JOBS, PHOTOS)}
+            self._day_counts = {b: self._load_day(b, day) for b in BUCKETS}
 
     def day_count(self, bucket: str = JOBS) -> int:
         with self._lock:
@@ -244,16 +262,13 @@ class Limiter:
 
         now = self.clock()
         with self._lock:
-            per_ip = self.jobs_per_ip_hour if bucket == JOBS else self.photos_per_ip_hour
+            per_ip = self.per_ip(bucket)
             hits = None if ip is None else self._prune((bucket, ip), now)
             if hits is not None and len(hits) >= per_ip:
                 wait = int(WINDOW_SECONDS - (now - hits[0])) + 1
                 # "1 job an hour" and "6 jobs an hour" both have to read like English:
                 # the cap is configurable, so the sentence cannot hard-code a plural.
-                one = per_ip == 1
-                what = ("job" if one else "jobs") if bucket == JOBS else (
-                    "photo check" if one else "photo checks"
-                )
+                what = _NOUN[bucket][0 if per_ip == 1 else 1]
                 return Decision(
                     429,
                     f"This demo allows {per_ip} {what} an hour from one address, so the "
@@ -276,9 +291,7 @@ class Limiter:
                     hour=0, minute=0, second=0, microsecond=0
                 ) + _dt.timedelta(days=1)
                 wait = int(midnight.timestamp() - now)
-                noun = ("jobs" if bucket == JOBS else "photo checks") if cap != 1 else (
-                    "job" if bucket == JOBS else "photo check"
-                )
+                noun = _NOUN[bucket][0 if cap == 1 else 1]
                 return Decision(
                     429,
                     f"This demo has run its {cap} {noun} for today — "
@@ -310,8 +323,11 @@ class Limiter:
                 "photos_per_ip_hour": self.photos_per_ip_hour,
                 "max_jobs_per_day": self.max_jobs_per_day,
                 "max_photos_per_day": self.max_photos_per_day,
+                "turns_per_ip_hour": self.turns_per_ip_hour,
+                "max_turns_per_day": self.max_turns_per_day,
                 "jobs_today": self._day_counts[JOBS],
                 "photos_today": self._day_counts[PHOTOS],
+                "turns_today": self._day_counts[TURNS],
                 "day": self._day,
                 "tracked_addresses": len({ip for _b, ip in self._hits}),
             }
@@ -336,6 +352,16 @@ def bucket_for(method: str, path: str) -> str | None:
     # photo caps (the judge-facing inspect endpoint and the judge scenarios).
     if tail == "/api/inspect" or tail.startswith("/api/judge/"):
         return PHOTOS
+    # Agent mode (web/agent_mode.py): starting a job is a job; a turn with a photo is a
+    # photo check; a turn with text only is an agent turn.
+    if tail == "/api/agent/start":
+        return JOBS
+    if tail.startswith("/api/agent/"):
+        if tail.endswith("/photo"):
+            return PHOTOS
+        if tail.endswith("/say"):
+            return TURNS
+        return None
     if not tail.startswith("/api/jobs/"):
         return None
     if tail.endswith("/photo") or tail.endswith("/demo-photo"):

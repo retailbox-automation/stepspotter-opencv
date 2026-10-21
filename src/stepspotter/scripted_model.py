@@ -78,7 +78,7 @@ class ScriptedModel(Model):
         """(turn index, tool calls already made this turn, context) from the history."""
         turn = -1
         done = 0
-        ctx: Ctx = {"results": [], "job_id": None}
+        ctx: Ctx = {"results": [], "job_id": None, "user": ""}
         for m in messages:
             content = m.get("content") or []
             if m.get("role") == "user":
@@ -94,6 +94,7 @@ class ScriptedModel(Model):
                 else:
                     turn += 1
                     done = 0
+                    ctx["user"] = " ".join(str(b.get("text", "")) for b in content if isinstance(b, dict))
         ctx["last"] = ctx["results"][-1] if ctx["results"] else ""
         return turn, done, ctx
 

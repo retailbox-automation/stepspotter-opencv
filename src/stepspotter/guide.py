@@ -776,6 +776,9 @@ def build_agent(
     system_prompt: str = GUIDE_SYSTEM,
     model_id: str | None = None,
     storage_dir: str | None = None,
+    model: Any | None = None,
+    hooks: list[Any] | None = None,
+    quiet: bool = False,
 ) -> tuple[Agent, JobService, StepGate]:
     """Wire the Guide: tools + the gate hook + (optionally) a file-backed session.
 
@@ -794,10 +797,16 @@ def build_agent(
     )
     kwargs: dict[str, Any] = {
         "tools": tools,
-        "hooks": [gate],
+        "hooks": [gate, *(hooks or [])],
         "system_prompt": system_prompt,
     }
-    if model_id:
+    if quiet:
+        # No streaming printer: on a server, stdout goes to the log, and the model's chat
+        # must not (only perception and limits rows are mirrored there — store.py).
+        kwargs["callback_handler"] = None
+    if model is not None:  # a ready-made Strands model (the scripted one, in tests)
+        kwargs["model"] = model
+    elif model_id:
         kwargs["model"] = model_id
     if session_id:
         from strands.session import FileSessionManager
