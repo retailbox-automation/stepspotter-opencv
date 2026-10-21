@@ -204,7 +204,7 @@ C. ONE FULL JOB WITH THE MODEL (about 2 minutes, uses Amazon Bedrock)
    the verdict is shown, and "Next step" appears if the model passed it. The model is not
    deterministic; the trace shows whatever came back.
 
-E. AGENT MODE - THE AGENT DECIDES THE TOOL CALLS (about 3 minutes, uses Amazon Bedrock)
+D. AGENT MODE - THE AGENT DECIDES THE TOOL CALLS (about 3 minutes, uses Amazon Bedrock)
 10. Open https://utgfmpcgxf.us-east-1.awsapprunner.com/agent . Type a task and attach a photo
    (e.g. src/stepspotter/web/demo_photos/02-panel-inside.jpg from the repo: "Confirm the
    structured wiring panel is safe to work on"). The Guide agent starts the job.
@@ -221,7 +221,7 @@ LIMITS: the live service allows, per day for everyone together, 6 jobs, 30 photo
 6 jobs, 30 photo checks and 20 agent turns; at most 8 tool calls in one agent turn. This
 keeps it inside its budget. If the page says the demo has run its quota for today, use D.
 
-D. OFFLINE, NO AWS ACCOUNT
+E. OFFLINE, NO AWS ACCOUNT
   git clone https://github.com/retailbox-automation/stepspotter-opencv && cd stepspotter-opencv
   python3.12 -m venv .venv && .venv/bin/pip install -e ".[dev]"
   tools/fetch_models.sh
