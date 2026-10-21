@@ -1,0 +1,317 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "StepSpotter agent loop: OpenCV 5 perception → decision → action",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "no-model",
+        "label": "Refused before any model call",
+        "focus": [
+          "photo",
+          "inspect",
+          "route",
+          "retake"
+        ],
+        "note": "Blur, dark, glare, out of frame, a repeat, no change: OpenCV answers with one instruction and the next photo is a different one."
+      },
+      {
+        "id": "two-routes",
+        "label": "OpenCV picks the model check",
+        "focus": [
+          "route",
+          "single",
+          "two",
+          "gate"
+        ],
+        "note": "Place confirmed: one photo plus the aligned zone crop. Place not confirmed: both photos, and the model must answer same_place."
+      },
+      {
+        "id": "gate-actions",
+        "label": "What the gate does next",
+        "focus": [
+          "gate",
+          "next",
+          "cancel",
+          "human"
+        ],
+        "note": "advance_step runs, is cancelled with a reason, or the run stops for a person's approval."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "person",
+      "label": "Person and page"
+    },
+    {
+      "id": "perception",
+      "label": "OpenCV 5.0.0 — no model"
+    },
+    {
+      "id": "model",
+      "label": "Model check — Bedrock, Claude Sonnet 4.6"
+    },
+    {
+      "id": "gate",
+      "label": "StepGate — BeforeToolCall on advance_step"
+    },
+    {
+      "id": "review",
+      "label": "Human control",
+      "variant": "exception"
+    }
+  ],
+  "phases": [
+    {
+      "id": "perceive",
+      "label": "Perception",
+      "fromCol": 0,
+      "toCol": 2,
+      "variant": "emphasis"
+    },
+    {
+      "id": "decide",
+      "label": "Decision",
+      "fromCol": 3,
+      "toCol": 4
+    },
+    {
+      "id": "act",
+      "label": "Action",
+      "fromCol": 5,
+      "toCol": 5,
+      "variant": "security"
+    }
+  ],
+  "mainPath": [
+    "photo",
+    "inspect",
+    "route",
+    "single",
+    "gate",
+    "next"
+  ],
+  "nodes": [
+    {
+      "id": "photo",
+      "lane": "person",
+      "col": 0,
+      "type": "frontend",
+      "label": "Evidence",
+      "sublabel": "photo, or video keyframe",
+      "width": 210,
+      "height": 42
+    },
+    {
+      "id": "inspect",
+      "lane": "perception",
+      "col": 1,
+      "type": "backend",
+      "label": "inspect_evidence",
+      "sublabel": "quality · place · replay · zones",
+      "width": 210,
+      "height": 42
+    },
+    {
+      "id": "route",
+      "lane": "perception",
+      "col": 2,
+      "type": "security",
+      "label": "Route",
+      "sublabel": "PerceptionReport.route",
+      "width": 210,
+      "height": 42
+    },
+    {
+      "id": "retake",
+      "lane": "person",
+      "col": 3,
+      "type": "frontend",
+      "label": "One instruction",
+      "sublabel": "retake · replay · no change",
+      "width": 210,
+      "height": 42
+    },
+    {
+      "id": "single",
+      "lane": "model",
+      "col": 3,
+      "type": "cloud",
+      "label": "Single-image check",
+      "sublabel": "photo + aligned zone crop",
+      "width": 210,
+      "height": 42
+    },
+    {
+      "id": "two",
+      "lane": "model",
+      "col": 4,
+      "type": "cloud",
+      "label": "Two-image check",
+      "sublabel": "first photo + evidence",
+      "width": 210,
+      "height": 42
+    },
+    {
+      "id": "gate",
+      "lane": "gate",
+      "col": 4,
+      "type": "security",
+      "label": "StepGate",
+      "sublabel": "verdict + stored report",
+      "width": 210,
+      "height": 42
+    },
+    {
+      "id": "next",
+      "lane": "person",
+      "col": 5,
+      "type": "frontend",
+      "label": "Next step",
+      "sublabel": "advance_step runs",
+      "width": 210,
+      "height": 42
+    },
+    {
+      "id": "cancel",
+      "lane": "gate",
+      "col": 5,
+      "type": "security",
+      "label": "cancel_tool",
+      "sublabel": "reason goes back to the chat",
+      "width": 210,
+      "height": 42
+    },
+    {
+      "id": "human",
+      "lane": "review",
+      "col": 5,
+      "type": "security",
+      "label": "interrupt",
+      "sublabel": "human_review: a person approves",
+      "width": 210,
+      "height": 42
+    }
+  ],
+  "edges": [
+    {
+      "id": "send",
+      "from": "photo",
+      "to": "inspect",
+      "label": "submit",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "report",
+      "from": "inspect",
+      "to": "route",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "block",
+      "from": "route",
+      "to": "retake",
+      "label": "opencv_block",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "one",
+      "from": "route",
+      "to": "single",
+      "label": "llm_single",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "both",
+      "from": "route",
+      "to": "two",
+      "label": "llm_two_image",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "verdict1",
+      "from": "single",
+      "to": "gate",
+      "label": "StepVerdict",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "verdict2",
+      "from": "two",
+      "to": "gate",
+      "label": "same_place",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "id": "pass",
+      "from": "gate",
+      "to": "next",
+      "label": "passed",
+      "variant": "emphasis",
+      "role": "main"
+    },
+    {
+      "id": "refuse",
+      "from": "gate",
+      "to": "cancel",
+      "label": "blocked",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "avoid",
+      "from": "gate",
+      "to": "human",
+      "label": "touched_avoid",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "again",
+      "from": "retake",
+      "to": "photo",
+      "label": "new photo",
+      "variant": "dashed",
+      "role": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Perception (code)",
+      "items": [
+        "inspect_full: quality, scene match, replay, zone change — perception/inspect.py:181",
+        "route = opencv_block | llm_single | llm_two_image — perception/models.py:163",
+        "Blocked photo: StepVerdict(source='opencv'), no model call — guide.py:396"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Decision (code)",
+      "items": [
+        "Two-image check only when OpenCV could not confirm the place — guide.py:434, verifier.py:91",
+        "Fail closed: a pass without same_place=true is turned into a fail — guide.py:440",
+        "Stuck rule: after 3 OpenCV blocks the model gets the photo with OpenCV's findings — guide.py:307"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Action (code)",
+      "items": [
+        "Stored blocking report: cancel_tool with OpenCV's reason — gate.py:141, :118",
+        "Place not confirmed and no same_place=true: cancel_tool — gate.py:153",
+        "touched_avoid: interrupt('human_review'), resume records the answer — gate.py:91, guide.py:513"
+      ]
+    }
+  ]
+}

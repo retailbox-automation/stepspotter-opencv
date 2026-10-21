@@ -1,0 +1,427 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>StepSpotter OpenCV26 report</title><style>
+@page { size: letter; margin: 16mm 15mm 16mm 15mm; }
+:root { --ink:#0b1030; --muted:#6b7280; --acc:#4a9fd8; --line:#d9dde7; --soft:#f4f6fa; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin:0; background:#fff; color:var(--ink);
+  font: 10pt/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+.head { border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 14px; }
+.kicker { font-size: 9pt; color: var(--muted); letter-spacing: .02em; }
+h1.title { font-size: 24pt; line-height: 1.15; margin: 6px 0 8px; font-weight: 750; }
+.hl { background: var(--acc); color: #fff; padding: 0 .12em; }
+.prep { font-size: 10pt; color: var(--muted); font-weight: 500; }
+.prep .who { color: var(--ink); font-weight: 650; }
+.ai { background: var(--acc); color: #fff; padding: 0 .04em; }
+.links { font-size: 8.8pt; color: var(--muted); margin-top: 4px; }
+h2 { font-size: 14pt; margin: 18px 0 6px; padding-top: 4px; border-top: 1px solid var(--line);
+  break-after: avoid; page-break-after: avoid; }
+h3 { font-size: 11pt; margin: 12px 0 4px; break-after: avoid; }
+p, li { orphans: 3; widows: 3; }
+ul, ol { padding-left: 18px; margin: 4px 0 8px; }
+li { margin: 2px 0; }
+code { font: 8.6pt/1.3 "SF Mono", Menlo, Consolas, monospace; background: var(--soft);
+  padding: 0 3px; border-radius: 3px; word-break: break-word; }
+pre { background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px;
+  white-space: pre-wrap; break-inside: avoid; }
+pre code { background: none; padding: 0; font-size: 8.2pt; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 10px; font-size: 8.8pt; }
+tr { break-inside: avoid; }
+td code, th code { white-space: nowrap; word-break: normal; }
+th, td { border: 1px solid var(--line); padding: 4px 6px; text-align: left; vertical-align: top; }
+th { background: var(--soft); font-weight: 650; }
+img { max-width: 100%; display: block; margin: 8px auto; border: 1px solid var(--line);
+  border-radius: 6px; break-inside: avoid; }
+blockquote { margin: 6px 0; padding: 6px 10px; border-left: 3px solid var(--acc);
+  background: var(--soft); color: var(--muted); }
+.ph { background: #fff1c2; color: #7a4b00; border: 1px dashed #c98a00; border-radius: 3px;
+  padding: 0 3px; font-weight: 600; }
+a { color: inherit; }
+</style></head><body><header class="head"><div class="kicker">OpenCV AI Competition 2026, powered by AWS · technical report</div><h1 class="title">StepSpotter: <span class="hl">OpenCV 5</span> decides what the agent does next</h1><div class="prep">prepared by <span class="who">Mikh<span class="ai">ai</span>l</span></div><div class="links">github.com/retailbox-automation/stepspotter-opencv · utgfmpcgxf.us-east-1.awsapprunner.com</div></header><blockquote>
+<p>Numbers in double braces (<code><span class="ph">{{EVAL:…}}</span></code>) are filled from <code>docs/EVAL.md</code> and
+<code>eval/results/*.json</code> when the evaluation run is final. No number in this report
+comes from anywhere else.</p>
+</blockquote>
+<h2>1. Problem</h2>
+<p>StepSpotter walks one person through one small home repair, one step at a time, on a
+photo of their own thing, and opens the next step only after a photo proves the last one
+was done. Until this entry, the proof was one vision-model call on one photo
+(<code>src/stepspotter/verifier.py:61</code>). A single-photo model check has three blind spots
+that a better prompt does not fix:</p>
+<ol>
+<li><strong>A bad photo.</strong> Blurred, dark, washed out, glare on the part, the part out of frame.
+   The model either guesses or refuses without saying what to change, and every such
+   attempt is a paid model call.</li>
+<li><strong>The wrong photo.</strong> One photo cannot tell the model that this is the same panel the
+   job started on, or that this is the "before" photo sent again. A photo of a similar
+   panel from somewhere else looks like valid proof.</li>
+<li><strong>The wrong change.</strong> The model does not compare before and after pixel by pixel: it
+   cannot measure that the work zone changed and the do-not-touch zone did not.</li>
+</ol>
+<p>OpenCV 5 now looks at every evidence photo first, without a model, and what it finds
+changes what the system does next: refuse with one instruction, send the photo to a
+one-photo or a two-photo model check, or stop the run for a person.</p>
+<h2>2. Users</h2>
+<p>People doing small, low-consequence jobs on their own home — low-voltage cabling, a
+network jack, a pressure-washer assembly — who learn best from their own photo marked up
+one step at a time. The first user is the author: the six evidence photos in this
+repository are of his own structured-wiring panel and wall jacks
+(<code>fixtures/perception/scenes.json</code>). StepSpotter's earlier build won the Everyday Agents
+Bronze award at the AWS "Agents for Humans" hackathon (see Disclosure); no other users
+are claimed. Jobs that need a licensed trade (mains wiring, gas, roofing, structural)
+are refused by the planner with an empty step list (<code>src/stepspotter/planner.py:26</code>,
+<code>:105</code>).</p>
+<h2>3. Architecture</h2>
+<p><img alt="Architecture: phone → App Runner (FastAPI, OpenCV 5 perception, Verifier, StepGate, job state) → Amazon Bedrock; CloudWatch, SNS and Budget; CodeBuild and ECR for delivery" src="../diagrams/architecture.png" /></p>
+<p>Everything above runs in one container on AWS App Runner, deployed by one CloudFormation
+stack (<code>infra/template.yaml</code>). Every node in the diagram carries its source file and line
+in <code>docs/diagrams/architecture.html</code> (checked against commit <code>43c1520</code>).</p>
+<ul>
+<li><strong>FastAPI web app</strong> (<code>src/stepspotter/web/app.py</code>) serves the phone page and the API.
+  A photo goes to <code>JobService.verify</code> (<code>src/stepspotter/guide.py:396</code>).</li>
+<li><strong>OpenCV 5.0.0 perception</strong> (<code>src/stepspotter/perception/</code>) runs first on every
+  evidence photo and returns a <code>PerceptionReport</code> with a decision and a route.</li>
+<li><strong>Verifier</strong> — a Strands <code>Agent</code> on Amazon Bedrock (Claude Sonnet 4.6) that returns a
+  typed <code>StepVerdict</code> (<code>src/stepspotter/vision.py:65</code>, <code>src/stepspotter/verifier.py:61</code>).
+  It is called only for photos OpenCV did not refuse.</li>
+<li><strong>StepGate</strong> — a Strands <code>BeforeToolCall</code> hook on the <code>advance_step</code> tool
+  (<code>src/stepspotter/gate.py:64</code>). The page's "next step" button calls <code>advance_step</code>
+  through a Strands <code>HookRegistry</code> with this hook (<code>src/stepspotter/web/gated.py:23</code>),
+  the same dispatch the agent loop uses.</li>
+<li><strong>Job state and trace</strong> live on the instance's disk (<code>/tmp/stepspotter</code>); perception
+  rows are also printed to stdout as JSON for CloudWatch (<code>src/stepspotter/store.py:113</code>).</li>
+</ul>
+<p>The agent loop, as the competition's Agentic Vision award asks for it — perception,
+decision, action:</p>
+<p><img alt="Agent workflow: evidence → inspect_evidence → route → one instruction (no model) | single-image check | two-image check → StepGate → next step | cancel_tool | interrupt human_review" src="../diagrams/agent-workflow.png" /></p>
+<p>Two front doors use the same tools and the same gate. On the public page the person's
+buttons drive the loop and code routes each photo. In <code>stepspotter chat</code>
+(<code>src/stepspotter/cli.py:195</code>) a Strands Guide agent drives it itself and can call
+<code>inspect_photo</code> before submitting (<code>src/stepspotter/guide.py:654</code>); that agent is not
+exposed on the public URL.</p>
+<h2>4. OpenCV 5 implementation</h2>
+<p>Pinned: <code>opencv-python-headless==5.0.0.93</code>, <code>numpy==2.5.4</code> (<code>pyproject.toml</code>). The image
+build prints <code>cv2 5.0.0</code> from inside the built container (<code>infra/buildspec.yml:24</code>). Full
+description, every threshold and where it came from: <code>docs/PERCEPTION.md</code>.</p>
+<table>
+<thead>
+<tr>
+<th>check</th>
+<th>OpenCV 5 calls</th>
+<th>file</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>faces blurred before anything else reads the photo</td>
+<td><code>FaceDetectorYN</code> (YuNet, opencv_zoo), <code>GaussianBlur</code></td>
+<td><code>perception/privacy.py:57</code></td>
+</tr>
+<tr>
+<td>sharpness, exposure, glare</td>
+<td><code>Laplacian</code>, <code>calcHist</code>, <code>threshold</code>, <code>connectedComponentsWithStats</code></td>
+<td><code>perception/quality.py:65</code>, <code>:96</code>, <code>:80</code>, <code>:85</code></td>
+</tr>
+<tr>
+<td>same place as the first photo</td>
+<td><code>SIFT_create</code> (on CLAHE luminance), <code>BFMatcher.knnMatch</code>, <code>findHomography(USAC_MAGSAC)</code>, <code>perspectiveTransform</code>, <code>isContourConvex</code>, <code>intersectConvexConvex</code></td>
+<td><code>perception/imgio.py:88</code>, <code>scene.py:55</code>, <code>:61</code>, <code>:78</code>, <code>:94</code>, <code>:101</code></td>
+</tr>
+<tr>
+<td>the photo was already sent (replay)</td>
+<td>homography near identity and aligned difference near zero</td>
+<td><code>perception/scene.py:247</code></td>
+</tr>
+<tr>
+<td>what changed in the work zone and in each do-not-touch zone</td>
+<td><code>warpPerspective</code>, <code>cvtColor(LAB)</code>, <code>createCLAHE</code>, <code>absdiff</code>, <code>morphologyEx</code>, <code>erode</code>, against the change outside all zones</td>
+<td><code>perception/change.py:40</code>, <code>:48</code>, <code>:54</code>, <code>:56</code></td>
+</tr>
+<tr>
+<td>a video instead of a photo</td>
+<td><code>VideoCapture</code>, best keyframe by sharpness × exposure × match</td>
+<td><code>perception/frames.py:30</code>, <code>:67</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The policy</strong> (<code>perception/inspect.py</code>, docstring, applied in order; the first rule that
+fires decides):</p>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>route</th>
+<th>next action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>retake</code> (blur, dark, washed out, glare, zone out of frame, blurrier than the first photo)</td>
+<td><code>opencv_block</code></td>
+<td>refused, one instruction to the person, <strong>no model call</strong></td>
+</tr>
+<tr>
+<td><code>replay</code></td>
+<td><code>opencv_block</code></td>
+<td>refused, no model call</td>
+</tr>
+<tr>
+<td><code>no_change</code> (the step had to change the work zone; it did not)</td>
+<td><code>opencv_block</code></td>
+<td>refused, no model call</td>
+</tr>
+<tr>
+<td><code>touched_avoid</code> (a do-not-touch zone changed)</td>
+<td><code>opencv_block</code></td>
+<td>the gate raises <code>interrupt("human_review")</code></td>
+</tr>
+<tr>
+<td><code>place_unconfirmed</code> (OpenCV cannot line the photo up with the first photo)</td>
+<td><code>llm_two_image</code></td>
+<td>the model gets both photos and must answer <code>same_place</code>; the gate needs <code>same_place=true</code></td>
+</tr>
+<tr>
+<td><code>ok</code></td>
+<td><code>llm_single</code></td>
+<td>the model gets the photo and OpenCV's aligned crop of the work zone</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why <code>place_unconfirmed</code> is not a refusal.</strong> On our own photos, real re-shots of the same
+place from another angle kept 4–8 SIFT inliers after the homography fit, the same range
+as photos of different rooms (5–8); no inlier threshold separates them
+(<code>eval/results/opencv.md</code>, run on 2026-10-21 under the previous policy, which refused
+3 of 5 such re-shots). So OpenCV confirms a place when it can (≥ 25 inliers,
+<code>perception/thresholds.py:115</code>) and otherwise hands the question to the model with both
+photos — a dearer check, never a refused person. The gate fails closed: a pass without
+<code>same_place=true</code> cannot close the step (<code>guide.py:440</code>, <code>gate.py:153</code>).</p>
+<p><strong>Where OpenCV output changes a later decision</strong> — the evidence the Agentic Vision award
+asks for, each with a test:</p>
+<ol>
+<li>A blocking decision becomes a failed verdict with <code>source="opencv"</code> and the model is
+   never called (<code>guide.py:421</code>; <code>tests/test_perception_gate.py</code>,
+   <code>test_a_blurred_photo_is_refused_without_calling_the_model</code>).</li>
+<li>The route chooses which model call is made: one photo plus crop, or two photos with a
+   required <code>same_place</code> (<code>guide.py:434</code>;
+   <code>test_a_photo_opencv_cannot_line_up_goes_to_the_two_photo_check</code>).</li>
+<li>The gate cancels <code>advance_step</code> on a stored blocking report even beside a passing
+   verdict (<code>gate.py:141</code>; <code>test_the_gate_refuses_on_a_blocking_report_even_beside_a_passing_verdict</code>).</li>
+<li>A change in a do-not-touch zone turns the next <code>advance_step</code> into a request for a
+   person's approval (<code>gate.py:91</code>;
+   <code>test_a_change_in_the_do_not_touch_zone_stops_the_run_for_a_person</code>).</li>
+<li><code>inspect_photo</code> lets the agent ask once for a photo from the first angle before it
+   submits (<code>guide.py:654</code>; <code>test_inspect_photo_offers_one_ask_for_the_first_angle_and_never_refuses</code>).</li>
+<li>After three OpenCV blocks in a row on one step, the next <code>retake</code> or <code>no_change</code> goes
+   to the model with OpenCV's findings attached, so a false positive cannot trap a person
+   (<code>perception/inspect.py</code>, <code>apply_stuck_rule</code>; <code>tests/test_perception_failures.py</code>).</li>
+</ol>
+<p>Every OpenCV decision is one trace row with <code>decision</code>, <code>route</code>, <code>llm_called</code> and
+<code>ms_total</code> (<code>guide.py:320</code>). On the page, "Everything it did" shows it as "OpenCV photo
+check (code, not the model)" with the match lines, the change heatmap and the time.</p>
+<p><span class="ph">{{SCREENSHOT:trace — docs/screens/trace-opencv.png, a judge scenario's trace row on the live URL}}</span></p>
+<h2>5. AWS deployment</h2>
+<table>
+<thead>
+<tr>
+<th>component</th>
+<th>what it does here</th>
+<th>where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AWS App Runner</td>
+<td>one instance, 1 vCPU / 2 GB, x86_64, min = max = 1 (job state is on local disk)</td>
+<td><code>infra/template.yaml:440</code>, <code>:450</code></td>
+</tr>
+<tr>
+<td>Amazon Bedrock</td>
+<td>Claude Sonnet 4.6 through a tagged application inference profile, so model spend is attributable to the stack</td>
+<td><code>infra/template.yaml:355</code></td>
+</tr>
+<tr>
+<td>IAM</td>
+<td>instance role may invoke one model and put metrics into one namespace; no secrets in the environment</td>
+<td><code>infra/template.yaml:393</code></td>
+</tr>
+<tr>
+<td>CloudWatch</td>
+<td>four metric filters on the JSON trace (<code>PerceptionDecisions</code> by decision, <code>LlmCallsSaved</code>, <code>LlmCallsMade</code>, <code>PerceptionLatencyMs</code>), three alarms (5xx, request flood, perception p95), one dashboard</td>
+<td><code>infra/template.yaml:502</code>–<code>654</code></td>
+</tr>
+<tr>
+<td>SNS + AWS Budget</td>
+<td>alarm email; $15/month Budget created before the service</td>
+<td><code>infra/template.yaml:160</code>, <code>:177</code></td>
+</tr>
+<tr>
+<td>CodeBuild + ECR + S3</td>
+<td><code>git archive HEAD</code> → S3 → x86_64 build with an architecture check and an import smoke → ECR (immutable tags, scan on push) → App Runner by digest</td>
+<td><code>infra/deploy.sh:156</code>, <code>infra/buildspec.yml</code>, <code>infra/template.yaml:212</code>, <code>:322</code></td>
+</tr>
+</tbody>
+</table>
+<p>One command deploys (<code>infra/deploy.sh --yes</code>) and one removes (<code>infra/destroy.sh --yes</code>);
+full procedure, measured durations and cost in <code>docs/DEPLOY.md</code>, operations and the kill
+switch in <code>docs/OPERATIONS.md</code>. Spend is bounded in code: per-address caps (6 jobs,
+30 photo checks an hour) and global daily caps (6 jobs, 30 photo checks a day) bound
+Bedrock at ≤ 78 calls a day (<code>src/stepspotter/web/limits.py</code>, <code>docs/OPERATIONS.md</code>). A
+photo OpenCV refuses costs no model call. Model price used: $3 / $15 per million input /
+output tokens for Claude Sonnet 4.6 in us-east-1 (AWS Price List API, effective
+2026-09-01, read 2026-10-21); at the 3,142 / 657 average tokens per call measured on the
+first deployment that is about $0.019 per model call (<code>docs/DEPLOY.md</code>).</p>
+<p>Deployed build: <span class="ph">{{DEPLOY:commit and image digest of the final redeploy}}</span>. OpenCV
+latency on the App Runner instance: <span class="ph">{{EVAL:cloud_latency — p50/p95 of ms_total on AWS,
+from a recorded run}}</span>.</p>
+<h2>6. Evaluation</h2>
+<p>Full method, data provenance and every failure: <code>docs/EVAL.md</code>. Summary:</p>
+<p><strong>Data.</strong> <span class="ph">{{EVAL:set_summary — cases by source (own photos, own video frames, public
+photos with licence, synthetic damage) and by class; calibration / test split by scene}}</span></p>
+<p><strong>Configurations.</strong> A = model only, one photo · A′ = model only, first photo and
+evidence · B = OpenCV only · C = OpenCV then model (the shipped gate).</p>
+<p><span class="ph">{{EVAL:table_ABC — per class: caught / missed on bad evidence, false blocks on good
+evidence, for A, A′, B, C; test half only}}</span></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">A</th>
+<th style="text-align: right;">A′</th>
+<th style="text-align: right;">B</th>
+<th style="text-align: right;">C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bad evidence caught</td>
+<td style="text-align: right;"><span class="ph">{{EVAL:A_caught}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:A2_caught}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:B_caught}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:C_caught}}</span></td>
+</tr>
+<tr>
+<td>good evidence refused</td>
+<td style="text-align: right;"><span class="ph">{{EVAL:A_false}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:A2_false}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:B_false}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:C_false}}</span></td>
+</tr>
+<tr>
+<td>model calls</td>
+<td style="text-align: right;"><span class="ph">{{EVAL:A_calls}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:A2_calls}}</span></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><span class="ph">{{EVAL:C_calls}}</span></td>
+</tr>
+<tr>
+<td>latency p50 / p95</td>
+<td style="text-align: right;"><span class="ph">{{EVAL:A_ms}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:A2_ms}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:B_ms}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:C_ms}}</span></td>
+</tr>
+<tr>
+<td>$ per 100 checks</td>
+<td style="text-align: right;"><span class="ph">{{EVAL:A_cost}}</span></td>
+<td style="text-align: right;"><span class="ph">{{EVAL:A2_cost}}</span></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;"><span class="ph">{{EVAL:C_cost}}</span></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Where C decided differently from A and A′.</strong> <span class="ph">{{EVAL:c_differs — each case with the
+image pair, OpenCV's numbers and both decisions}}</span></p>
+<p><strong>Real re-shots of the same place.</strong> <span class="ph">{{EVAL:false_blocks_real_reshots}}</span></p>
+<p><strong>How to read the synthetic classes.</strong> Synthetic damage is of a known kind and size and
+the checks were built for it, so a high catch rate there shows the checks fire on what
+they target, not field accuracy. The informative numbers are the false refusals, the
+real pairs and the comparison with A′.</p>
+<h2>7. Limitations and failure cases</h2>
+<ul>
+<li><strong>Real re-shots do not line up.</strong> A photo of the same place from another angle or after
+  cables moved often keeps too few SIFT inliers to confirm the place. Since <code>793b987</code> it
+  costs a two-photo model call instead of a refusal; before that, OpenCV refused 3 of 5
+  such pairs in our set (<code>eval/results/opencv.md</code>). OpenCV alone can no longer reject a
+  photo of another room; only the model can, through <code>same_place</code>.</li>
+<li><strong>Parallax.</strong> On the real 01↔02 pair, alignment left 37 % of the frame "changed"; such
+  maps are marked <code>unreliable</code> and decide nothing, so <code>no_change</code> and <code>touched_avoid</code>
+  fire only for photos taken from near the first viewpoint (<code>docs/PERCEPTION.md</code>).</li>
+<li><strong>Zones come from a model.</strong> Work and do-not-touch zones are the Marker model's boxes,
+  which drift and run oversized (<code>src/stepspotter/marker.py</code>); a wrong zone makes a
+  right change look wrong.</li>
+<li><strong>Thresholds were set on six photos of one house</strong> and are not a blind test; the scene
+  split shows whether results differ by scene, not field accuracy.</li>
+<li><strong>Faces:</strong> checked on one public-domain portrait (<code>tests/test_privacy_faces.py</code>); no
+  detection rate is claimed.</li>
+<li><strong>One instance, local disk.</strong> Jobs live on the App Runner instance and are lost on
+  every redeploy, pause or instance replacement (<code>docs/OPERATIONS.md</code>).</li>
+<li><strong>Judging capacity.</strong> The global daily caps (6 jobs, 30 photo checks a day, shared by
+  everyone) protect the budget and can run out on a busy judging day; the offline test
+  suite and the eval harness need no AWS account.</li>
+<li><span class="ph">{{EVAL:opencv_failures — OpenCV misses and false refusals from the final run, with
+  pictures and reasons}}</span></li>
+</ul>
+<h2>8. Responsible use</h2>
+<ul>
+<li><strong>Scope.</strong> Low-voltage, low-consequence jobs only. The planner refuses mains wiring,
+  gas, roofing and structural work with an empty step list (<code>planner.py:26</code>). That
+  refusal is a model judgement, not a certified hazard classifier.</li>
+<li><strong>The person stays in control of risk.</strong> A change in a do-not-touch zone stops the run
+  for a person's approval (<code>interrupt</code>, not a cancel), and a hazard seen by the model
+  stops the run too (<code>gate.py:76</code>). A refusal always comes with the reason and one
+  instruction; the stuck rule keeps a false positive from trapping anyone.</li>
+<li><strong>Fail closed.</strong> A photo whose place OpenCV cannot confirm closes a step only if the
+  model says it is the same place (<code>guide.py:440</code>, <code>gate.py:153</code>).</li>
+<li><strong>Privacy.</strong> Faces are blurred in the stored file before any model sees it; each report
+  says whether that check ran (<code>faces_checked</code>). Photos live only on the instance's
+  ephemeral disk, are not copied to S3 or a database, and are gone on every redeploy.
+  Model-invocation logging is not turned on. CloudWatch gets perception metrics and
+  decisions, no image data; rate-limit rows carry a salted hash of the caller address
+  (<code>docs/OPERATIONS.md</code>, <code>src/stepspotter/store.py</code>).</li>
+<li><strong>Spend and abuse.</strong> Per-address and global daily caps, a kill switch
+  (<code>STEPSPOTTER_PAUSED=1</code>), a Budget alert and a request-flood alarm.</li>
+<li><strong>Least privilege.</strong> The instance role can call one model and write one metric
+  namespace; the build role can push to one repository (<code>infra/template.yaml:271</code>, <code>:393</code>).</li>
+<li><strong>Data rights.</strong> Our own photos are published with the owner's permission; the face
+  test photo is public domain (<code>tests/fixtures/ATTRIBUTION.md</code>); public photos in the
+  evaluation carry their licence and attribution (<code>eval/cases/public/ATTRIBUTION.md</code>).
+  The repository's MIT licence does not cover third-party photos.</li>
+<li><strong>Honest results.</strong> Failures are published next to successes, and every number traces
+  to a committed results file.</li>
+</ul>
+<h2>9. Disclosure</h2>
+<p>StepSpotter was built on 9–14 September 2026 for the AWS "Agents for Humans" hackathon on
+Devpost, where it won the Everyday Agents Bronze award (announced 14 October 2026). It was
+also submitted to the AI Builders hackathon, whose judging has not finished. The original
+code is public at <a href="https://github.com/retailbox-automation/stepspotter">https://github.com/retailbox-automation/stepspotter</a>, commit <code>80979af</code>
+(pushed 2026-09-14). It is imported here as the first commit, <code>295e3f3</code>, with the text
+copied from manufacturers' manuals removed (the bundled manual cache keeps only links and
+page numbers).</p>
+<p>Everything OpenCV 5 — the perception package, its integration into the gate and the
+verifier, the face blurring, the evaluation harness, the AWS stack, the diagrams and this
+report — was built on 21–24 October 2026, inside this competition's window: commits
+<code>9cc6ca1</code> through <span class="ph">{{FINAL:head commit}}</span> (<code>git log --reverse 295e3f3..HEAD</code>).</p>
+<p>We read the Official Rules for a clause on previously submitted projects and found none.
+The nearest is the timeline: «From August 26 through October 26, teams will build,
+evaluate, document, and submit their final projects.» The rules also say «Disclosed agents
+and automated programs that are integral to the submitted project are allowed and
+encouraged».</p>
+<h2>10. How AI was used</h2>
+<ul>
+<li><strong>In the product:</strong> Claude Sonnet 4.6 on Amazon Bedrock plans the steps, draws the
+  zones and checks the photos OpenCV lets through (one photo, or two photos with
+  <code>same_place</code>); a tool-less agent answers questions typed into the chat. OpenCV runs
+  before it on every evidence photo.</li>
+<li><strong>In development:</strong> the code, tests, infrastructure and these documents were written
+  with AI coding assistants, directed and reviewed by the author. The author chose the
+  product and its rules, took the photos, decided what to publish and approved every
+  spend and every outward step.</li>
+</ul>
+<p>Details: <code>docs/AI-USE.md</code>.</p>
+<h2>Reproduce</h2>
+<pre><code class="language-bash">git clone https://github.com/retailbox-automation/stepspotter-opencv &amp;&amp; cd stepspotter-opencv
+python3.12 -m venv .venv &amp;&amp; .venv/bin/pip install -e &quot;.[dev]&quot;
+tools/fetch_models.sh                                   # YuNet face detector, SHA256-checked
+.venv/bin/python -m pytest -q -m &quot;not integration&quot;      # offline, no AWS account
+.venv/bin/python eval/build_set.py &amp;&amp; .venv/bin/python eval/run.py --config opencv
+infra/deploy.sh --yes                                   # needs an AWS account; see docs/DEPLOY.md
+</code></pre></body></html>
