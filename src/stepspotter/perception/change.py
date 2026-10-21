@@ -131,9 +131,12 @@ def measure(
         )
     floor = float(mask[outside].mean())
     bar = T.NOISE_MULT * floor + T.NOISE_ADD
-    act_changed = any(r.changed_frac >= max(T.ACT_CHANGED_MIN, bar) for r in act_rows) if act_rows else None
+    # Only zones the photo actually shows are judged (ZONE_JUDGE_MIN_VISIBLE).
+    act_seen = [r for r in act_rows if r.visible_frac >= T.ZONE_JUDGE_MIN_VISIBLE]
+    avoid_seen = [r for r in avoid_rows if r.visible_frac >= T.ZONE_JUDGE_MIN_VISIBLE]
+    act_changed = any(r.changed_frac >= max(T.ACT_CHANGED_MIN, bar) for r in act_seen) if act_seen else None
     avoid_touched = (
-        any(r.changed_frac >= max(T.AVOID_CHANGED_MIN, bar) for r in avoid_rows) if avoid_rows else None
+        any(r.changed_frac >= max(T.AVOID_CHANGED_MIN, bar) for r in avoid_seen) if avoid_seen else None
     )
     if floor > T.NOISE_FLOOR_MAX:
         return (

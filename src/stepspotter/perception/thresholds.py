@@ -78,6 +78,11 @@ SHARP_P90_MIN = 45.0
 #: a geometric match, so two different scenes are never compared on texture.
 SHARP_RATIO_MIN = 0.35
 
+#: ...and only when the evidence covers at least this share of the reference frame, i.e.
+#: frames roughly the same view. Eval run 1: close-ups (coverage ~0.3) were refused by the
+#: ratio because magnification lowers texture per pixel (02, 06 good_closeup).
+REL_SHARP_MIN_COVERAGE = 0.6
+
 #: Largest connected blob of saturated pixels (grey >= 250), as a share of the frame,
 #: above which the photo has glare. exp 21.10: originals <= 0.002 (01 has a lamp-lit
 #: wall in frame); a synthetic 5 % glare disc 0.009-0.011, a 12 % disc 0.022-0.027.
@@ -180,6 +185,12 @@ NOISE_ADD = 0.02
 #: zone changed as well (a hand reaching across the work is fine; rewiring the thing
 #: you were told to leave alone is not).
 AVOID_LARGE = 0.25
+
+#: A zone is only judged for change when at least this share of it is inside the
+#: evidence frame. Eval run 1: a close-up held 1.2 % of a do-not-touch zone, and 7 % of
+#: that sliver "changed" (resampling at the edge) — a stop for a person over a zone the
+#: photo does not show (05-good_closeup).
+ZONE_JUDGE_MIN_VISIBLE = 0.3
 
 #: Share of the work zone that must land inside the evidence frame. Below it the
 #: person is asked to step back (DESIGN.md §2: "отойдите — панель целиком").

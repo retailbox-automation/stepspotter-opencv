@@ -82,7 +82,7 @@ def sanity(H: np.ndarray, ev_size: tuple[int, int], ref_size: tuple[int, int]) -
     """Return (why it is NOT sane or None, the measured geometry)."""
     ew, eh = ev_size
     rw, rh = ref_size
-    geo: dict[str, float | None] = {"scale": None, "overlap": None, "side_ratio": None}
+    geo: dict[str, float | None] = {"scale": None, "overlap": None, "coverage": None, "side_ratio": None}
     if not np.all(np.isfinite(H)) or abs(H[2, 2]) < 1e-12:
         return "the homography is not finite", geo
     det = float(np.linalg.det(H[:2, :2] / H[2, 2]))
@@ -100,7 +100,13 @@ def sanity(H: np.ndarray, ev_size: tuple[int, int], ref_size: tuple[int, int]) -
     ref_quad = np.float32([[0, 0], [rw, 0], [rw, rh], [0, rh]])
     inter, _poly = cv2.intersectConvexConvex(quad.astype(np.float32), ref_quad)
     overlap = float(inter) / max(min(area, float(rw * rh)), 1e-6)
-    geo = {"scale": round(scale, 3), "overlap": round(overlap, 3), "side_ratio": round(side_ratio, 2)}
+    coverage = float(inter) / float(rw * rh)
+    geo = {
+        "scale": round(scale, 3),
+        "overlap": round(overlap, 3),
+        "coverage": round(coverage, 3),
+        "side_ratio": round(side_ratio, 2),
+    }
     if not (T.SCALE_MIN <= scale <= T.SCALE_MAX):
         return f"implausible scale {scale:.2f}", geo
     if side_ratio > T.MAX_SIDE_RATIO:
@@ -179,6 +185,7 @@ def match_scene(
         inlier_ratio=round(best.inliers / max(best.good, 1), 3),
         scale=geo.get("scale"),
         overlap=geo.get("overlap"),
+        coverage=geo.get("coverage"),
         side_ratio=geo.get("side_ratio"),
         rejected_because=why,
         H=m.H.tolist() if (why is None and m.H is not None) else None,

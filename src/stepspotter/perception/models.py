@@ -61,6 +61,9 @@ class SceneMatch(BaseModel):
     inlier_ratio: float = 0.0
     scale: float | None = None
     overlap: float | None = None
+    coverage: float | None = Field(
+        default=None, description="share of the reference frame the evidence covers (a close-up is small)"
+    )
     side_ratio: float | None = None
     rejected_because: str | None = None
     H: list[list[float]] | None = Field(

@@ -250,9 +250,9 @@ def inspect_full(
     ref_size = (ref_w.shape[1], ref_w.shape[0]) if ref_w is not None else None
 
     if match_rep.status == "matched" and H is not None and ref_w is not None:
-        # Both sharpness numbers come from the full-size image scaled to QUALITY_PX, so
-        # the ratio compares like with like.
-        rel = quality.relative_issue(q, quality.sharpness_p90(ref_full))
+        # Both sharpness numbers are read off the full-size images by the same rule, and
+        # only for the same view (see quality.relative_issue).
+        rel = quality.relative_issue(q, quality.sharpness_p90(ref_full), match_rep.coverage)
         if rel:
             return done(_report("retake", rel, _quality_reason(rel, q), quality.instruction_for(rel, work_label), **common))
         if work is not None:

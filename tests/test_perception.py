@@ -276,6 +276,16 @@ def test_a_change_made_by_an_earlier_step_is_not_credited_to_this_one(tmp_path, 
     assert vs_step1.change.baseline == "your photo for step 1"
 
 
+def test_a_close_up_is_not_called_blurry_for_being_magnified():
+    """Eval run 1 refused this as 'blurry next to the first photo': a close-up has less
+    texture per pixel than the overview it was taken from. It is not blur."""
+    ref = photo("02")
+    close = synthetic.crop_around(ref, zone_box("02", "act"), 0.55)
+    rep = inspect_evidence(close, ref, zones("02"))
+    assert rep.decision == "ok", (rep.reason_code, rep.reason)
+    assert rep.scene.coverage < T.REL_SHARP_MIN_COVERAGE and rep.quality.sharpness_ratio is None
+
+
 def test_a_zone_cut_off_by_the_frame_asks_the_person_to_step_back():
     ref = photo("02")
     ev = synthetic.cut_zone(ref, zone_box("02", "act"), keep_frac=0.25)

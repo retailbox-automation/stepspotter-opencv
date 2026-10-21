@@ -50,6 +50,23 @@ def glare(img: np.ndarray, frac: float, cx: float, cy: float) -> np.ndarray:
     return np.clip(img.astype(np.float32) * (1 - a) + 255.0 * a, 0, 255).astype(np.uint8)
 
 
+def side_light(img: np.ndarray, left_gain: float, right_gain: float) -> np.ndarray:
+    """Light from one side: the gain ramps linearly from left to right edge."""
+    h, w = img.shape[:2]
+    ramp = np.linspace(left_gain, right_gain, w, dtype=np.float32)[None, :, None]
+    return np.clip(img.astype(np.float32) * ramp, 0, 255).astype(np.uint8)
+
+
+def new_clipped(before: np.ndarray, after: np.ndarray, level: int = 245) -> float:
+    """Share of pixels pushed to near-white by an edit that were not near-white before.
+
+    Recorded next to every lighting case, so a "good" lighting change that is really
+    an overexposed photo is visible in the manifest, not discovered in the results."""
+    gb = cv2.cvtColor(before, cv2.COLOR_BGR2GRAY)
+    ga = cv2.cvtColor(after, cv2.COLOR_BGR2GRAY)
+    return round(float(((ga >= level) & (gb < level)).mean()), 4)
+
+
 def sensor_noise(img: np.ndarray, sigma: float, seed: int) -> np.ndarray:
     rng = np.random.default_rng(seed)
     return np.clip(img.astype(np.float32) + rng.normal(0, sigma, img.shape), 0, 255).astype(np.uint8)

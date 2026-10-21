@@ -36,7 +36,8 @@ def instruction_for(code: str, zone: str | None = None) -> str:
 
 
 def _grey_small(img: np.ndarray) -> np.ndarray:
-    """Greyscale with the LONG side scaled to QUALITY_PX (never upscaled).
+    """Greyscale with the LONG side scaled to QUALITY_PX, or to half its own size if
+    that is smaller (never upscaled).
 
     The long side, not the width: Laplacian energy depends on how much the photo was
     shrunk, and scaling by width made a narrower framing of the very same photo read as
@@ -44,7 +45,12 @@ def _grey_small(img: np.ndarray) -> np.ndarray:
     """
     g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     h, w = g.shape
-    s = T.QUALITY_PX / max(h, w)
+    # At least a 2x downscale, which is the scale every threshold was measured at (the
+    # 1280 px originals -> 640). Laplacian energy depends on the scale it is read at: a
+    # 700 px crop read at 640 (0.9x) looks half as sharp as the same pixels read at 0.5x,
+    # and was refused as blurry in eval run 1 (04-good_closeup).
+    target = min(T.QUALITY_PX, max(h, w) / 2.0)
+    s = target / max(h, w)
     if s < 1.0:
         g = cv2.resize(g, (max(1, round(w * s)), max(1, round(h * s))), interpolation=cv2.INTER_AREA)
     return g
@@ -125,13 +131,19 @@ def assess(img: np.ndarray, zone: str | None = None) -> QualityReport:
     )
 
 
-def relative_issue(report: QualityReport, ref_sharpness: float) -> str | None:
+def relative_issue(report: QualityReport, ref_sharpness: float, coverage: float | None) -> str | None:
     """After a scene match only: is the evidence far blurrier than its own reference?
 
-    Two photos of the same place at similar distance carry similar texture, so a big
-    drop is blur, not content (exp 21.10: motion-blurred 03 kept 0.08-0.32).
+    Applied only when the evidence frames roughly the same view as the reference
+    (``coverage`` >= REL_SHARP_MIN_COVERAGE). Two photos of the same view carry the same
+    texture, so a big drop is blur (exp 21.10: motion-blurred 03 kept 0.08-0.32). A
+    close-up shows the work zone magnified — less texture per pixel, not blur — and was
+    refused for it in eval run 1 (02, 06 good_closeup: 0.29, 0.26), so it is left to the
+    absolute floor. (Comparing the evidence warped onto the reference was tried and
+    dropped: the warp's interpolation and a blur-bent fit made that ratio swing from
+    0.37 on a sharp re-shot to 5.5 on a blurred copy.)
     """
-    if ref_sharpness <= 0:
+    if ref_sharpness <= 0 or coverage is None or coverage < T.REL_SHARP_MIN_COVERAGE:
         return None
     ratio = report.sharpness_p90 / ref_sharpness
     report.sharpness_ratio = round(ratio, 3)
