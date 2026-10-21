@@ -164,6 +164,12 @@ class StepVerdict(BaseModel):
     #: layer refused it before any model was asked). Hidden from the JSON schema the model
     #: fills in, so the model can never claim to be the other one; the code sets it.
     source: SkipJsonSchema[str] = "llm"
+    #: Set only by the two-photo check (verifier.TwoPhotoVerdict), when OpenCV could not
+    #: confirm the place: did the model see the same place as the person's first photo?
+    #: Hidden from the single-photo schema; None means nobody was asked.
+    same_place: SkipJsonSchema[bool | None] = None
+    #: Which check produced this verdict: opencv_block, llm_single or llm_two_image.
+    route: SkipJsonSchema[str | None] = None
 
 
 class EvidenceRecord(BaseModel):

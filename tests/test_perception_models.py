@@ -68,3 +68,15 @@ def test_the_stuck_rule_lets_a_photo_through_only_after_k_blocks_and_never_a_rep
     for d in ("replay", "touched_avoid"):
         out = apply_stuck_rule(rep(d), STUCK_AFTER + 5)
         assert not out.overridden and out.blocks, d
+
+
+def test_the_two_photo_check_must_answer_same_place_and_the_single_one_never_sees_it():
+    from stepspotter.verifier import TwoPhotoVerdict
+
+    two = convert_pydantic_to_tool_spec(TwoPhotoVerdict)["inputSchema"]["json"]
+    assert "same_place" in two["properties"] and "same_place" in two["required"]
+    assert "source" not in two["properties"] and "route" not in two["properties"]
+    single = convert_pydantic_to_tool_spec(StepVerdict)["inputSchema"]["json"]["properties"]
+    assert "same_place" not in single and "route" not in single
+    v = StepVerdict.model_validate(TwoPhotoVerdict(step_id=1, passed=True, reason="r", same_place=False).model_dump())
+    assert v.same_place is False and v.source == "llm"
