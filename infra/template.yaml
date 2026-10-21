@@ -66,7 +66,7 @@ Parameters:
     Description: Receives the 80 % actual-spend Budget notification (no confirmation needed).
   BudgetLimitUsd:
     Type: Number
-    Default: 20
+    Default: 15
     MinValue: 1
   CostTagKey:
     Type: String
@@ -79,6 +79,18 @@ Parameters:
   FoundationModelId:
     Type: String
     Default: anthropic.claude-sonnet-4-6
+  DemoModelId:
+    Type: String
+    Default: ""
+    AllowedPattern: "^$|^[a-z0-9.:-]+$"
+    Description: >-
+      Cost fallback for the photo/plan path. Empty = Claude Sonnet 4.6 (ModelProfileId or its
+      application profile). Set e.g. us.amazon.nova-2-lite-v1:0 to point STEPSPOTTER_MODEL at a
+      cheaper inference profile; the instance role is widened to exactly that profile + model.
+  DemoFoundationModelId:
+    Type: String
+    Default: amazon.nova-2-lite-v1:0
+    Description: Foundation model behind DemoModelId (IAM resource). Ignored while DemoModelId is empty.
   UseAppInferenceProfile:
     Type: String
     Default: "true"
@@ -99,12 +111,12 @@ Parameters:
     MinValue: 1
   MaxJobsPerDay:
     Type: Number
-    Default: 20
+    Default: 6
     MinValue: 1
-    Description: Global daily cap on job starts (each = up to 3 Bedrock calls).
+    Description: Global daily cap on job starts (each = up to 3 Bedrock calls). 6 jobs + 30 photos = at most 78 model calls a day.
   MaxPhotosPerDay:
     Type: Number
-    Default: 80
+    Default: 30
     MinValue: 1
     Description: Global daily cap on photo checks (each = up to 2 Bedrock calls; refused by OpenCV = 0).
   PerceptionP95AlarmMs:
@@ -128,6 +140,7 @@ Conditions:
   OwnTopicWithEmail: !And [!Condition OwnTopic, !Not [!Equals [!Ref AlertEmail, ""]]]
   ArmBuild: !Equals [!Ref ImageArch, arm64]
   AppProfile: !Equals [!Ref UseAppInferenceProfile, "true"]
+  DemoModel: !Not [!Equals [!Ref DemoModelId, ""]]
 
 Rules:
   ServiceNeedsAnImage:
@@ -405,6 +418,16 @@ Resources:
                     - AppProfile
                     - !GetAtt AppInferenceProfile.InferenceProfileArn
                     - !Ref AWS::NoValue
+              - !If
+                - DemoModel
+                - Sid: InvokeDemoFallbackModel
+                  Effect: Allow
+                  Action: [bedrock:InvokeModel, bedrock:InvokeModelWithResponseStream]
+                  Resource:
+                    - !Sub "arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${DemoModelId}"
+                    - !Sub "arn:${AWS::Partition}:bedrock:*::foundation-model/${DemoFoundationModelId}"
+                    - !Sub "arn:${AWS::Partition}:bedrock:::foundation-model/${DemoFoundationModelId}"
+                - !Ref AWS::NoValue
               - Sid: OwnMetricNamespaceOnly
                 Effect: Allow
                 Action: cloudwatch:PutMetricData
@@ -450,7 +473,10 @@ Resources:
               - {Name: STEPSPOTTER_MAX_JOBS_PER_DAY, Value: !Ref MaxJobsPerDay}
               - {Name: STEPSPOTTER_MAX_PHOTOS_PER_DAY, Value: !Ref MaxPhotosPerDay}
               - Name: STEPSPOTTER_MODEL
-                Value: !If [AppProfile, !GetAtt AppInferenceProfile.InferenceProfileArn, !Ref ModelProfileId]
+                Value: !If
+                  - DemoModel
+                  - !Ref DemoModelId
+                  - !If [AppProfile, !GetAtt AppInferenceProfile.InferenceProfileArn, !Ref ModelProfileId]
       InstanceConfiguration:
         Cpu: !Ref Cpu
         Memory: !Ref Memory
@@ -656,6 +682,9 @@ Outputs:
   AlertTopic:
     Value: !If [OwnTopic, !Ref AlertTopic, !Ref AlertTopicArn]
   ModelInUse:
-    Value: !If [AppProfile, !GetAtt AppInferenceProfile.InferenceProfileArn, !Ref ModelProfileId]
+    Value: !If
+      - DemoModel
+      - !Ref DemoModelId
+      - !If [AppProfile, !GetAtt AppInferenceProfile.InferenceProfileArn, !Ref ModelProfileId]
   InstanceRoleArn:
     Value: !GetAtt InstanceRole.Arn

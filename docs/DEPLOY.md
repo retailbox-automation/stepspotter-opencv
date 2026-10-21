@@ -18,7 +18,7 @@ git HEAD ──git archive──▶ S3 (source zip, 7-day lifecycle)
      ├─ stdout (JSON trace) → CloudWatch Logs → metric filters → StepSpotterOpenCV/*
      ├─ alarms (5xx, request flood, perception p95) → SNS → email
      └─ dashboard stepspotter-opencv
-   AWS Budget stepspotter-opencv ($20/month, email at 80 % actual), created before the service
+   AWS Budget stepspotter-opencv ($15/month, email at 80 % actual), created before the service
 ```
 
 ## Prerequisites
@@ -80,8 +80,9 @@ Measured durations: **not measured yet.** The pipeline has been validated (`clou
 | `CPU` / `MEMORY` | `1 vCPU` / `2 GB` | App Runner instance size. `0.25 vCPU` / `0.5 GB` is ~4× cheaper when idle, but OpenCV runs on a quarter of a core and Python + Strands + OpenCV must fit in 0.5 GB. That size is untested. |
 | `PAUSED` | `0` | Kill switch, see [OPERATIONS.md](OPERATIONS.md). |
 | `JOBS_PER_IP_HOUR` / `PHOTOS_PER_IP_HOUR` | 6 / 30 | Per-address hourly caps. |
-| `MAX_JOBS_PER_DAY` / `MAX_PHOTOS_PER_DAY` | 20 / 80 | Global daily caps. They bound the Bedrock spend at ≈ 220 calls/day. |
-| `BUDGET_LIMIT_USD` | 20 | Monthly Budget. The email goes out at 80 % of actual spend. |
+| `MAX_JOBS_PER_DAY` / `MAX_PHOTOS_PER_DAY` | 6 / 30 | Global daily caps. They bound the Bedrock spend at ≤ 6 × 3 + 30 × 2 = 78 calls/day. |
+| `BUDGET_LIMIT_USD` | 15 | Monthly Budget. The email goes out at 80 % of actual spend. |
+| `DEMO_MODEL_ID` | empty | Cost fallback. Empty means Claude Sonnet 4.6. `us.amazon.nova-2-lite-v1:0` points the photo-check and planning path (`STEPSPOTTER_MODEL`) at Amazon Nova 2 Lite, and the instance role is widened to exactly that profile and model. The in-app Guide chat keeps the Strands default model. |
 | `ALERT_TOPIC_ARN` | empty | Use an existing SNS topic for alarms. Empty means the stack creates `<service>-alerts` and subscribes `ALERT_EMAIL` (you must confirm the email). |
 | `USE_APP_INFERENCE_PROFILE` | `true` | Creates a tagged Bedrock *application inference profile* over the global Sonnet 4.6 profile, so model spend carries the `project` tag. Set `false` to call the global profile directly. |
 | `PERCEPTION_P95_ALARM_MS` | 2000 | Perception p95 alarm threshold. Provisional until the eval run publishes the real p95. |
@@ -127,7 +128,7 @@ Prices are from the AWS Price List API (`aws pricing get-products`, us-east-1, r
 | CloudWatch alarms | $0.10 per standard alarm-month | 3 alarms; 10 in the free tier → $0–0.30/month |
 | CloudWatch dashboard | $3.00 per dashboard-month; 3 dashboards ≤ 50 metrics free | $0–3.00/month |
 | CloudWatch Logs | $0.50 per GB ingested, $0.03 per GB-month stored [2026-10-01]; 5 GB/month free | health checks every 10 s plus trace lines ≈ 1 MB/day → ≈ $0.02/month |
-| Bedrock Claude Sonnet 4.6 (global profile) | $3 per 1M input tokens, $15 per 1M output tokens [2026-09-01] — [pricing](https://aws.amazon.com/bedrock/pricing/) | ≈ $0.019 per call (3,142 in / 657 out tokens average, measured on the first deployment 01.09–15.10.2026). Daily caps bound it at ≤ 220 calls ≈ **≤ $4.25/day**. A photo that OpenCV refuses costs no call. |
+| Bedrock Claude Sonnet 4.6 (global profile) | $3 per 1M input tokens, $15 per 1M output tokens [2026-09-01] — [pricing](https://aws.amazon.com/bedrock/pricing/) | ≈ $0.019 per call (3,142 in / 657 out tokens average, measured on the first deployment 01.09–15.10.2026). Daily caps bound it at ≤ 78 calls ≈ **≤ $1.51/day**. A photo that OpenCV refuses costs no call. |
 
 **Idle total at 1 vCPU / 2 GB ≈ $0.34/day ≈ $10.5/month** before Bedrock. Most of that is the provisioned 2 GB.
 
