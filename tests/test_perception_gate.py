@@ -152,13 +152,85 @@ def test_a_blurred_photo_is_refused_without_calling_the_model(job):
     assert state.current == 0
 
 
-def test_a_photo_of_another_place_is_refused_as_wrong_place(job):
-    _service, state, _gate, _tools, model, tmp = job
-    out = submit(job, save(tmp, photo("04"), "elsewhere.jpg"))
-    assert model.calls == []
-    assert state.perception[0].decision == "wrong_place"
-    assert "coax splitter" in out["content"]
+class TwoPhotoModel(Model):
+    """A verifier that also takes the person's first photo, and answers same_place."""
+
+    def __init__(self, passed: bool = True, same_place: bool = True) -> None:
+        super().__init__(passed)
+        self.same_place = same_place
+
+    def __call__(self, step, photo_path, model_id=None, context=None, zone_crop=None, reference_photo=None):
+        self.calls.append({"photo": photo_path, "context": context, "zone_crop": zone_crop,
+                           "reference_photo": reference_photo})
+        v = StepVerdict(step_id=step.id, passed=self.passed and self.same_place, reason="compared both photos")
+        if reference_photo is not None:
+            v.same_place = self.same_place
+        return v
+
+
+def _job_with(tmp_path, model):
+    start = tmp_path / "start.jpg"
+    shutil.copy(ROOT / SCENES["02"]["file"], start)
+    service = JobService(
+        plan_fn=lambda task, photo, model_id=None: plan(),
+        verify_fn=model,
+        locate_fn=lambda step, photo, model_id=None: boxes("02"),
+    )
+    state = service.start("fit the splitter", str(start))
+    service.card(state, layout="photo")
+    gate = StepGate(state_for=service.get, on_review=service.review)
+    return service, state, gate, build_tools(service), model, tmp_path
+
+
+@pytest.mark.parametrize("same_place", [True, False])
+def test_a_photo_opencv_cannot_line_up_goes_to_the_two_photo_check(tmp_path, same_place):
+    """Not refused by OpenCV: routed. The model gets BOTH photos; the gate needs same_place."""
+    model = TwoPhotoModel(passed=True, same_place=same_place)
+    job = _job_with(tmp_path, model)
+    _service, state, _gate, _tools, _m, tmp = job
+    submit(job, save(tmp, photo("03"), "closeup-another-day.jpg"))  # real photo, same panel
+    assert state.perception[0].decision == "place_unconfirmed"
+    assert len(model.calls) == 1
+    assert model.calls[0]["reference_photo"] == state.start_photo  # the two-photo call
+    assert model.calls[0]["zone_crop"] is None  # nothing lined up to crop
+    row = perception_rows(state)[-1]
+    assert row["route"] == "llm_two_image" and row["llm_called"] is True
+    v = state.verdicts[0]
+    assert v.route == "llm_two_image" and v.same_place is same_place
+    res = advance(job)
+    assert res["cancelled"] is (not same_place)
+    assert state.current == (1 if same_place else 0)
+
+
+def test_without_a_two_photo_verifier_the_unconfirmed_place_fails_closed(tmp_path):
+    """A verifier that cannot take the first photo cannot confirm the place: no pass."""
+    model = Model(passed=True)  # single-photo signature only
+    job = _job_with(tmp_path, model)
+    _service, state, _gate, _tools, _m, tmp = job
+    submit(job, save(tmp, photo("04"), "elsewhere.jpg"))
+    assert len(model.calls) == 1
+    v = state.verdicts[0]
+    assert v.passed is False and "same place" in v.reason
     assert advance(job)["cancelled"]
+
+
+def test_the_gate_wants_same_place_even_if_a_pass_was_written_in(tmp_path):
+    model = TwoPhotoModel(passed=True, same_place=True)
+    job = _job_with(tmp_path, model)
+    _service, state, _gate, _tools, _m, tmp = job
+    submit(job, save(tmp, photo("04"), "elsewhere.jpg"))
+    state.verdicts[0] = StepVerdict(step_id=1, passed=True, reason="written in")  # same_place None
+    res = advance(job)
+    assert res["cancelled"] and "did not confirm it is the same place" in res["content"]
+
+
+def test_a_confirmed_place_is_checked_on_one_photo(job, part):
+    _service, state, _gate, _tools, model, tmp = job
+    done = synthetic.perspective(synthetic.paste_patch(photo("02"), zone("02", "act"), part, cover=0.6, seed=1), 0.05, 2)
+    submit(job, save(tmp, done, "done.jpg"))
+    assert perception_rows(state)[-1]["route"] == "llm_single"
+    assert state.verdicts[0].route == "llm_single"
+    assert "reference_photo" not in model.calls[0] or model.calls[0].get("reference_photo") is None
 
 
 def test_sending_the_start_photo_again_is_a_replay(job):
@@ -246,6 +318,16 @@ def test_the_gate_refuses_on_a_blocking_report_even_beside_a_passing_verdict(job
 
 
 # ------------------------------------------------------------------------- agent tools
+
+
+def test_inspect_photo_offers_one_ask_for_the_first_angle_and_never_refuses(job):
+    _service, state, gate, tools, model, tmp = job
+    res = run_tool_through_gate(gate, tools, "inspect_photo",
+                                {"job_id": state.job_id, "photo_path": save(tmp, photo("04"), "x.jpg")})
+    assert "place not confirmed" in res["content"] and "ONCE" in res["content"]
+    assert "submit this one" in res["content"]
+    assert model.calls == [] and state.evidence == []
+    assert perception_rows(state)[-1]["route"] == "llm_two_image"
 
 
 def test_inspect_photo_tells_the_agent_what_to_ask_for_and_stores_nothing(job):

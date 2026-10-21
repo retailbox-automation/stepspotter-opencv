@@ -6,7 +6,9 @@ One call per evidence photo, before any model sees it. It returns a
     ok             the photo goes on to the model check, as before
     retake         blocked; the person gets ONE concrete instruction (light, hold still,
                    step back so X is in frame, move the glare)
-    wrong_place    blocked; it is not the place this step's zones were drawn on
+    place_unconfirmed  NOT a block: OpenCV could not confirm it is the place the step's
+                   zones were drawn on, so the model gets both photos and must answer
+                   same_place (route llm_two_image); the gate requires same_place=true
     replay         blocked; it is a photo this job already has
     no_change      blocked; the step had to change something and nothing changed there
     touched_avoid  not a block: the gate stops the run for a person (human approval)
@@ -25,8 +27,19 @@ order the code applies them. The first rule that fires decides.
    - matched: the evidence must not be far blurrier than the reference
      (``blurry_vs_reference``), the work zone must be in frame
      (``zone_out_of_frame``) and not under glare (``glare_on_zone``) -> else ``retake``.
-   - not matched AND the step's zones were located on the reference -> ``wrong_place``:
-     the step said "work here, on this photo", and this photo is not of there.
+   - not matched AND the step's zones were located on the reference ->
+     ``place_unconfirmed``, NOT a block. The step said "work here, on this photo", and
+     OpenCV cannot line this photo up with it — but a real re-shot from another angle or
+     after the cables moved fails to line up exactly as often as a photo of another room
+     does (eval run 2: 4-8 inliers either way), so OpenCV is not confident enough to
+     refuse. The photo goes to the model with BOTH photos and a ``same_place`` field it
+     must fill; the gate then requires ``same_place=true``. OpenCV only blocks on place
+     through ``replay``. (Until 21.10 this was a ``wrong_place`` block, and it refused 3
+     of 5 real same-place pairs.)
+     Active perception — asking once for a photo "from about where you took the first
+     one" — is offered only to the agent, by ``inspect_photo`` before it submits; the
+     submit path never asks, so a person who did the step is never sent back for an
+     angle alone.
    - not matched AND no zones were located for this step -> scene ``not_applicable``,
      recorded as such: the place the step is about may simply not be in the reference.
 4. **Replay**: near-identical (homography ~ identity AND aligned difference ~ 0) to ANY
@@ -50,7 +63,7 @@ order the code applies them. The first rule that fires decides.
 6. Otherwise ``ok``.
 
 STUCK RULE (``apply_stuck_rule``): after ``STUCK_AFTER`` consecutive OpenCV blocks on the
-same step, a further ``retake`` / ``wrong_place`` / ``no_change`` is NOT allowed to block
+same step, a further ``retake`` / ``no_change`` is NOT allowed to block
 on its own: the photo goes to the model check with OpenCV's findings attached, and the
 report is marked ``overridden``. Chosen over interrupting for a human because the person
 in front of the panel gets a second, independent look at once instead of waiting for
@@ -275,14 +288,7 @@ def inspect_full(
                     quality.instruction_for("glare_on_zone", f"the {work_label}"),
                     **common,
                 ))
-    elif match_rep.status == "not_matched" and zs:
-        where = f"the {work_label}" if work_label else "the place this step is about"
-        return done(_report(
-            "wrong_place", "no_scene_match",
-            f"This photo does not match the photo the step was drawn on ({match_rep.rejected_because}).",
-            f"Take the photo of {where} from about where you took your first photo, so I can line the two up.",
-            **common,
-        ))
+    place_unconfirmed = match_rep.status == "not_matched" and bool(zs)
     t = time.perf_counter()
 
     # 4. replay ------------------------------------------------------------------
@@ -302,6 +308,17 @@ def inspect_full(
             "replay", "replay",
             f"This is the same photo as {rp.of} (aligned difference {rp.mad}, corner shift {rp.corner_shift}).",
             "Take a new photo after doing the step — an earlier photo cannot prove it.",
+            **common,
+        ))
+
+    if place_unconfirmed:
+        where = f"the {work_label}" if work_label else "the place this step is about"
+        return done(_report(
+            "place_unconfirmed", "place_unconfirmed",
+            f"OpenCV could not line this photo up with your first photo "
+            f"({match_rep.rejected_because}), so it cannot confirm it shows {where}. "
+            "The model checks it against your first photo instead.",
+            None,
             **common,
         ))
 
@@ -411,7 +428,10 @@ def findings_for_model(report: PerceptionReport) -> str:
         if s.status == "matched":
             lines.append(f"- it lines up with the person's first photo ({s.inliers} matched points, {s.method}).")
         elif s.status == "not_matched":
-            lines.append(f"- it does NOT line up with the person's first photo ({s.rejected_because}).")
+            lines.append(
+                f"- OpenCV could not line it up with the person's first photo ({s.rejected_because}); "
+                "that alone does not mean it is another place."
+            )
     c = report.change
     if c is not None and c.status != "not_applicable":
         parts = [f"{z.label}: {z.changed_frac:.0%} changed" for z in c.act + c.avoid]

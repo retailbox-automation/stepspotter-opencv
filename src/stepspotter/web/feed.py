@@ -64,6 +64,7 @@ CV_HEADINGS = {
     "ok": "Photo check passed — sent on to the model",
     "retake": "Photo check: please retake it",
     "wrong_place": "Photo check: this is not the place in your first photo",
+    "place_unconfirmed": "Photo check: I could not line it up with your first photo, so the model compares the two",
     "replay": "Photo check: this photo was already sent",
     "no_change": "Photo check: nothing changed at the work zone yet",
     "touched_avoid": "Photo check: something changed where you were told not to touch",
@@ -97,6 +98,8 @@ def _cv_msg(state: JobState, row: dict) -> dict[str, Any]:
         "needs_human": bool(row.get("needs_human")),
         "overridden": bool(row.get("overridden")),
         "llm_called": bool(row.get("llm_called")),
+        "route": row.get("route"),
+        "probe": row.get("mode") == "probe",
         "ms_total": row.get("ms_total"),
         "step_number": row.get("step_id"),
         "images": images,
@@ -188,6 +191,15 @@ def build_feed(state: JobState, rows: list[dict]) -> list[dict]:
         elif event == "perception":
             if row.get("mode") == "submit":
                 pending_cv = row
+            elif row.get("mode") == "probe":
+                # A look before sending (the agent's inspect_photo, or a judge scenario
+                # that stops at the routing decision). Nothing was submitted or judged.
+                att = int(row.get("attempt") or 1)
+                step_no = int(row.get("step_id") or 0)
+                add({"from": "you", "kind": "photo",
+                     "url": f"/api/jobs/{state.job_id}/evidence/{step_no}?attempt={att}",
+                     "caption": "the photo, checked before sending"})
+                add(_cv_msg(state, row))
 
         elif event == "judge":
             add(

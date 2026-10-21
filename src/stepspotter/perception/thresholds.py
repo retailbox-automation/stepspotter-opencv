@@ -104,10 +104,15 @@ RANSAC_REPROJ_PX = 4.0
 RANSAC_MAX_ITERS = 5000
 RANSAC_CONFIDENCE = 0.999
 
-#: Inliers needed to call two photos the same place. spike 21.10 (no CLAHE): different
-#: places <= 10, the real pair 01<->02 33, synthetic same-place >= 98. exp 21.10 with
-#: CLAHE on the luminance before SIFT: real pair 62, different places still <= 10.
-MIN_INLIERS = 20
+#: Inliers needed to CONFIRM two photos show the same place. Below it OpenCV does not
+#: refuse the photo: it routes it to the model with both photos (place_unconfirmed), so
+#: the cost of a high bar is a dearer check, never a refused person.
+#: spike 21.10 (no CLAHE): different places <= 10. eval run 2 (CLAHE): every pair that
+#: did not line up had <= 8 — different rooms (5-8) AND real re-shots of the same place
+#: from another view (4-8), so no bar separates those two; every confirmed match had
+#: >= 52 (real 01<->02: 52, 79; synthetic >= 118). 25 = 3x the worst unmatched, half the
+#: weakest real match. Raised from 20 when a miss stopped being a block (L1b, 21.10).
+MIN_INLIERS = 25
 
 #: Inliers / ratio-test matches. Different places that scrape past MIN_INLIERS do it
 #: with a low ratio (exp 21.10: 01->06 at 1280 px, 35/57 but a degenerate H).

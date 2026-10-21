@@ -102,6 +102,15 @@ def _verdict(r: dict) -> dict:
         result, tone = "Passed", "ok"
     else:
         result, tone = "Not yet", "bad"
+    if r.get("route") == "llm_two_image":
+        place = r.get("same_place")
+        return _row(
+            "Checker",
+            f"Compared the photo for step {step} with the first photo (two photos)",
+            result + (" — same place" if place else (" — not confirmed as the same place" if place is False else "")),
+            why=scrub(r.get("reason")),
+            tone=tone,
+        )
     if r.get("source") == "opencv":
         return _row(
             "Checker",
@@ -124,6 +133,7 @@ _CV_RESULT = {
     "ok": ("Fine — passed on to the model", "ok"),
     "retake": ("Refused — needs a retake", "bad"),
     "wrong_place": ("Refused — not the place in the first photo", "bad"),
+    "place_unconfirmed": ("Could not line it up with the first photo — the model compares both photos", ""),
     "replay": ("Refused — a photo already sent", "bad"),
     "no_change": ("Refused — nothing changed at the work zone", "bad"),
     "touched_avoid": ("Stopped — a do-not-touch zone changed; a person decides", "stop"),
@@ -150,6 +160,8 @@ def _perception(r: dict) -> dict:
     timing = f"{ms:.0f} ms" if isinstance(ms, (int, float)) else ""
     if r.get("mode") == "probe":
         tail = f" · {timing}, a look before sending, no model call" if timing else ""
+    elif r.get("llm_called") and r.get("route") == "llm_two_image":
+        tail = f" · {timing}, then the model compared it with the first photo" if timing else ""
     elif r.get("llm_called"):
         tail = f" · {timing}, then the model was asked" if timing else ""
     else:

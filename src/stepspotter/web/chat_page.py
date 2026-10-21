@@ -498,8 +498,13 @@ function node(m){
   else if(m.kind === "perception"){
     const tone = m.needs_human ? "stop" : (m.blocks ? "bad" : (m.overridden ? "" : "ok"));
     const ms = (typeof m.ms_total === "number") ? Math.round(m.ms_total) + " ms" : "";
-    const meta = m.llm_called
-      ? (ms + (m.overridden ? " · refused several in a row, so the model looks this time" : " · then the model looked"))
+    const meta = m.probe
+      ? (ms + (m.route === "llm_two_image" ? " · next: the model compares it with your first photo"
+                                           : " · a look before sending, no model call"))
+      : m.llm_called
+      ? (ms + (m.overridden ? " · refused several in a row, so the model looks this time"
+                            : (m.route === "llm_two_image" ? " · then the model compared it with your first photo"
+                                                           : " · then the model looked")))
       : (ms + " · no model call needed");
     // "Move on anyway" stays reachable: the refusal a judge came to see is the gate's,
     // and hiding the way to ask for it would make the browser the gate.

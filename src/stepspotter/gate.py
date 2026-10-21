@@ -24,6 +24,8 @@ The OpenCV layer (``perception/``) adds two things here, read from
 * any other blocking decision cancels ``advance_step`` with OpenCV's reason, even if a
   passing verdict somehow sits beside it (defence in depth: in the normal path a
   photo OpenCV refuses never gets a passing verdict, because the model is never asked).
+* ``place_unconfirmed`` (route ``llm_two_image``) allows advancing only on a verdict whose
+  two-photo check answered ``same_place=true``.
 """
 
 from __future__ import annotations
@@ -137,13 +139,25 @@ class StepGate(HookProvider):
         return None
 
     def perception_block(self, state: JobState) -> str | None:
-        """The stored OpenCV report still blocks this step, whatever else says."""
+        """The stored OpenCV report still blocks this step, whatever else says.
+
+        And when OpenCV could not confirm the place (route llm_two_image), a pass counts
+        only if the model's two-photo check said ``same_place=true``.
+        """
         rep = state.perception.get(state.current)
         if rep is not None and rep.blocks and not rep.needs_human:
             return (
                 f"Blocked by the photo check (OpenCV, {rep.decision}): {rep.reason} "
                 f"{rep.instruction or ''}".strip()
             )
+        if rep is not None and rep.route == "llm_two_image":
+            verdict = state.verdicts.get(state.current)
+            if verdict is None or verdict.same_place is not True:
+                return (
+                    "Blocked: OpenCV could not line this photo up with your first photo, and "
+                    "the two-photo check did not confirm it is the same place. Send a photo "
+                    "of the place in your first photo."
+                )
         return None
 
     def check(self, state: JobState, tool_input: dict) -> str | None:

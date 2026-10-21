@@ -161,6 +161,7 @@ def _perception_dict(state: JobState) -> dict | None:
         "needs_human": rep.needs_human,
         "overridden": rep.overridden,
         "ms_total": rep.ms_total,
+        "route": rep.route,
         "approved": state.current in state.approvals,
     }
 
@@ -560,6 +561,7 @@ def create_app(
                     Path(p).unlink(missing_ok=True)
         body = json.loads(rep.model_dump_json(exclude={"artifacts"}))
         body["images"] = {k: f"/api/inspect/{rid}/{k}" for k in arts}
+        body["route"] = rep.route
         body["llm_called"] = False
         return body
 

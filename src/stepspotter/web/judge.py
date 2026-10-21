@@ -118,11 +118,14 @@ SCENARIOS: dict[str, dict[str, Any]] = {
         "expect": "retake",
         "make": _blurred,
     },
-    "wrong_place": {
-        "label": "Photo of another place → blocked",
+    "another_place": {
+        "label": "Photo OpenCV cannot line up → the two-photo check",
         "evidence": "the packaged photo of a wall jack, not the panel",
-        "expect": "wrong_place",
+        "expect": "place_unconfirmed",
         "make": _elsewhere,
+        # Not a block any more: OpenCV routes it to the model with BOTH photos, which is
+        # where judge mode stops — the scenario shows the routing decision, no model call.
+        "probe": True,
     },
     "replay": {
         "label": "The first photo sent again → blocked",
@@ -195,6 +198,27 @@ def run(name: str, on_block: Callable[[str, dict], None] | None = None) -> dict:
 
     evidence = store.cards_dir(state.job_id) / "evidence-01-01.jpg"
     cv2.imwrite(str(evidence), sc["make"](), [cv2.IMWRITE_JPEG_QUALITY, 90])
+    if sc.get("probe"):
+        # OpenCV decides the route and the job stops there: the next call would be the
+        # model's two-photo check, which judge mode never makes.
+        rep = svc.inspect_only(state, str(evidence))
+        return {
+            "scenario": name,
+            "job_id": state.job_id,
+            "expected": sc["expect"],
+            "decision": rep.decision,
+            "as_expected": rep.decision == sc["expect"],
+            "reason": rep.reason,
+            "instruction": rep.instruction,
+            "route": rep.route,
+            "ms_total": rep.ms_total,
+            "llm_called": False,
+            "verdict_source": None,
+            "gate": {"blocked": None, "human_review": False,
+                     "reason": "Not refused: the next call would be the model's two-photo check "
+                               "(first photo + this one, same_place required). Judge mode stops here."},
+            "images": {k: f"/api/jobs/{state.job_id}/perception/{_ref(p)}" for k, p in rep.artifacts.items()},
+        }
     verdict = svc.verify(state, str(evidence))
     rep = state.perception[0]
 
@@ -217,6 +241,7 @@ def run(name: str, on_block: Callable[[str, dict], None] | None = None) -> dict:
         "reason": rep.reason,
         "instruction": rep.instruction,
         "ms_total": rep.ms_total,
+        "route": rep.route,
         "llm_called": False,
         "verdict_source": verdict.source,
         "gate": gate_out,

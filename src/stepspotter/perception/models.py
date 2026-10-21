@@ -13,7 +13,8 @@ from pydantic import BaseModel, Field
 Decision = Literal[
     "ok",  # nothing OpenCV can see is wrong; the photo goes on to the model
     "retake",  # the photo cannot be judged as taken: blur, dark, glare, framing
-    "wrong_place",  # it does not show the place this step's zones were drawn on
+    "place_unconfirmed",  # OpenCV could not confirm the place: the model compares both photos
+    "wrong_place",  # NO LONGER PRODUCED (L1b, 21.10): kept so jobs saved before still load
     "replay",  # it is a photo this job has already seen
     "no_change",  # the step had to change something, and nothing changed there
     "touched_avoid",  # something changed where the step said not to touch
@@ -29,6 +30,14 @@ BLOCKING: frozenset[str] = frozenset(
 #: (see inspect.STUCK_POLICY). A replay is never one of them: a new photo always
 #: clears it. touched_avoid is never one either: it already goes to a person.
 OVERRIDABLE: frozenset[str] = frozenset({"retake", "wrong_place", "no_change"})
+
+#: Where a photo goes after OpenCV, recorded on every perception trace row:
+#:   opencv_block   refused (or stopped for a person) by OpenCV; no model call
+#:   llm_single     the model checks the evidence photo on its own (OpenCV confirmed the
+#:                  place, or the step's place is not in the reference at all)
+#:   llm_two_image  OpenCV could not confirm the place: the model gets the person's first
+#:                  photo AND the evidence and must answer same_place; the gate requires it
+Route = Literal["opencv_block", "llm_single", "llm_two_image"]
 
 
 class QualityReport(BaseModel):
@@ -149,6 +158,15 @@ class PerceptionReport(BaseModel):
     @property
     def needs_human(self) -> bool:
         return self.decision == "touched_avoid"
+
+    @property
+    def route(self) -> Route:
+        """Which check comes next — the decision OpenCV's output makes about the next call."""
+        if self.blocks:
+            return "opencv_block"
+        if self.decision == "place_unconfirmed":
+            return "llm_two_image"
+        return "llm_single"
 
     @property
     def ms_total(self) -> float:

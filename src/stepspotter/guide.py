@@ -149,6 +149,7 @@ class JobService:
         self._plan_takes_research = _accepts_research(self.plan_fn)
         self._verify_takes_context = _accepts(self.verify_fn, "context")
         self._verify_takes_crop = _accepts(self.verify_fn, "zone_crop")
+        self._verify_takes_reference = _accepts(self.verify_fn, "reference_photo")
 
     # -- state ---------------------------------------------------------------
     def get(self, job_id: str | None) -> JobState | None:
@@ -338,6 +339,7 @@ class JobService:
             needs_human=rep.needs_human,
             overridden=rep.overridden,
             llm_called=(mode == "submit" and not rep.blocks),
+            route=rep.route,
             llm_calls_saved=state.llm_calls_saved,
             ms_total=rep.ms_total,
             ms_quality=tm.get("quality"),
@@ -415,9 +417,11 @@ class JobService:
                 state.perception_streak[k] = 0
             self._trace_perception(state, rep, photo_path, attempt, mode="submit")
 
+        route = rep.route if rep is not None else "llm_single"
         if rep is not None and rep.blocks:
             verdict = StepVerdict(
-                step_id=step.id, passed=False, reason=_opencv_words(rep), source="opencv"
+                step_id=step.id, passed=False, reason=_opencv_words(rep), source="opencv",
+                route="opencv_block",
             )
         else:
             kwargs: dict[str, Any] = {}
@@ -427,8 +431,20 @@ class JobService:
                 kwargs["context"] = findings_for_model(rep)
             if crop is not None and self._verify_takes_crop:
                 kwargs["zone_crop"] = crop
+            if route == "llm_two_image" and self._verify_takes_reference:
+                # OpenCV could not confirm the place: the model compares both photos.
+                kwargs["reference_photo"] = state.start_photo
             verdict = self.verify_fn(step, photo_path, self.model_id, **kwargs)
             verdict.source = "llm"
+            verdict.route = route
+            if route == "llm_two_image" and verdict.same_place is not True and verdict.passed:
+                # Fail closed: nobody confirmed the place, so the photo cannot close the
+                # step — whatever else the answer said.
+                verdict.passed = False
+                verdict.reason = (
+                    f"{verdict.reason} I could not confirm this is the same place as your first "
+                    "photo, so it cannot close the step."
+                ).strip()
 
         state.verdicts[k] = verdict
         state.evidence.append(
@@ -451,6 +467,8 @@ class JobService:
             reason=verdict.reason,
             photo=photo_path,
             source=verdict.source,
+            route=verdict.route,
+            same_place=verdict.same_place,
             reason_code=rep.reason_code if (rep is not None and verdict.source == "opencv") else None,
             needs_human=bool(rep is not None and rep.needs_human and verdict.source == "opencv"),
         )
@@ -655,6 +673,16 @@ def build_tools(service: JobService) -> list[Any]:
             return f"[OpenCV ok, {rep.ms_total:.0f} ms] {rep.reason} Submit it with submit_photo."
         if rep.decision == "skipped":
             return f"[OpenCV could not read it] {rep.reason}"
+        if rep.decision == "place_unconfirmed":
+            # Active perception, offered once and only here: a photo from about the first
+            # angle can be confirmed by OpenCV alone (cheaper, faster). The submit path
+            # never asks — a person who did the step is never sent back for an angle alone.
+            return (
+                f"[OpenCV: place not confirmed, {rep.ms_total:.0f} ms] {rep.reason} You may ask "
+                "them ONCE for a photo from about where they took the first one. If they "
+                "cannot, or already did, submit this one: the model will compare it with the "
+                "first photo."
+            )
         if rep.needs_human:
             return (
                 f"[OpenCV: {rep.decision}, {rep.ms_total:.0f} ms] {rep.reason} Tell them to stop "

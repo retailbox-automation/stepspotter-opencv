@@ -86,10 +86,26 @@ def test_the_judge_zones_are_the_hand_placed_ones():
 def test_the_judge_menu_lists_the_branches(client):
     info = client.get("/api/judge").json()
     assert info["available"] is True
-    assert {s["name"] for s in info["scenarios"]} == {"retake", "wrong_place", "replay", "human_approval"}
+    assert {s["name"] for s in info["scenarios"]} == {"retake", "another_place", "replay", "human_approval"}
 
 
-@pytest.mark.parametrize("name", ["retake", "wrong_place", "replay", "human_approval"])
+def test_the_another_place_scenario_shows_the_route_and_stops_before_the_model(client, model):
+    out = client.post("/api/judge/another_place").json()
+    assert out["as_expected"] and out["decision"] == "place_unconfirmed"
+    assert out["route"] == "llm_two_image" and out["llm_called"] is False and model.calls == 0
+    assert out["gate"]["blocked"] is None
+    feed = client.get(f"/api/jobs/{out['job_id']}/feed").json()["messages"]
+    cv = next(m for m in feed if m["kind"] == "perception")
+    assert cv["probe"] and cv["route"] == "llm_two_image" and not cv["blocks"]
+    assert any(m["kind"] == "photo" and "attempt=1" in m["url"] for m in feed)
+    human = client.get(f"/api/jobs/{out['job_id']}/trace?view=human").json()["human"]
+    text = json.dumps(human)
+    assert "the model compares both photos" in text
+    for pattern in FORBIDDEN:
+        assert not pattern.search(text), pattern.pattern
+
+
+@pytest.mark.parametrize("name", ["retake", "replay", "human_approval"])
 def test_each_judge_scenario_ends_in_opencv_and_the_gate(client, model, name):
     out = client.post(f"/api/judge/{name}").json()
     assert out["as_expected"], out
@@ -160,14 +176,14 @@ def test_inspect_returns_the_report_and_pictures_without_a_model(client, model):
     assert client.get(body["images"]["quality"]).status_code == 200
 
 
-def test_inspect_with_zones_calls_another_place_wrong(client):
+def test_inspect_with_zones_routes_another_place_to_two_photos(client):
     zones = json.dumps(SCENES["02"]["zones"])
     files = {
         "reference": ("ref.jpg", START.read_bytes(), "image/jpeg"),
         "evidence": ("ev.jpg", (ROOT / SCENES["04"]["file"]).read_bytes(), "image/jpeg"),
     }
     body = client.post("/api/inspect", files=files, data={"zones": zones}).json()
-    assert body["decision"] == "wrong_place"
+    assert body["decision"] == "place_unconfirmed" and body["route"] == "llm_two_image"
     assert set(body["images"]) == {"match", "quality"}
 
 

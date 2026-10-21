@@ -205,14 +205,37 @@ def test_a_reshot_from_another_angle_is_unreliable_not_a_change():
 # --------------------------------------------------------------------- the whole policy
 
 
-def test_wrong_place_needs_zones_on_the_reference():
+def test_a_photo_opencv_cannot_line_up_is_routed_to_two_photos_not_refused():
+    """OpenCV only blocks on place when it is confident; it is not, below the bar."""
     ref, ev = photo("02"), photo("04")
     with_zones = inspect_evidence(ev, ref, zones("02"))
-    assert with_zones.decision == "wrong_place" and with_zones.blocks
-    assert "coax splitter" in with_zones.instruction
-    without = inspect_evidence(ev, ref, [])
-    assert without.decision == "ok" and without.scene.status == "not_matched"
-    assert without.change.status == "not_applicable"
+    assert with_zones.decision == "place_unconfirmed"
+    assert not with_zones.blocks and with_zones.route == "llm_two_image"
+    assert with_zones.instruction is None  # nobody is sent back for an angle
+    assert "coax splitter" in with_zones.reason
+    without = inspect_evidence(ev, ref, [])  # the step's place may not be in the reference
+    assert without.decision == "ok" and without.route == "llm_single"
+    assert without.scene.status == "not_matched" and without.change.status == "not_applicable"
+
+
+@pytest.mark.parametrize("ref,ev", [("02", "03"), ("01", "03"), ("04", "05")])
+def test_real_re_shots_of_the_same_place_are_never_refused(ref, ev):
+    """The three real same-place pairs eval run 2 refused as wrong_place (4-8 inliers)."""
+    rep = inspect_evidence(photo(ev), photo(ref), zones(ref))
+    assert rep.decision == "place_unconfirmed" and rep.route == "llm_two_image", (rep.reason_code, rep.reason)
+    assert not rep.blocks
+
+
+@pytest.mark.parametrize("ref,ev", [("04", "06"), ("05", "06"), ("06", "04"), ("06", "05")])
+def test_a_photo_of_another_room_never_passes_on_opencv_alone(ref, ev):
+    rep = inspect_evidence(photo(ev), photo(ref), zones(ref))
+    assert rep.decision == "place_unconfirmed" and rep.route == "llm_two_image"
+
+
+def test_a_confirmed_place_takes_the_cheap_single_photo_route():
+    rep = inspect_evidence(photo("01"), photo("02"), zones("02"))  # the real pair that lines up
+    assert rep.scene.status == "matched" and rep.scene.inliers >= T.MIN_INLIERS
+    assert rep.route == "llm_single"
 
 
 def test_the_reference_counts_as_a_replay_only_when_the_step_expects_change():
