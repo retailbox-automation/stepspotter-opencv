@@ -26,7 +26,12 @@ order the code applies them. The first rule that fires decides.
    then a crop around the work zone for close-ups).
    - matched: the evidence must not be far blurrier than the reference
      (``blurry_vs_reference``), the work zone must be in frame
-     (``zone_out_of_frame``) and not under glare (``glare_on_zone``) -> else ``retake``.
+     (``zone_out_of_frame``) and not under NEW glare (``glare_on_zone``: at least
+     GLARE_ZONE_NEW_FRAC of the zone saturated here but not in the reference) -> else
+     ``retake``. Glare anywhere else, or where the photo cannot be lined up, is an
+     advisory note: the decision stays as it is.
+   - a weak fit (sane homography, fewer inliers than the confirm bar) still gets the
+     relative-sharpness check — blur is what removes the matches.
    - not matched AND the step's zones were located on the reference ->
      ``place_unconfirmed``, NOT a block. The step said "work here, on this photo", and
      OpenCV cannot line this photo up with it — but a real re-shot from another angle or
@@ -103,7 +108,7 @@ STUCK_AFTER = 3
 #: The thresholds a report carries: the ones its decisions can depend on.
 _REPORTED = (
     "WORK_PX", "DARK_MEAN", "DARK_FRAC_MAX", "BRIGHT_FRAC_MAX", "BLANK_STD", "SHARP_P90_MIN",
-    "SHARP_RATIO_MIN", "GLARE_BLOB_FRAC", "GLARE_ZONE_FRAC", "MIN_INLIERS", "MIN_INLIER_RATIO",
+    "SHARP_RATIO_MIN", "WEAK_FIT_INLIERS", "GLARE_BLOB_FRAC", "GLARE_ZONE_NEW_FRAC", "MIN_INLIERS", "MIN_INLIER_RATIO",
     "SCALE_MIN", "SCALE_MAX", "MIN_OVERLAP", "REPLAY_CORNER_SHIFT", "REPLAY_MAD",
     "REPLAY_CHANGED_FRAC", "CHANGE_DELTA", "ACT_CHANGED_MIN", "AVOID_CHANGED_MIN",
     "NOISE_FLOOR_MAX", "AVOID_LARGE", "ZONE_VISIBLE_MIN",
@@ -170,12 +175,28 @@ def _report(decision: str, code: str, reason: str, instruction: str | None, **kw
     )
 
 
-def _zone_glare(ev_w: np.ndarray, H: np.ndarray, ref_size: tuple[int, int], zone: Zone) -> float:
+def _zone_new_glare(
+    ev_w: np.ndarray, ref_w: np.ndarray, H: np.ndarray, ref_size: tuple[int, int], zone: Zone
+) -> float:
+    """Share of the work zone saturated in the evidence but NOT at the same place in the
+    reference. A white object is white in both photos; a reflection is new."""
     warped_glare, valid = _change.warp_into(quality.glare_mask(ev_w)[..., None].repeat(3, axis=2), H, ref_size)
+    k = np.ones((T.GLARE_REF_DILATE_PX, T.GLARE_REF_DILATE_PX), np.uint8)
+    ref_sat = cv2.dilate(quality.glare_mask(ref_w), k) > 0
     zm = _change.zone_mask((ref_size[1], ref_size[0]), zone[2]) & valid
     if not zm.any():
         return 0.0
-    return float((warped_glare[..., 0] > 0)[zm].mean())
+    return float(((warped_glare[..., 0] > 0) & ~ref_sat)[zm].mean())
+
+
+def _weak_fit_coverage(raw: "scene.Match | None", ev_w: np.ndarray, ref_w: np.ndarray) -> float | None:
+    """Coverage of a sane whole-frame fit with too few inliers to confirm the place."""
+    if raw is None or raw.H is None or raw.inliers < T.WEAK_FIT_INLIERS:
+        return None
+    if raw.inliers / max(raw.good, 1) < T.MIN_INLIER_RATIO:
+        return None
+    why, geo = scene.sanity(raw.H, (ev_w.shape[1], ev_w.shape[0]), (ref_w.shape[1], ref_w.shape[0]))
+    return geo.get("coverage") if why is None else None
 
 
 def inspect_full(
@@ -262,6 +283,17 @@ def inspect_full(
     H = np.array(match_rep.H) if match_rep.H is not None else None
     ref_size = (ref_w.shape[1], ref_w.shape[0]) if ref_w is not None else None
 
+    advisories: list[str] = []
+    common["advisories"] = advisories
+    if match_rep.status == "not_matched" and ref_w is not None:
+        # A weak fit: blur removes matches, so a blurred photo of the same view can fall
+        # under the confirm bar. If the fit is sane and covers the same view, the
+        # relative-sharpness check still applies (WEAK_FIT_INLIERS).
+        cov = _weak_fit_coverage(detail.match, ev_w, ref_w)
+        if cov is not None:
+            rel = quality.relative_issue(q, quality.sharpness_p90(ref_full), cov)
+            if rel:
+                return done(_report("retake", rel, _quality_reason(rel, q), quality.instruction_for(rel, work_label), **common))
     if match_rep.status == "matched" and H is not None and ref_w is not None:
         # Both sharpness numbers are read off the full-size images by the same rule, and
         # only for the same view (see quality.relative_issue).
@@ -279,15 +311,25 @@ def inspect_full(
                     f"Step back so the whole {work_label} is in the photo, then take it again.",
                     **common,
                 ))
-            gz = _zone_glare(ev_w, H, ref_size, work)  # type: ignore[arg-type]
+            gz = _zone_new_glare(ev_w, ref_w, H, ref_size, work)  # type: ignore[arg-type]
             q.glare_zone_frac = round(gz, 4)
-            if gz > T.GLARE_ZONE_FRAC:
+            if gz >= T.GLARE_ZONE_NEW_FRAC:
                 return done(_report(
                     "retake", "glare_on_zone",
-                    f"Glare covers {gz:.0%} of the {work_label}.",
+                    f"A bright reflection covers {gz:.0%} of the {work_label} (it is not there in your first photo).",
                     quality.instruction_for("glare_on_zone", f"the {work_label}"),
                     **common,
                 ))
+            if "glare" in q.notes or gz > 0.01:
+                advisories.append(
+                    f"A bright patch is in the photo ({q.glare_blob_frac:.1%} of it; {gz:.0%} of the "
+                    f"{work_label} newly bright). It does not cover the work, so it is not a reason to retake."
+                )
+    if "glare" in q.notes and not advisories:
+        advisories.append(
+            f"A bright patch covers {q.glare_blob_frac:.1%} of the photo. It could not be placed on the "
+            "work zone, so it is noted, not a reason to retake."
+        )
     place_unconfirmed = match_rep.status == "not_matched" and bool(zs)
     t = time.perf_counter()
 
@@ -366,7 +408,10 @@ def inspect_full(
                 **common,
             ))
 
-    return done(_report("ok", "ok", _ok_reason(match_rep, ch, rp), None, **common))
+    reason = _ok_reason(match_rep, ch, rp)
+    if advisories:
+        reason = f"{reason} Note: {' '.join(advisories)}"
+    return done(_report("ok", "ok", reason, None, **common))
 
 
 def inspect_evidence(

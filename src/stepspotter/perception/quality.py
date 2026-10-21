@@ -113,12 +113,16 @@ def assess(img: np.ndarray, zone: str | None = None) -> QualityReport:
         issues.append("blank")
     if sharp < T.SHARP_P90_MIN and not ({"too_dark", "overexposed", "blank"} & set(issues)):
         issues.append("blurry")
+    # Glare on its own is a note, never a refusal: whether it covers the work zone is
+    # decided after alignment (inspect.py, GLARE_ZONE_NEW_FRAC).
+    notes: list[str] = []
     if blob > T.GLARE_BLOB_FRAC and "overexposed" not in issues:
-        issues.append("glare")
+        notes.append("glare")
 
     return QualityReport(
         ok=not issues,
         issues=issues,
+        notes=notes,
         instruction=instruction_for(issues[0], zone) if issues else None,
         width=w,
         height=h,

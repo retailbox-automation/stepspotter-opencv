@@ -65,10 +65,9 @@ def test_every_real_photo_passes_quality(pid):
         (lambda im: synthetic.gaussian_blur(im, 4), "blurry"),
         (lambda im: synthetic.exposure(im, 0.12), "too_dark"),
         (lambda im: synthetic.exposure(im, 3.0, 40), "overexposed"),
-        (lambda im: synthetic.glare(im, 0.10, 0.5, 0.45), "glare"),
         (lambda im: synthetic.resize(im, 0.3), "too_small"),
     ],
-    ids=["blur", "dark", "overexposed", "glare", "small"],
+    ids=["blur", "dark", "overexposed", "small"],
 )
 def test_damage_is_named_and_comes_with_one_instruction(pid, damage, code):
     q = quality.assess(damage(photo(pid)))
@@ -317,12 +316,58 @@ def test_a_zone_cut_off_by_the_frame_asks_the_person_to_step_back():
     assert rep.instruction.startswith("Step back")
 
 
-def test_glare_on_the_work_zone_names_the_zone():
+@pytest.mark.parametrize("pid", IDS)
+def test_glare_on_its_own_is_a_note_not_a_refusal(pid):
+    """L2's eval: a frame-wide glare rule refused white basins and white walls."""
+    q = quality.assess(synthetic.glare(photo(pid), 0.10, 0.5, 0.45))
+    assert q.ok and q.issues == [] and q.notes == ["glare"]
+
+
+def test_new_glare_on_the_work_zone_is_a_retake_that_names_the_zone():
+    ref = photo("02")
+    x0, y0, x1, y1 = zone_box("02", "act")
+    rep = inspect_evidence(synthetic.glare(ref, 0.10, (x0 + x1) / 2, (y0 + y1) / 2), ref, zones("02"))
+    assert rep.decision == "retake" and rep.reason_code == "glare_on_zone"
+    assert rep.quality.glare_zone_frac >= T.GLARE_ZONE_NEW_FRAC
+    assert "coax splitter" in rep.instruction
+
+
+def test_glare_away_from_the_work_zone_is_said_but_does_not_block():
+    ref = photo("02")
+    rep = inspect_evidence(synthetic.glare(ref, 0.10, 0.25, 0.85), ref, zones("02"))
+    assert rep.decision == "ok", (rep.reason_code, rep.reason)
+    assert rep.advisories and "not a reason to retake" in rep.advisories[0]
+    assert "Note:" in rep.reason
+
+
+def test_a_white_object_in_both_photos_is_not_glare():
+    """A basin that is white in the first photo is not a reflection in the second."""
+    x0, y0, x1, y1 = zone_box("02", "act")
+    ref = photo("02").copy()
+    h, w = ref.shape[:2]
+    ref[int((y0 + 0.02) * h) : int((y1 - 0.02) * h), int((x0 + 0.03) * w) : int((x1 - 0.03) * w)] = 255
+    ev = synthetic.perspective(ref, 0.05, 3)
+    rep = inspect_evidence(ev, ref, zones("02"))
+    assert rep.decision == "ok", (rep.reason_code, rep.reason)
+    assert rep.quality.glare_zone_frac < T.GLARE_ZONE_NEW_FRAC
+
+
+def test_a_shaken_photo_that_only_weakly_lines_up_is_still_called_blurry():
+    """Blur removes matches: the fit falls under the confirm bar but stays sane, and the
+    relative-sharpness check still runs (the sink-video frame v0180 in L2's set)."""
     ref = photo("03")
-    x0, y0, x1, y1 = zone_box("03", "act")
-    ev = synthetic.glare(ref, 0.04, (x0 + x1) / 2, (y0 + y1) / 2)
-    rep = inspect_evidence(ev, ref, zones("03"))
-    assert rep.decision == "retake" and rep.reason_code in ("glare", "glare_on_zone")
+    rep = inspect_evidence(synthetic.motion_blur(ref, 61, 0), ref, zones("03"))
+    assert rep.scene.status == "not_matched" and rep.scene.inliers >= T.WEAK_FIT_INLIERS
+    assert rep.quality.sharpness_p90 >= T.SHARP_P90_MIN  # the absolute floor alone lets it through
+    assert rep.decision == "retake" and rep.reason_code == "blurry_vs_reference"
+
+
+def test_a_slightly_softer_photo_of_the_same_view_is_not_refused():
+    """A ratio of 0.30 was refused at the old bar of 0.35 (L2's real pair c36->c37: 0.255)."""
+    ref = photo("01")
+    rep = inspect_evidence(synthetic.rotate(synthetic.gaussian_blur(ref, 0.8), 3), ref, zones("01"))
+    assert rep.decision == "ok"
+    assert T.SHARP_RATIO_MIN < rep.quality.sharpness_ratio < 0.35
 
 
 def test_an_unreadable_file_is_skipped_not_refused(tmp_path):

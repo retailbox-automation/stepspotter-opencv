@@ -76,7 +76,19 @@ SHARP_P90_MIN = 45.0
 #: vertical motion, caught by the floor above). Real re-shots of the same place at
 #: another distance sit near 1 (spike 21.10, 01 vs 02: 0.66 / 1.5). Applied only after
 #: a geometric match, so two different scenes are never compared on texture.
-SHARP_RATIO_MIN = 0.35
+SHARP_RATIO_MIN = 0.22
+#: ^ Lowered from 0.35 on 21.10, CALIBRATION half of L2's set only: every blur case that
+#: passed the absolute floor had a ratio <= 0.193 (c41 motion), while the real same-place
+#: pair c36->c37 — a very sharp photo (p90 2600) next to an even sharper one — scored
+#: 0.255 and was wrongly refused at 0.35.
+
+#: The ratio is also read on a WEAK fit — a whole-frame homography that passes every
+#: sanity check but has fewer inliers than MIN_INLIERS — because blur is exactly what
+#: removes matches. Calibration: the blurred trap frame v0180 kept 16 inliers (sane,
+#: coverage 0.82, ratio 0.12) and went to the model with sharpness 55; no good
+#: calibration photo has a sane weak fit with coverage >= 0.6. 12 sits above the
+#: different-place maximum seen anywhere (10, spike 21.10).
+WEAK_FIT_INLIERS = 12
 
 #: ...and only when the evidence covers at least this share of the reference frame, i.e.
 #: frames roughly the same view. Eval run 1: close-ups (coverage ~0.3) were refused by the
@@ -84,13 +96,24 @@ SHARP_RATIO_MIN = 0.35
 REL_SHARP_MIN_COVERAGE = 0.6
 
 #: Largest connected blob of saturated pixels (grey >= 250), as a share of the frame,
-#: above which the photo has glare. exp 21.10: originals <= 0.002 (01 has a lamp-lit
-#: wall in frame); a synthetic 5 % glare disc 0.009-0.011, a 12 % disc 0.022-0.027.
+#: above which the photo carries a glare NOTE. Advisory only since 21.10 (L1 glare fix):
+#: on L2's eval set a frame-wide blob rule refused 14 of 111 good calibration photos
+#: (white basins, a white wall, a flashlight hot spot) — good photos had blobs of
+#: 0.005-0.035, synthetic glare 0.011-0.025, so blob size cannot tell glare from a
+#: white object. exp 21.10: originals <= 0.002; a 5 % glare disc 0.009-0.011.
 GLARE_BLOB_FRAC = 0.005
 SATURATED_LEVEL = 250
 
-#: Saturated share of the work zone (after alignment) that counts as glare on it.
-GLARE_ZONE_FRAC = 0.25
+#: Glare BLOCKS only when it newly covers the work zone: the share of the work zone
+#: (after alignment) that is saturated in the evidence but not at the same place in the
+#: reference (reference mask dilated by GLARE_REF_DILATE_PX). A white basin is white in
+#: both photos and does not count; a hot spot on the part being worked on does.
+#: Calibrated on the CALIBRATION half of L2's set only (308 cases, 21.10): good photos
+#: reached 0.086 (c25 side-lit), 0.067, 0.056, then <= 0.012; the 12 synthetic glare
+#: cases 0.060-0.569. 0.10 refuses no good calibration photo (was 14) and still blocks
+#: 5 of the 12; the other 7 go on to the model check, which has to pass them itself.
+GLARE_ZONE_NEW_FRAC = 0.10
+GLARE_REF_DILATE_PX = 15
 
 # ------------------------------------------------------------------------------- scene
 

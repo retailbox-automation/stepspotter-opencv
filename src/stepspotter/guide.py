@@ -355,6 +355,7 @@ class JobService:
             act_change=max((z.changed_frac for z in ch.act), default=None) if ch else None,
             avoid_change=max((z.changed_frac for z in ch.avoid), default=None) if ch else None,
             background_change=ch.outside_frac if ch else None,
+            advisory=" ".join(rep.advisories) or None,
             faces_checked=rep.privacy.faces_checked,
             faces_blurred=rep.privacy.faces_blurred,
             streak=state.perception_streak.get(state.current, 0),
