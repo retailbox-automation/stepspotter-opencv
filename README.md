@@ -12,6 +12,9 @@ Entry to the **OpenCV AI Competition 2026, powered by AWS**. Live on AWS App Run
 [`docs/REPORT.md`](docs/REPORT.md) (PDF: [`docs/report/StepSpotter-OpenCV26-report.pdf`](docs/report/StepSpotter-OpenCV26-report.pdf))
 · video (3:33): <https://youtu.be/i219UI-TS5Y>
 
+> **Demo paused until Oct 26 to save credits; it reopens before judging.** Meanwhile everything in
+> [Run it](#run-it) works offline, and the video shows the live app.
+
 ## Judge it in two minutes
 
 | claim | proof | what you will see |
