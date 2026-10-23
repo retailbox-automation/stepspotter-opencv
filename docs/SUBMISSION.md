@@ -253,12 +253,14 @@ https://youtu.be/i219UI-TS5Y — 3:33, public on YouTube (channel Let's Automate
 
 ## Files (zip_file_required)
 
-A `git archive` of the final documentation commit, named after that commit
-(`stepspotter-opencv-<commit>.zip`): code, `constraints.txt`, `docs/report/StepSpotter-OpenCV26-report.pdf`,
+`stepspotter-opencv-757fd84.zip` — 25,976,536 bytes, SHA-256
+`6ca6b7831c275b5d55e4f42ebc04c49c95d6930d3e5565d2da801dc191d8b933`, 457 files: a `git archive` of
+commit 757fd84 — code, `constraints.txt`, `docs/report/StepSpotter-OpenCV26-report.pdf`,
 `docs/diagrams/`, `docs/screens/`, `eval/results/`. Left out to stay under 30 MB, and listed in its top-level
 `ZIP-CONTENTS.md`: the evaluation photos and the video clip under `eval/cases/` (manifest, ATTRIBUTION,
 LICENSE-NOTE and sources kept) and the September "Agents for Humans" design screens. Its size and SHA-256
-are recorded here in the next commit, since an archive cannot carry its own hash.
+are recorded in the commit after 757fd84, since an archive cannot carry its own hash; the two commits
+differ only in this paragraph.
 
 ## Gallery (upload in this order; files in `docs/screens/gallery/`, captions ≤ 140 characters)
 
