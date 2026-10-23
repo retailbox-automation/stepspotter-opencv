@@ -252,11 +252,14 @@ integration.)
 
 ## Files (zip_file_required)
 
-A `git archive` of the final documentation commit (code, `docs/report/StepSpotter-OpenCV26-report.pdf`,
-`docs/diagrams/`, `docs/screens/`, `eval/results/`), named `stepspotter-opencv-<commit>.zip`. Left out to stay
+`stepspotter-opencv-dc793fe.zip` — 25,970,514 bytes, SHA-256
+`35459c0b15dc8a2a1da7ca1747f9a4e54bb90bc2f94612d1f001d238b4b4d73e`. `git archive` of commit dc793fe
+(code, `docs/report/StepSpotter-OpenCV26-report.pdf`, `docs/diagrams/`, `docs/screens/`, `eval/results/`),
+456 files. Left out to stay
 under 30 MB, and listed in its top-level `ZIP-CONTENTS.md`: the evaluation photos and the video clip under
 `eval/cases/` (manifest, ATTRIBUTION, LICENSE-NOTE and sources kept) and the September "Agents for Humans"
-design screens. Its size and SHA-256 are recorded here in the next commit, since an archive cannot carry its own hash.
+design screens. The size and hash are recorded in the commit after dc793fe, since an archive cannot carry
+its own hash; dc793fe and this commit differ only in this paragraph.
 
 ## Gallery (upload in this order; files in `docs/screens/gallery/`, captions ≤ 140 characters)
 
