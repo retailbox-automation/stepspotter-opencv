@@ -5,8 +5,7 @@ OpenCV AI Competition 2026, powered by AWS · prepared by Mikhail Oskola · repo
 <https://utgfmpcgxf.us-east-1.awsapprunner.com>
 
 > Every evaluation number in this report comes from `docs/EVAL.md` and
-> `eval/results/*.json`, with the file and field next to it. Text in double braces is
-> filled in at submission.
+> `eval/results/*.json`, with the file and field next to it.
 
 ## 1. Problem
 
@@ -208,7 +207,8 @@ output tokens for Claude Sonnet 4.6 in us-east-1 (AWS Price List API, effective
 2026-09-01, read 2026-10-21); at the 3,142 / 657 average tokens per call measured on the
 first deployment that is about $0.019 per model call (`docs/DEPLOY.md`).
 
-Deployed build: {{DEPLOY:commit and image digest of the final redeploy}}. The timings in
+Deployed build: commit `8831099`, image `stepspotter-opencv@sha256:2a77953096bbb54f616843e6d05d1bade7db4c559eb62acd56f0b320bd4e23de`
+(ECR tag `git-883109941a76`), App Runner update finished 2026-10-21 14:57:58 UTC. The timings in
 §6 were measured on a shared Mac, not on the App Runner instance (1 vCPU); the evaluation
 did not measure OpenCV latency on AWS.
 
@@ -359,7 +359,8 @@ page numbers).
 Everything OpenCV 5 — the perception package, its integration into the gate and the
 verifier, the face blurring, the evaluation harness, the AWS stack, the diagrams and this
 report — was built on 21–24 October 2026, inside this competition's window: commits
-`9cc6ca1` through {{FINAL:head commit}} (`git log --reverse 295e3f3..HEAD`).
+`9cc6ca1` through `8831099`, the deployed code; the commits after it change documentation only
+(`git log --reverse 295e3f3..HEAD`).
 
 We read the Official Rules for a clause on previously submitted projects and found none.
 The nearest is the timeline: «From August 26 through October 26, teams will build,

@@ -181,7 +181,7 @@ imported here as the first commit, `295e3f3`, with the text copied from manufact
 manuals removed. Everything OpenCV 5 — the perception package, the gate and verifier
 integration, face blurring, the evaluation harness, the AWS stack and the documents — was
 built on 21–24 October 2026 in this competition's window: commits `9cc6ca1` through
-{{FINAL:head commit}}. The Official Rules have no clause on previously submitted projects;
+`8831099` (the deployed code; the commits after it change documentation only). The Official Rules have no clause on previously submitted projects;
 the nearest is «From August 26 through October 26, teams will build, evaluate, document,
 and submit their final projects.» AI coding assistants were used; see
 [`docs/AI-USE.md`](docs/AI-USE.md).

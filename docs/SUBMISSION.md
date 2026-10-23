@@ -2,8 +2,8 @@
 
 Form: opencv26.devpost.com. Fields and their ids come from the Devpost MCP
 `get_submission_requirements` (`docs/opencv26/RULES-LIVE-2026-10-21.md` in the
-hackathon project). Placeholders in double braces are filled before Submit:
-`{{VIDEO:url}}`, `{{FINAL:head commit}}`, `{{ZIP:…}}`; every
+hackathon project). The one placeholder left, `{{VIDEO:url}}`, is filled once the video is
+published; every
 evaluation number is from `docs/EVAL.md` / `eval/results/*.json` at `750d152`. Submit is pressed by Mikhail only.
 
 ## Project name
@@ -143,7 +143,8 @@ into this repository as its first commit (295e3f3), with the text copied from
 manufacturers' manuals removed. Everything OpenCV 5 — the perception package, its
 integration into the gate and the verifier, face blurring, the evaluation harness, the
 AWS stack, the diagrams and the report — was built on 21–24 October 2026, in this
-competition's window: commits 9cc6ca1 through {{FINAL:head commit}}. We found no clause in
+competition's window: commits 9cc6ca1 through 8831099 (the deployed code; the commits after it
+change documentation only). We found no clause in
 the Official Rules about previously submitted projects; the nearest is «From August 26
 through October 26, teams will build, evaluate, document, and submit their final
 projects.» The code was written with AI coding assistants (docs/AI-USE.md); the product
@@ -251,13 +252,11 @@ integration.)
 
 ## Files (zip_file_required)
 
-`stepspotter-opencv-89cddd6.zip` — 25,982,643 bytes, SHA-256
-`bee5b402dd4224d057040f3ac9403d7cf852f3f4fe41ceb62cf38f2cd1f9edb3`. `git archive` of commit 89cddd6
-(code, `docs/report/StepSpotter-OpenCV26-report.pdf`, `docs/diagrams/`, `docs/screens/`, `eval/results/`),
-537 files. Left out to stay under 30 MB, and listed in its top-level `ZIP-CONTENTS.md`: the 57 evaluation
-photos and the video clip under `eval/cases/` (manifest, ATTRIBUTION, LICENSE-NOTE and sources kept) and the
-September "Agents for Humans" design screens. To be rebuilt on the final commit at freeze with the same
-script; the name and hash here change then.
+A `git archive` of the final documentation commit (code, `docs/report/StepSpotter-OpenCV26-report.pdf`,
+`docs/diagrams/`, `docs/screens/`, `eval/results/`), named `stepspotter-opencv-<commit>.zip`. Left out to stay
+under 30 MB, and listed in its top-level `ZIP-CONTENTS.md`: the evaluation photos and the video clip under
+`eval/cases/` (manifest, ATTRIBUTION, LICENSE-NOTE and sources kept) and the September "Agents for Humans"
+design screens. Its size and SHA-256 are recorded here in the next commit, since an archive cannot carry its own hash.
 
 ## Gallery (upload in this order; files in `docs/screens/gallery/`, captions ≤ 140 characters)
 

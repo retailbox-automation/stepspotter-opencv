@@ -38,8 +38,7 @@ blockquote { margin: 6px 0; padding: 6px 10px; border-left: 3px solid var(--acc)
 a { color: inherit; }
 </style></head><body><header class="head"><div class="kicker">OpenCV AI Competition 2026, powered by AWS · technical report</div><h1 class="title">StepSpotter: <span class="hl">OpenCV 5</span> decides what the agent does next</h1><div class="prep">prepared by <span class="who">Mikh<span class="ai">ai</span>l</span></div><div class="links">github.com/retailbox-automation/stepspotter-opencv · utgfmpcgxf.us-east-1.awsapprunner.com</div></header><blockquote>
 <p>Every evaluation number in this report comes from <code>docs/EVAL.md</code> and
-<code>eval/results/*.json</code>, with the file and field next to it. Text in double braces is
-filled in at submission.</p>
+<code>eval/results/*.json</code>, with the file and field next to it.</p>
 </blockquote>
 <h2>1. Problem</h2>
 <p>StepSpotter walks one person through one small home repair, one step at a time, on a
@@ -317,7 +316,8 @@ photo OpenCV refuses costs no model call. Model price used: $3 / $15 per million
 output tokens for Claude Sonnet 4.6 in us-east-1 (AWS Price List API, effective
 2026-09-01, read 2026-10-21); at the 3,142 / 657 average tokens per call measured on the
 first deployment that is about $0.019 per model call (<code>docs/DEPLOY.md</code>).</p>
-<p>Deployed build: <span class="ph">{{DEPLOY:commit and image digest of the final redeploy}}</span>. The timings in
+<p>Deployed build: commit <code>8831099</code>, image <code>stepspotter-opencv@sha256:2a77953096bbb54f616843e6d05d1bade7db4c559eb62acd56f0b320bd4e23de</code>
+(ECR tag <code>git-883109941a76</code>), App Runner update finished 2026-10-21 14:57:58 UTC. The timings in
 §6 were measured on a shared Mac, not on the App Runner instance (1 vCPU); the evaluation
 did not measure OpenCV latency on AWS.</p>
 <h2>6. Evaluation</h2>
@@ -504,7 +504,8 @@ page numbers).</p>
 <p>Everything OpenCV 5 — the perception package, its integration into the gate and the
 verifier, the face blurring, the evaluation harness, the AWS stack, the diagrams and this
 report — was built on 21–24 October 2026, inside this competition's window: commits
-<code>9cc6ca1</code> through <span class="ph">{{FINAL:head commit}}</span> (<code>git log --reverse 295e3f3..HEAD</code>).</p>
+<code>9cc6ca1</code> through <code>8831099</code>, the deployed code; the commits after it change documentation only
+(<code>git log --reverse 295e3f3..HEAD</code>).</p>
 <p>We read the Official Rules for a clause on previously submitted projects and found none.
 The nearest is the timeline: «From August 26 through October 26, teams will build,
 evaluate, document, and submit their final projects.» The rules also say «Disclosed agents
