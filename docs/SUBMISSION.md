@@ -220,7 +220,7 @@ D. AGENT MODE - THE AGENT DECIDES THE TOOL CALLS (about 3 minutes, uses Amazon B
 LIMITS: the live service allows, per day for everyone together, 6 jobs, 30 photo checks
 (the four judge buttons count as photo checks) and 60 agent turns; per address per hour,
 6 jobs, 30 photo checks and 20 agent turns; at most 8 tool calls in one agent turn. This
-keeps it inside its budget. If the page says the demo has run its quota for today, use D.
+keeps it inside its budget. If the page says the demo has run its quota for today, use E.
 
 E. OFFLINE, NO AWS ACCOUNT
   git clone https://github.com/retailbox-automation/stepspotter-opencv && cd stepspotter-opencv
@@ -228,7 +228,7 @@ E. OFFLINE, NO AWS ACCOUNT
   tools/fetch_models.sh
   .venv/bin/python -m pytest -q -m "not integration"
   .venv/bin/python eval/build_set.py && .venv/bin/python eval/run.py --config opencv
-Expected: 433 passed, 1 skipped (with the face model fetched).
+Expected: 444 passed, 1 skipped (with the face model fetched).
 The test tests/test_perception_gate.py shows each OpenCV decision changing the next call
 (no model call / one-photo / two-photo check / cancel_tool / interrupt) with the model
 replaced by a recorder.

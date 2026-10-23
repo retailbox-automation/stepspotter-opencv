@@ -125,7 +125,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 tools/fetch_models.sh                                    # YuNet face detector, SHA256-checked
 
 # test — offline, no AWS account
-.venv/bin/python -m pytest -q -m "not integration"       # 433 passed, 1 skipped (with the face model)
+.venv/bin/python -m pytest -q -m "not integration"       # 444 passed, 1 skipped (with the face model)
 
 # eval — OpenCV only, no AWS account
 .venv/bin/python eval/build_set.py && .venv/bin/python eval/run.py --config opencv

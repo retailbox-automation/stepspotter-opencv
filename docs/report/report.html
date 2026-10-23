@@ -528,7 +528,7 @@ encouraged».</p>
 <pre><code class="language-bash">git clone https://github.com/retailbox-automation/stepspotter-opencv &amp;&amp; cd stepspotter-opencv
 python3.12 -m venv .venv &amp;&amp; .venv/bin/pip install -e &quot;.[dev]&quot;
 tools/fetch_models.sh                                   # YuNet face detector, SHA256-checked
-.venv/bin/python -m pytest -q -m &quot;not integration&quot;      # offline: 433 passed, 1 skipped
+.venv/bin/python -m pytest -q -m &quot;not integration&quot;      # offline: 444 passed, 1 skipped
 .venv/bin/python eval/build_set.py &amp;&amp; .venv/bin/python eval/run.py --config opencv
 infra/deploy.sh --yes                                   # needs an AWS account; see docs/DEPLOY.md
 </code></pre></body></html>

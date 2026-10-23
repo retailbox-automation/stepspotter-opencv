@@ -388,7 +388,7 @@ Details: `docs/AI-USE.md`.
 git clone https://github.com/retailbox-automation/stepspotter-opencv && cd stepspotter-opencv
 python3.12 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 tools/fetch_models.sh                                   # YuNet face detector, SHA256-checked
-.venv/bin/python -m pytest -q -m "not integration"      # offline: 433 passed, 1 skipped
+.venv/bin/python -m pytest -q -m "not integration"      # offline: 444 passed, 1 skipped
 .venv/bin/python eval/build_set.py && .venv/bin/python eval/run.py --config opencv
 infra/deploy.sh --yes                                   # needs an AWS account; see docs/DEPLOY.md
 ```
