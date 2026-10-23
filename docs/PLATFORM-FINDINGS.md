@@ -79,7 +79,7 @@ ourselves, it says so.
   same file also deprecates `**kwargs` on invocation in favour of `invocation_state`
   (`agent.py:1391`).
 - **What we did:** every typed call uses `agent(blocks, structured_output_model=schema)`
-  and reads `result.structured_output` (`src/stepspotter/vision.py:92–93`), including
+  and reads `result.structured_output` (`src/stepspotter/vision.py:91–92`), including
   the new two-photo verdict with its required `same_place` field.
 
 ## 5. OpenCV 5.0.0: the DNN warns about the new graph engine when a face detector is created

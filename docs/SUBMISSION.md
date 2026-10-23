@@ -2,9 +2,8 @@
 
 Form: opencv26.devpost.com. Fields and their ids come from the Devpost MCP
 `get_submission_requirements` (`docs/opencv26/RULES-LIVE-2026-10-21.md` in the
-hackathon project). The one placeholder left, `{{VIDEO:url}}`, is filled once the video is
-published; every
-evaluation number is from `docs/EVAL.md` / `eval/results/*.json` at `750d152`. Submit is pressed by Mikhail only.
+hackathon project). No placeholders are left; every
+evaluation number is from `docs/EVAL.md` / `eval/results/*.json` at `750d152`. Submit is pressed on Mikhail's go-ahead.
 
 ## Project name
 
@@ -23,7 +22,9 @@ A home-repair assistant that won't take your word for it: OpenCV 5 checks every 
 I bought my first house in Orlando and realised I didn't know how to do the simplest
 things around it. What works for me is my phone: someone marks up my own photo, one
 step at a time, "not this one, that one". StepSpotter does that, with one rule I
-insisted on — it can't take my word that a step is done; it has to see it.
+insisted on — it can't take my word that a step is done; it has to see it. Plenty of
+homeowners work this way: in the 2021–2023 American Housing Survey, 50 million of 140 million
+home-improvement projects were do-it-yourself (U.S. Census Bureau and HUD).
 
 The first version (built for AWS "Agents for Humans", see Disclosure) asked a vision
 model to judge one photo. It worked, and it had three blind spots no prompt fixes: a
@@ -136,15 +137,14 @@ better question, not to refuse.
 ### Disclosure
 
 StepSpotter was built on 9–14 September 2026 for the AWS "Agents for Humans" hackathon on
-Devpost, where it won the Everyday Agents Bronze award (announced 14 October 2026). It was
-also submitted to the AI Builders hackathon, whose judging has not finished. That code is
+Devpost. It was also submitted to the AI Builders hackathon, whose judging has not finished. That code is
 public at github.com/retailbox-automation/stepspotter (commit 80979af) and is imported
 into this repository as its first commit (295e3f3), with the text copied from
 manufacturers' manuals removed. Everything OpenCV 5 — the perception package, its
 integration into the gate and the verifier, face blurring, the evaluation harness, the
 AWS stack, the diagrams and the report — was built on 21–24 October 2026, in this
 competition's window: commits 9cc6ca1 through 8831099 (the deployed code; the commits after it
-change documentation only). We found no clause in
+change only documentation and add constraints.txt). We found no clause in
 the Official Rules about previously submitted projects; the nearest is «From August 26
 through October 26, teams will build, evaluate, document, and submit their final
 projects.» The code was written with AI coding assistants (docs/AI-USE.md); the product
@@ -224,11 +224,12 @@ keeps it inside its budget. If the page says the demo has run its quota for toda
 
 E. OFFLINE, NO AWS ACCOUNT
   git clone https://github.com/retailbox-automation/stepspotter-opencv && cd stepspotter-opencv
-  python3.12 -m venv .venv && .venv/bin/pip install -e ".[dev]"
+  python3.12 -m venv .venv && .venv/bin/pip install -c constraints.txt -e ".[dev]"
   tools/fetch_models.sh
   .venv/bin/python -m pytest -q -m "not integration"
   .venv/bin/python eval/build_set.py && .venv/bin/python eval/run.py --config opencv
-Expected: 444 passed, 1 skipped (with the face model fetched).
+Expected on a fresh clone: 438 passed, 7 skipped (six card-rendering tests need raw photos
+that are not in the repository).
 The test tests/test_perception_gate.py shows each OpenCV decision changing the next call
 (no model call / one-photo / two-photo check / cancel_tool / interrupt) with the model
 replaced by a recorder.
@@ -248,18 +249,16 @@ integration.)
 
 ## Video
 
-{{VIDEO:url}} — ≤ 5 minutes, public on YouTube.
+https://youtu.be/i219UI-TS5Y — 3:33, public on YouTube (channel Let's Automate That).
 
 ## Files (zip_file_required)
 
-`stepspotter-opencv-06205b3.zip` — 25,970,653 bytes, SHA-256
-`67bb1b484de0b501633772aacf4171dbefb66d6e8144e22e6294abc28457ca4b`. `git archive` of commit 06205b3
-(code, `docs/report/StepSpotter-OpenCV26-report.pdf`, `docs/diagrams/`, `docs/screens/`, `eval/results/`),
-456 files. Left out to stay
-under 30 MB, and listed in its top-level `ZIP-CONTENTS.md`: the evaluation photos and the video clip under
-`eval/cases/` (manifest, ATTRIBUTION, LICENSE-NOTE and sources kept) and the September "Agents for Humans"
-design screens. The size and hash are recorded in the commit after 06205b3, since an archive cannot carry
-its own hash; 06205b3 and this commit differ only in this paragraph.
+A `git archive` of the final documentation commit, named after that commit
+(`stepspotter-opencv-<commit>.zip`): code, `constraints.txt`, `docs/report/StepSpotter-OpenCV26-report.pdf`,
+`docs/diagrams/`, `docs/screens/`, `eval/results/`. Left out to stay under 30 MB, and listed in its top-level
+`ZIP-CONTENTS.md`: the evaluation photos and the video clip under `eval/cases/` (manifest, ATTRIBUTION,
+LICENSE-NOTE and sources kept) and the September "Agents for Humans" design screens. Its size and SHA-256
+are recorded here in the next commit, since an archive cannot carry its own hash.
 
 ## Gallery (upload in this order; files in `docs/screens/gallery/`, captions ≤ 140 characters)
 

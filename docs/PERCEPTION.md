@@ -2,7 +2,8 @@
 
 StepSpotter opens the next step of a repair only after a photo proves the last one was
 done. Until this layer, one model call on one photo decided that. Now OpenCV 5 looks at
-every evidence photo **first**, in tens of milliseconds and without a model. What it finds
+every evidence photo **first**, without a model: about 70 ms on a laptop (p50 over 548 cases,
+`eval/results/opencv.json`), 0.2–1.9 s on the 1-vCPU App Runner instance. What it finds
 changes what happens next:
 
 | OpenCV decision | route | what happens next | who decides after |
@@ -72,15 +73,15 @@ the model configurations and photos nobody tuned on, is `docs/EVAL.md`.
 
 ## Where OpenCV changes what happens next
 
-1. `JobService.verify` (`guide.py:405`) runs `inspect_evidence` first. A blocking decision
+1. `JobService.verify` (`guide.py:409`) runs `inspect_evidence` first. A blocking decision
    becomes `StepVerdict(passed=False, source="opencv", route="opencv_block")` **without
    calling the model**; the `perception` trace row says `llm_called: false` and the job's
    `llm_calls_saved` grows. Tests: `tests/test_perception_gate.py` (`Model.calls == []` in
    every blocking case).
 2. **The route picks the model check.** `place_unconfirmed` sends the person's first photo
-   and the evidence to the two-photo verifier (`guide.py:443`, `verifier.py:91`), which must
+   and the evidence to the two-photo verifier (`guide.py:447`, `verifier.py:91`), which must
    fill `same_place`; a pass without `same_place=true` is turned into a fail
-   (`guide.py:449`, fail closed). `ok` sends one photo plus OpenCV's aligned crop of the
+   (`guide.py:453`, fail closed). `ok` sends one photo plus OpenCV's aligned crop of the
    work zone. Tests: `test_a_photo_opencv_cannot_line_up_goes_to_the_two_photo_check`,
    `test_without_a_two_photo_verifier_the_unconfirmed_place_fails_closed`,
    `test_a_confirmed_place_is_checked_on_one_photo`.

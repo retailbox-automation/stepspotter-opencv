@@ -5485,7 +5485,7 @@
           <h3>Gate and human control</h3>
         </div>
         <ul>
-          <li>&bull; advance_step runs through a Strands HookRegistry with StepGate (web/gated.py:23, guide.py:861)</li>
+          <li>&bull; advance_step runs through a Strands HookRegistry with StepGate (web/gated.py:23, guide.py:926)</li>
           <li>&bull; Blocking OpenCV report: cancel_tool with OpenCV&#39;s reason (gate.py:141, :118)</li>
           <li>&bull; Place not confirmed: pass only with same_place=true from the two-photo check (gate.py:153)</li>
           <li>&bull; Change in a do-not-touch zone: interrupt(&#39;human_review&#39;) (gate.py:91)</li>
@@ -5498,7 +5498,7 @@
           <h3>Agent mode and limits</h3>
         </div>
         <ul>
-          <li>&bull; At /agent the Strands Guide agent decides the tool calls (inspect_photo, submit_photo, advance_step); same tools, same gate (web/app.py:510, guide.py:773)</li>
+          <li>&bull; At /agent the Strands Guide agent decides the tool calls (inspect_photo, submit_photo, advance_step); same tools, same gate (web/app.py:523, guide.py:777)</li>
           <li>&bull; Capped: 6 jobs, 30 photo checks, 60 agent turns a day for everyone; at most 8 tool calls per turn (web/limits.py, web/agent_mode.py)</li>
           <li>&bull; No COOL, no S3 for photos, no AgentCore in this stack</li>
         </ul>

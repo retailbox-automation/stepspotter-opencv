@@ -34,9 +34,9 @@ People doing small, low-consequence jobs on their own home — low-voltage cabli
 network jack, a pressure-washer assembly — who learn best from their own photo marked up
 one step at a time. The first user is the author: the six evidence photos in this
 repository are of his own structured-wiring panel and wall jacks
-(`fixtures/perception/scenes.json`). StepSpotter's earlier build won the Everyday Agents
-Bronze award at the AWS "Agents for Humans" hackathon (see Disclosure); no other users
-are claimed. Jobs that need a licensed trade (mains wiring, gas, roofing, structural)
+(`fixtures/perception/scenes.json`); no other users are claimed. The wider group is large:
+in the 2021–2023 American Housing Survey, 50 million of 140 million home-improvement projects
+were do-it-yourself ([U.S. Census Bureau and HUD](https://www.census.gov/content/dam/Census/library/visualizations/2024/demo/2023%20Home%20Improvements%20Infographic.pdf)). Jobs that need a licensed trade (mains wiring, gas, roofing, structural)
 are refused by the planner with an empty step list (`src/stepspotter/planner.py:26`,
 `:105`).
 
@@ -46,14 +46,14 @@ are refused by the planner with an empty step list (`src/stepspotter/planner.py:
 
 Everything above runs in one container on AWS App Runner, deployed by one CloudFormation
 stack (`infra/template.yaml`). Every node in the diagram carries its source file and line
-in `docs/diagrams/architecture.html` (checked against commit `750d152`).
+in `docs/diagrams/architecture.html` (checked against the deployed commit `8831099`).
 
 - **FastAPI web app** (`src/stepspotter/web/app.py`) serves the phone page and the API.
-  A photo goes to `JobService.verify` (`src/stepspotter/guide.py:405`).
+  A photo goes to `JobService.verify` (`src/stepspotter/guide.py:409`).
 - **OpenCV 5.0.0 perception** (`src/stepspotter/perception/`) runs first on every
   evidence photo and returns a `PerceptionReport` with a decision and a route.
 - **Verifier** — a Strands `Agent` on Amazon Bedrock (Claude Sonnet 4.6) that returns a
-  typed `StepVerdict` (`src/stepspotter/vision.py:65`, `src/stepspotter/verifier.py:61`).
+  typed `StepVerdict` (`src/stepspotter/vision.py:63`, `src/stepspotter/verifier.py:61`).
   It is called only for photos OpenCV did not refuse.
 - **StepGate** — a Strands `BeforeToolCall` hook on the `advance_step` tool
   (`src/stepspotter/gate.py:64`). The page's "next step" button calls `advance_step`
@@ -71,7 +71,7 @@ Three front doors use the same tools and the same gate. On the default page the 
 buttons drive the loop and code routes each photo. In **agent mode** (`/agent`,
 `src/stepspotter/web/agent_mode.py`) and in `stepspotter chat` (`src/stepspotter/cli.py:195`)
 the Strands Guide agent decides which tools to call — it can run `inspect_photo` before
-submitting (`src/stepspotter/guide.py:663`) — and every answer on the web shows the tool
+submitting (`src/stepspotter/guide.py:667`) — and every answer on the web shows the tool
 calls it made, what OpenCV decided about each photo, and any gate refusal. Agent mode is
 capped like the rest: starting a job counts as a job, a turn with a photo as a photo check,
 a text-only turn as an agent turn (60 a day for everyone, 20 an hour per address), and a
@@ -132,16 +132,16 @@ as photos of different rooms (5–8); no inlier threshold separates them
 3 of 5 such re-shots). So OpenCV confirms a place when it can (≥ 25 inliers,
 `perception/thresholds.py:152`) and otherwise hands the question to the model with both
 photos — a dearer check, never a refused person. The gate fails closed: a pass without
-`same_place=true` cannot close the step (`guide.py:449`, `gate.py:153`).
+`same_place=true` cannot close the step (`guide.py:453`, `gate.py:153`).
 
 **Where OpenCV output changes a later decision** — the evidence the Agentic Vision award
 asks for, each with a test:
 
 1. A blocking decision becomes a failed verdict with `source="opencv"` and the model is
-   never called (`guide.py:430`; `tests/test_perception_gate.py`,
+   never called (`guide.py:434`; `tests/test_perception_gate.py`,
    `test_a_blurred_photo_is_refused_without_calling_the_model`).
 2. The route chooses which model call is made: one photo plus crop, or two photos with a
-   required `same_place` (`guide.py:443`;
+   required `same_place` (`guide.py:447`;
    `test_a_photo_opencv_cannot_line_up_goes_to_the_two_photo_check`).
 3. The gate cancels `advance_step` on a stored blocking report even beside a passing
    verdict (`gate.py:141`; `test_the_gate_refuses_on_a_blocking_report_even_beside_a_passing_verdict`).
@@ -149,7 +149,7 @@ asks for, each with a test:
    person's approval (`gate.py:91`;
    `test_a_change_in_the_do_not_touch_zone_stops_the_run_for_a_person`).
 5. `inspect_photo` lets the agent ask once for a photo from the first angle before it
-   submits (`guide.py:663`; `test_inspect_photo_offers_one_ask_for_the_first_angle_and_never_refuses`).
+   submits (`guide.py:667`; `test_inspect_photo_offers_one_ask_for_the_first_angle_and_never_refuses`).
 6. After three OpenCV blocks in a row on one step, the next `retake` or `no_change` goes
    to the model with OpenCV's findings attached, so a false positive cannot trap a person
    (`perception/inspect.py`, `apply_stuck_rule`; `tests/test_perception_failures.py`).
@@ -178,7 +178,7 @@ honestly pass a step; the agent, the Marker, the verifier, OpenCV and the gate w
 recording, where no step could pass, is kept unchanged in `run-1/`.
 
 Every OpenCV decision is one trace row with `decision`, `route`, `llm_called` and
-`ms_total` (`guide.py:320`). On the page, "Everything it did" shows it as "OpenCV photo
+`ms_total` (`guide.py:324`). On the page, "Everything it did" shows it as "OpenCV photo
 check (code, not the model)" with the match lines, the change heatmap and the time.
 
 ![The trace sheet on the live URL for the judge scenario "change in a do-not-touch zone": OpenCV's row (1868 ms, no model call) with the match lines, the change heatmap and the quality bars; right, the match picture at full size, 1044 SIFT inliers](screens/gallery/02-trace-opencv-pictures.png)
@@ -317,6 +317,10 @@ is constructed, not observed in use. Timings are from a shared Mac.
   agent run were drawn before the caption fix (`3f75518`), which wraps long captions
   instead of cutting them.
 - **Model numbers are small.** 2 cases per synthetic class, one run each (§6).
+- **Success is counted per photo, not per job.** We did not run whole jobs with and without
+  OpenCV, so there is no job-completion rate; the one recorded agent run is
+  `data/demo/agentic-opencv/`. Every OpenCV branch has an offline test
+  (`tests/test_perception_gate.py`); the `no_change` branch has no live trace.
 
 ## 8. Responsible use
 
@@ -328,7 +332,7 @@ is constructed, not observed in use. Timings are from a shared Mac.
   stops the run too (`gate.py:76`). A refusal always comes with the reason and one
   instruction; the stuck rule keeps a false positive from trapping anyone.
 - **Fail closed.** A photo whose place OpenCV cannot confirm closes a step only if the
-  model says it is the same place (`guide.py:449`, `gate.py:153`).
+  model says it is the same place (`guide.py:453`, `gate.py:153`).
 - **Privacy.** Faces are blurred in the stored file before any model sees it; each report
   says whether that check ran (`faces_checked`). Photos live only on the instance's
   ephemeral disk, are not copied to S3 or a database, and are gone on every redeploy.
@@ -349,8 +353,7 @@ is constructed, not observed in use. Timings are from a shared Mac.
 ## 9. Disclosure
 
 StepSpotter was built on 9–14 September 2026 for the AWS "Agents for Humans" hackathon on
-Devpost, where it won the Everyday Agents Bronze award (announced 14 October 2026). It was
-also submitted to the AI Builders hackathon, whose judging has not finished. The original
+Devpost. It was also submitted to the AI Builders hackathon, whose judging has not finished. The original
 code is public at <https://github.com/retailbox-automation/stepspotter>, commit `80979af`
 (pushed 2026-09-14). It is imported here as the first commit, `295e3f3`, with the text
 copied from manufacturers' manuals removed (the bundled manual cache keeps only links and
@@ -359,7 +362,8 @@ page numbers).
 Everything OpenCV 5 — the perception package, its integration into the gate and the
 verifier, the face blurring, the evaluation harness, the AWS stack, the diagrams and this
 report — was built on 21–24 October 2026, inside this competition's window: commits
-`9cc6ca1` through `8831099`, the deployed code; the commits after it change documentation only
+`9cc6ca1` through `8831099`, the deployed code; the commits after it change only documentation and add
+`constraints.txt`
 (`git log --reverse 295e3f3..HEAD`).
 
 We read the Official Rules for a clause on previously submitted projects and found none.
@@ -386,9 +390,9 @@ Details: `docs/AI-USE.md`.
 
 ```bash
 git clone https://github.com/retailbox-automation/stepspotter-opencv && cd stepspotter-opencv
-python3.12 -m venv .venv && .venv/bin/pip install -e ".[dev]"
+python3.12 -m venv .venv && .venv/bin/pip install -c constraints.txt -e ".[dev]"
 tools/fetch_models.sh                                   # YuNet face detector, SHA256-checked
-.venv/bin/python -m pytest -q -m "not integration"      # offline: 444 passed, 1 skipped
+.venv/bin/python -m pytest -q -m "not integration"      # fresh clone: 438 passed, 7 skipped
 .venv/bin/python eval/build_set.py && .venv/bin/python eval/run.py --config opencv
 infra/deploy.sh --yes                                   # needs an AWS account; see docs/DEPLOY.md
 ```

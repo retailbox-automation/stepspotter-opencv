@@ -10,7 +10,20 @@ and what it finds changes what the system does next.
 Entry to the **OpenCV AI Competition 2026, powered by AWS**. Live on AWS App Runner:
 **<https://utgfmpcgxf.us-east-1.awsapprunner.com>** · technical report:
 [`docs/REPORT.md`](docs/REPORT.md) (PDF: [`docs/report/StepSpotter-OpenCV26-report.pdf`](docs/report/StepSpotter-OpenCV26-report.pdf))
-· video: {{VIDEO:url}}
+· video (3:33): <https://youtu.be/i219UI-TS5Y>
+
+## Judge it in two minutes
+
+| claim | proof | what you will see |
+|---|---|---|
+| OpenCV 5 runs on AWS and decides before any model | live app → **For judges: the OpenCV checks, no model** → *Blurry photo* | decision `retake`, the time in ms, "no model call needed", the gate refusing to move on |
+| OpenCV's output changes the next call | [`tests/test_perception_gate.py`](tests/test_perception_gate.py) (offline, the model replaced by a recorder) | one test per decision: no model call, one-photo check, two-photo check, `cancel_tool`, `interrupt` |
+| The real agent acts on it | [`data/demo/agentic-opencv/transcript.md`](data/demo/agentic-opencv/transcript.md) (live Bedrock run) | `retake` in 44 ms with no model call; another room goes to the two-photo check and fails; 52 matched points → pass → `advance_step` allowed; a skip attempt cancelled by the gate |
+| More bad photos stopped, for less | [`docs/EVAL.md`](docs/EVAL.md) § Headline · [`eval/results/compare.json`](eval/results/compare.json) | 50 held-out cases: 30 of 33 bad photos refused (the model on one photo: 11); 4 of 17 good ones refused (model: 3); $0.89 per 100 checks (model: $1.27) |
+| Ordinary photos still get through | [`eval/results/originals.json`](eval/results/originals.json) | 0 of 56 unmodified real photos refused by OpenCV |
+| OpenCV 5.0.0 is what runs in the container | [`infra/buildspec.yml`](infra/buildspec.yml) line 24 · [`pyproject.toml`](pyproject.toml) | the build prints `cv2 5.0.0` from inside the image; `opencv-python-headless==5.0.0.93` pinned |
+| One stack, observable and capped | [`infra/template.yaml`](infra/template.yaml) · [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | App Runner, metric filters on the perception trace, 3 alarms, a dashboard, a $15 Budget |
+| The 3:33 video | <https://youtu.be/i219UI-TS5Y> | the team, the live app, the architecture and the results |
 
 ## In 60 seconds
 
@@ -22,8 +35,9 @@ by a Strands `BeforeToolCall` hook until a photo passes.
 
 **Why OpenCV changes the decision.** A model looking at one photo cannot tell a blurred
 photo from an unfinished step, the panel you started on from a similar one, or a change
-in the work zone from a change in the zone you were told not to touch. OpenCV 5 can, in
-tens of milliseconds and without a model:
+in the work zone from a change in the zone you were told not to touch. OpenCV 5 can, without a
+model: about 70 ms per photo on a laptop (p50 over 548 cases, `eval/results/opencv.json`) and
+0.2–1.9 s on the 1-vCPU App Runner instance (the live screenshots in `docs/screens/`):
 
 | OpenCV sees | what happens next |
 |---|---|
@@ -116,16 +130,17 @@ Failures, with pictures: `docs/EVAL.md`, `eval/results/figures/`.
 ## Run it
 
 Python 3.12. Pinned: `opencv-python-headless==5.0.0.93`, `numpy==2.5.4`,
-`strands-agents==1.55.0` (`pyproject.toml`); the cloud build runs `import cv2` inside the
+`strands-agents==1.55.0` (`pyproject.toml`); every other version the tests passed with is in
+`constraints.txt`. The cloud build runs `import cv2` inside the
 built image and prints its version (`infra/buildspec.yml`).
 
 ```bash
 git clone https://github.com/retailbox-automation/stepspotter-opencv && cd stepspotter-opencv
-python3.12 -m venv .venv && .venv/bin/pip install -e ".[dev]"
+python3.12 -m venv .venv && .venv/bin/pip install -c constraints.txt -e ".[dev]"
 tools/fetch_models.sh                                    # YuNet face detector, SHA256-checked
 
 # test — offline, no AWS account
-.venv/bin/python -m pytest -q -m "not integration"       # 444 passed, 1 skipped (with the face model)
+.venv/bin/python -m pytest -q -m "not integration"       # fresh clone: 438 passed, 7 skipped *
 
 # eval — OpenCV only, no AWS account
 .venv/bin/python eval/build_set.py && .venv/bin/python eval/run.py --config opencv
@@ -138,6 +153,9 @@ BUDGET_EMAIL=you@example.com ALERT_EMAIL=you@example.com infra/deploy.sh --yes
 infra/destroy.sh --yes                                   # removes it
 ```
 
+\* Six card-rendering tests need the author's raw panel photos, which are not in the repository,
+so they skip on a fresh clone (on the author's machine: 444 passed, 1 skipped).
+
 Deploy details, measured durations and cost: [`docs/DEPLOY.md`](docs/DEPLOY.md).
 Operations, spend caps, kill switch, logs and privacy: [`docs/OPERATIONS.md`](docs/OPERATIONS.md).
 
@@ -145,12 +163,12 @@ Operations, spend caps, kill switch, logs and privacy: [`docs/OPERATIONS.md`](do
 
 | what | where |
 |---|---|
-| OpenCV runs first; a blocked photo never reaches the model | `src/stepspotter/guide.py:405`, `:430` |
-| the route picks the one-photo or the two-photo model check | `src/stepspotter/perception/models.py:167`, `src/stepspotter/guide.py:443` |
-| fail closed without `same_place=true` | `src/stepspotter/guide.py:449`, `src/stepspotter/gate.py:153` |
+| OpenCV runs first; a blocked photo never reaches the model | `src/stepspotter/guide.py:409`, `:430` |
+| the route picks the one-photo or the two-photo model check | `src/stepspotter/perception/models.py:167`, `src/stepspotter/guide.py:447` |
+| fail closed without `same_place=true` | `src/stepspotter/guide.py:453`, `src/stepspotter/gate.py:153` |
 | the gate cancels `advance_step` on a blocking report | `src/stepspotter/gate.py:141`, `:118` |
 | a change in a do-not-touch zone → `interrupt("human_review")` | `src/stepspotter/gate.py:91` |
-| the agent's own OpenCV tool (`inspect_photo`) | `src/stepspotter/guide.py:663` |
+| the agent's own OpenCV tool (`inspect_photo`) | `src/stepspotter/guide.py:667` |
 | the OpenCV 5 checks | `src/stepspotter/perception/` (quality, scene, change, frames, privacy) |
 
 ## Documents
@@ -174,14 +192,13 @@ That refusal is a model judgement, not a certified hazard classifier.
 ## Disclosure
 
 StepSpotter was built on 9–14 September 2026 for the AWS "Agents for Humans" hackathon
-(Devpost), where it won the Everyday Agents Bronze award (announced 14 October 2026), and
-was also submitted to the AI Builders hackathon (judging not finished). That code is
+(Devpost) and was also submitted to the AI Builders hackathon (judging not finished). That code is
 public at <https://github.com/retailbox-automation/stepspotter> (commit `80979af`) and is
 imported here as the first commit, `295e3f3`, with the text copied from manufacturers'
 manuals removed. Everything OpenCV 5 — the perception package, the gate and verifier
 integration, face blurring, the evaluation harness, the AWS stack and the documents — was
 built on 21–24 October 2026 in this competition's window: commits `9cc6ca1` through
-`8831099` (the deployed code; the commits after it change documentation only). The Official Rules have no clause on previously submitted projects;
+`8831099` (the deployed code; the commits after it change only documentation and add `constraints.txt`). The Official Rules have no clause on previously submitted projects;
 the nearest is «From August 26 through October 26, teams will build, evaluate, document,
 and submit their final projects.» AI coding assistants were used; see
 [`docs/AI-USE.md`](docs/AI-USE.md).
