@@ -22,8 +22,8 @@ Entry to the **OpenCV AI Competition 2026, powered by AWS**. Live on AWS App Run
 | OpenCV 5 runs on AWS and decides before any model | live app → **For judges: the OpenCV checks, no model** → *Blurry photo* | decision `retake`, the time in ms, "no model call needed", the gate refusing to move on |
 | OpenCV's output changes the next call | [`tests/test_perception_gate.py`](tests/test_perception_gate.py) (offline, the model replaced by a recorder) | one test per decision: no model call, one-photo check, two-photo check, `cancel_tool`, `interrupt` |
 | The real agent acts on it | [`data/demo/agentic-opencv/transcript.md`](data/demo/agentic-opencv/transcript.md) (live Bedrock run) | `retake` in 44 ms with no model call; another room goes to the two-photo check and fails; 52 matched points → pass → `advance_step` allowed; a skip attempt cancelled by the gate |
-| More bad photos stopped, for less | [`docs/EVAL.md`](docs/EVAL.md) § Headline · [`eval/results/compare.json`](eval/results/compare.json) | 50 held-out cases: 30 of 33 bad photos refused (the model on one photo: 11); 4 of 17 good ones refused (model: 3); $0.89 per 100 checks (model: $1.27) |
-| Ordinary photos still get through | [`eval/results/originals.json`](eval/results/originals.json) | 0 of 56 unmodified real photos refused by OpenCV |
+| More bad photos stopped, for less | [`docs/EVAL.md`](docs/EVAL.md) § Headline · [`eval/results/compare.json`](eval/results/compare.json) | 50 test cases: 30 of 33 bad photos refused (the model on one photo: 11); 4 of 17 good ones refused (model: 3); $0.89 per 100 checks (model: $1.27) |
+| Ordinary photos still get through | [`eval/results/originals.json`](eval/results/originals.json) | 0 of 56 unmodified real photos refused by OpenCV after the glare fix, which these same photos prompted (8 of 56 before) |
 | OpenCV 5.0.0 is what runs in the container | [`infra/buildspec.yml`](infra/buildspec.yml) line 24 · [`pyproject.toml`](pyproject.toml) | the build prints `cv2 5.0.0` from inside the image; `opencv-python-headless==5.0.0.93` pinned |
 | One stack, observable and capped | [`infra/template.yaml`](infra/template.yaml) · [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | App Runner, metric filters on the perception trace, 3 alarms, a dashboard, a $15 Budget |
 | The 3:33 video | <https://youtu.be/i219UI-TS5Y> | the team, the live app, the architecture and the results |
@@ -39,7 +39,7 @@ by a Strands `BeforeToolCall` hook until a photo passes.
 **Why OpenCV changes the decision.** A model looking at one photo cannot tell a blurred
 photo from an unfinished step, the panel you started on from a similar one, or a change
 in the work zone from a change in the zone you were told not to touch. OpenCV 5 can, without a
-model: about 70 ms per photo on a laptop (p50 over 548 cases, `eval/results/opencv.json`) and
+model: about 70 ms per photo on a Mac Studio (p50 over 548 cases, `eval/results/opencv.json`) and
 0.2–1.9 s on the 1-vCPU App Runner instance (the live screenshots in `docs/screens/`):
 
 | OpenCV sees | what happens next |
@@ -47,7 +47,7 @@ model: about 70 ms per photo on a laptop (p50 over 548 cases, `eval/results/open
 | blur, dark, glare, the part out of frame | refused **without a model call**, with one instruction ("hold still", "more light", "step back") |
 | the same photo sent again | refused without a model call |
 | nothing changed in the work zone | refused without a model call |
-| something changed in the do-not-touch zone | the gate stops the run and asks a person to approve (`interrupt`) |
+| something changed in the do-not-touch zone | the gate stops the run (`interrupt`); in the web app it goes on only after the user presses "I am the person — I checked it, carry on" |
 | it cannot line the photo up with your first photo | the model gets **both** photos and must answer `same_place`; the gate needs `true` |
 | it all checks out | the model checks the photo, with OpenCV's aligned crop of the work zone |
 
@@ -122,8 +122,9 @@ configuration:
   C's edge is what a model cannot see in one or two photos: a photo sent again, nothing
   changed in the work zone, a change in a do-not-touch zone, overexposure, a work zone cut
   off.
-- OpenCV alone on all 548 cases: 0 of 56 unmodified real photos refused; 2 of 66 good
-  test-half photos wrongly refused; p50 / p95 68 / 111 ms on a Mac.
+- OpenCV alone on all 548 cases: 0 of 56 unmodified real photos refused after the glare fix,
+  which these same photos prompted (8 of 56 before); 2 of 66 good test-half photos wrongly
+  refused; p50 / p95 68 / 111 ms on the test half, on a Mac Studio.
 - Still open: mirror-image look-alikes pass every configuration; a resent photo with a circle
   drawn on it passes; one smeared video frame passes the blur check.
 - The model numbers rest on 2 cases per synthetic class, one run each — examples, not rates.

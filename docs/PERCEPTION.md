@@ -2,7 +2,7 @@
 
 StepSpotter opens the next step of a repair only after a photo proves the last one was
 done. Until this layer, one model call on one photo decided that. Now OpenCV 5 looks at
-every evidence photo **first**, without a model: about 70 ms on a laptop (p50 over 548 cases,
+every evidence photo **first**, without a model: about 70 ms on a Mac Studio (p50 over 548 cases,
 `eval/results/opencv.json`), 0.2–1.9 s on the 1-vCPU App Runner instance. What it finds
 changes what happens next:
 
@@ -29,7 +29,7 @@ with where it came from. The route is `PerceptionReport.route` (`perception/mode
 
 | module | measures | OpenCV 5 calls |
 |---|---|---|
-| `privacy.py` | faces found and blurred in the file **before** anything else reads it — before the quality check, before it is stored, before any model sees it (see Privacy) | `FaceDetectorYN`, `GaussianBlur` |
+| `privacy.py` | faces found in an evidence photo are blurred **before** the quality check and before any model sees it; the blurred pixels are written over the stored file; the first photo, which the planner reads, is not blurred (see Privacy) | `FaceDetectorYN`, `GaussianBlur` |
 | `quality.py` | sharpness = p90 of Laplacian variance over 4x4 tiles (a sharp part on a soft background passes); exposure = mean grey, share of near-black (<16) and near-white (>=245) pixels, overexposure read against the first photo; blank frame = grey std; glare = largest connected saturated (>=250) blob — a note on its own, a refusal only when it newly covers the work zone; size | `Laplacian`, `calcHist`, `threshold`, `connectedComponentsWithStats` |
 | `scene.py` | is the evidence the same place as the reference: SIFT (2000, on CLAHE luminance), Lowe ratio 0.75, `findHomography(USAC_MAGSAC)`, then a sanity check on the homography (orientation, convex projected quad, scale 0.2–5, not a sliver, overlap). A close-up that fails the whole-frame match is matched again against a crop of the reference around the work zone. Replay = homography near identity AND nothing different after alignment, anywhere | `SIFT_create`, `BFMatcher.knnMatch`, `findHomography`, `perspectiveTransform`, `isContourConvex`, `intersectConvexConvex` |
 | `change.py` | the evidence warped onto the reference grid, CLAHE on L in Lab, sigma-3 blur, per-pixel change = any Lab channel moved > 28 levels, 5x5 opening; the changed share of each work zone and each do-not-touch zone, **read against the change outside every zone** (the noise floor) | `warpPerspective`, `cvtColor(LAB)`, `createCLAHE`, `absdiff`, `morphologyEx`, `erode` |
@@ -213,9 +213,9 @@ good refused. Four of its findings were fixed before run 2, none by moving a thr
 
 ## Privacy
 
-Faces are blurred in the evidence file itself, before the quality check, before the
-photo is stored and before any model sees it (`inspect.py`, step 1; `guide.py`
-`perceive` writes the blurred pixels back to the stored file). The detector is YuNet from
+Faces in an evidence photo are blurred before the quality check and before any model sees
+it (`inspect.py`, step 1); `guide.py` `perceive` then writes the blurred pixels over the
+already-stored file. The first photo, which the planner reads, is not blurred. The detector is YuNet from
 opencv_zoo (MIT, Copyright (c) 2020 Shiqi Yu), run through `cv2.FaceDetectorYN`. The
 ONNX file is not committed: the container build fetches it and checks its size and
 SHA256 against the pins in `src/stepspotter/perception/fetch_yunet.py` (`sha256
